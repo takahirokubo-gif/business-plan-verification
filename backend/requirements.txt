@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+openpyxl
+python-multipart
+python-dotenv
+anthropic
+pytest
+httpx
+pypdf
+reportlab

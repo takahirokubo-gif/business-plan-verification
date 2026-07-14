@@ -632,7 +632,7 @@ def build_seed(extraction, kpi_tree, scenarios) -> dict:
     return dict(
         users=[
             dict(key="tanaka", name="田中", role="稟議担当"),
-            dict(key="sato", name="佐藤", role="部長（決裁者）"),
+            dict(key="sato", name="佐藤", role="部長"),
             dict(key="takahashi", name="高橋", role="稟議担当"),
         ],
         deals=[deal1] + other_deals,
