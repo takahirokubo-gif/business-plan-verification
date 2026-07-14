@@ -64,6 +64,29 @@ def export(deal_id: int, body: ExportBody, db: Session = Depends(get_db)):
     )
 
 
+@router.post("/export/pdf")
+def export_pdf(deal_id: int, body: ExportBody, db: Session = Depends(get_db)):
+    """PDF出力（補助）。Excelと同じ確定データを転記する。"""
+    deal = _deal(db, deal_id)
+    if not deal.required_items_confirmed():
+        raise HTTPException(400, "必須項目がすべて確定されていません")
+    if deal.kpi_status != "confirmed":
+        raise HTTPException(400, "KPI構造が確定されていません")
+    from ..services.export_pdf import build_export_pdf
+    path, excluded = build_export_pdf(deal)
+    filename = Path(path).name
+    db.add(ExportRecord(deal_id=deal.id, at=datetime.now(), user_key=body.user,
+                        filename=filename, excluded_held=excluded))
+    add_history(db, deal, body.user, "PDF出力",
+                f"{filename}" + (f"（保留{excluded}項目を除外）" if excluded else ""))
+    db.commit()
+    quoted = urllib.parse.quote(filename)
+    return FileResponse(
+        path, media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename*=UTF-8''{quoted}"},
+    )
+
+
 class FindingBody(BaseModel):
     target_type: str | None = None  # scenario / item / kpi
     target_key: str | None = None
