@@ -1,0 +1,508 @@
+{
+  "deal_key": "autostaff",
+  "company": "株式会社オートスタッフ中部",
+  "items": [
+    {
+      "key": "business_summary",
+      "section": "前提・定性情報",
+      "label": "事業要約",
+      "unit": "テキスト",
+      "case": null,
+      "values": null,
+      "text_value": "自動車製造派遣の東海地場大手。在籍登録スタッフ約3,800名、稼働率88%と業界高水準。寮・送迎インフラと自動車工程ノウハウが競争優位。創業者の事業承継を背景としたスポンサー主導のLBO。",
+      "required": true,
+      "evidence": {
+        "file": "DD_Business_オートスタッフ中部.pdf",
+        "location": "p.4〜5（1. エグゼクティブサマリー）",
+        "quote": "東海地区において、自動車完成車メーカーおよび部品メーカー向けの製造派遣・製造請負を主力事業とする人材サービス会社である。",
+        "logic": "事業DDのエグゼクティブサマリーから事業内容・競争優位・案件背景を要約。"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "risk_concentration",
+      "section": "前提・定性情報",
+      "label": "主要リスク①：顧客集中",
+      "unit": "テキスト",
+      "case": null,
+      "values": null,
+      "text_value": "上位3社への売上依存度62%（うち最大手A社28%）。A社は内製化・工程再編を検討中。",
+      "required": true,
+      "evidence": {
+        "file": "DD_Business_オートスタッフ中部.pdf",
+        "location": "p.18（6.2 顧客集中度）",
+        "quote": "上位3社への売上依存度は62%（うち最大手A社28%）に達しており、特定顧客の生産動向・調達方針変更が業績に与える影響は大きい。",
+        "logic": "発見事項6-2の記載を主要リスクとして採用。最大手A社の基本契約残存2年も併記。"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "risk_overtime",
+      "section": "前提・定性情報",
+      "label": "主要リスク②：未払残業代",
+      "unit": "テキスト",
+      "case": null,
+      "values": null,
+      "text_value": "固定残業代制度の運用不備により、未払残業代の潜在債務は最大300百万円（3億円）。",
+      "required": true,
+      "evidence": {
+        "file": "DD_Legal_オートスタッフ中部.pdf",
+        "location": "p.12（4.3 未払残業代に係る潜在債務）",
+        "quote": "未払残業代に係る潜在債務は、賃金請求権の消滅時効（3年）の範囲で最大300百万円（3億円）と試算される。",
+        "logic": "法務DDの重要指摘事項。買収契約での特別補償・エスクローによる手当てが推奨されている。"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "risk_recruiting",
+      "section": "前提・定性情報",
+      "label": "主要リスク③：採用競争の激化",
+      "unit": "テキスト",
+      "case": null,
+      "values": null,
+      "text_value": "採用単価CPAが225→250千円（FY24→FY26）と年率5%超で上昇。計画達成の主要コストリスク。",
+      "required": false,
+      "evidence": {
+        "file": "DD_Business_オートスタッフ中部.pdf",
+        "location": "p.16（5.3 採用とスタッフ定着）",
+        "quote": "採用単価（CPA：採用費÷採用人数）はFY24の225千円からFY26には250千円へと年率5%超のペースで上昇しており、採用市場の競争激化が今後の計画達成における主要なコスト上振れリスクである。",
+        "logic": "事業DDのKPI分析から、計画期間のコスト上振れ要因として抽出。"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "normalized_ebitda",
+      "section": "前提・定性情報",
+      "label": "正常収益力EBITDA（FY26）",
+      "unit": "百万円",
+      "case": null,
+      "values": {
+        "FY26": 1620
+      },
+      "text_value": null,
+      "required": true,
+      "evidence": {
+        "file": "DD_Financial_オートスタッフ中部.pdf",
+        "location": "p.34（8.2 結論：正常収益力EBITDA）",
+        "quote": "FY26（2026年3月期）における正常収益力ベースのEBITDAは1,620百万円（16.2億円）と評価する。",
+        "logic": "財務DDの結論数値。モデルFY26実績EBITDA（1,620百万円）と一致することを確認済み。"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "act_revenue",
+      "section": "実績（FY24〜FY26）",
+      "label": "売上高",
+      "unit": "百万円",
+      "case": null,
+      "values": {
+        "FY24": 12460,
+        "FY25": 13363,
+        "FY26": 14160
+      },
+      "text_value": null,
+      "required": true,
+      "evidence": {
+        "file": "AutostaffChubu_Model_Base.xlsx",
+        "location": "PLシート C9:E9（9行・FY24〜FY26列）",
+        "quote": "売上高（Net Sales）　12,460 / 13,363 / 14,160（百万円換算）",
+        "logic": "行ラベル『売上高（Net Sales）』を『売上高』にマッピング。単位注記（千円）に基づき百万円へ換算。財務DD p.4 財務ハイライトの売上高とも一致。"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "act_op",
+      "section": "実績（FY24〜FY26）",
+      "label": "営業利益",
+      "unit": "百万円",
+      "case": null,
+      "values": {
+        "FY24": 1229,
+        "FY25": 1388,
+        "FY26": 1515
+      },
+      "text_value": null,
+      "required": true,
+      "evidence": {
+        "file": "AutostaffChubu_Model_Base.xlsx",
+        "location": "PLシート C21:E21（21行・FY24〜FY26列）",
+        "quote": "営業利益（Operating Profit）　1,229 / 1,388 / 1,515（百万円換算）",
+        "logic": "行ラベル『営業利益（Operating Profit）』を標準項目にマッピング。シート冒頭の単位注記（単位：千円）に基づき百万円へ換算。"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "act_ebitda",
+      "section": "実績（FY24〜FY26）",
+      "label": "EBITDA",
+      "unit": "百万円",
+      "case": null,
+      "values": {
+        "FY24": 1321,
+        "FY25": 1486,
+        "FY26": 1620
+      },
+      "text_value": null,
+      "required": true,
+      "evidence": {
+        "file": "AutostaffChubu_Model_Base.xlsx",
+        "location": "PLシート C25:E25（25行・FY24〜FY26列）",
+        "quote": "Adj. EBITDA　1,321 / 1,486 / 1,620（百万円換算）",
+        "logic": "行ラベル『Adj. EBITDA』を『EBITDA』にマッピング。営業利益＋減価償却費の構造をシート数式から確認。財務DD p.34 の正常収益力EBITDA（FY26: 1,620百万円）と一致。"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "act_ni",
+      "section": "実績（FY24〜FY26）",
+      "label": "当期純利益",
+      "unit": "百万円",
+      "case": null,
+      "values": {
+        "FY24": 842,
+        "FY25": 952,
+        "FY26": 1041
+      },
+      "text_value": null,
+      "required": false,
+      "evidence": {
+        "file": "AutostaffChubu_Model_Base.xlsx",
+        "location": "PLシート C32:E32（32行・FY24〜FY26列）",
+        "quote": "当期純利益　842 / 952 / 1,041（百万円換算）",
+        "logic": "行ラベル『当期純利益』を標準項目にマッピング。シート冒頭の単位注記（単位：千円）に基づき百万円へ換算。"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "act_cash",
+      "section": "実績（FY24〜FY26）",
+      "label": "現預金",
+      "unit": "百万円",
+      "case": null,
+      "values": {
+        "FY24": 1420,
+        "FY25": 1640,
+        "FY26": 1850
+      },
+      "text_value": null,
+      "required": true,
+      "evidence": {
+        "file": "AutostaffChubu_Model_Base.xlsx",
+        "location": "BSシート C7:E7（7行・FY24〜FY26列）",
+        "quote": "現金及び預金　1,420 / 1,640 / 1,850（百万円換算）",
+        "logic": "行ラベル『現金及び預金』を標準項目にマッピング。シート冒頭の単位注記（単位：千円）に基づき百万円へ換算。"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "act_net_assets",
+      "section": "実績（FY24〜FY26）",
+      "label": "純資産",
+      "unit": "百万円",
+      "case": null,
+      "values": {
+        "FY24": 1950,
+        "FY25": 2560,
+        "FY26": 3150
+      },
+      "text_value": null,
+      "required": true,
+      "evidence": {
+        "file": "AutostaffChubu_Model_Base.xlsx",
+        "location": "BSシート C23:E23（23行・FY24〜FY26列）",
+        "quote": "純資産（Net Assets）　1,950 / 2,560 / 3,150（百万円換算）",
+        "logic": "行ラベル『純資産（Net Assets）』を標準項目にマッピング。シート冒頭の単位注記（単位：千円）に基づき百万円へ換算。"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "act_debt",
+      "section": "実績（FY24〜FY26）",
+      "label": "有利子負債",
+      "unit": "百万円",
+      "case": null,
+      "values": {
+        "FY24": 400,
+        "FY25": 350,
+        "FY26": 300
+      },
+      "text_value": null,
+      "required": true,
+      "evidence": {
+        "file": "AutostaffChubu_Model_Base.xlsx",
+        "location": "BSシート C20:E20（20行・FY24〜FY26列）",
+        "quote": "有利子負債　400 / 350 / 300（百万円換算）",
+        "logic": "行ラベル『有利子負債』を標準項目にマッピング。シート冒頭の単位注記（単位：千円）に基づき百万円へ換算。クロージング時に全額返済予定（財務DD p.25）。"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "act_fcf",
+      "section": "実績（FY24〜FY26）",
+      "label": "フリー・キャッシュフロー",
+      "unit": "百万円",
+      "case": null,
+      "values": {
+        "FY24": 1050,
+        "FY25": 1180,
+        "FY26": 1305
+      },
+      "text_value": null,
+      "required": false,
+      "evidence": {
+        "file": "AutostaffChubu_Model_Base.xlsx",
+        "location": "CFシート C13:E13（13行・FY24〜FY26列）",
+        "quote": "フリー・キャッシュフロー（FCF）　1,050 / 1,180 / 1,305（百万円換算）",
+        "logic": "行ラベル『フリー・キャッシュフロー（FCF）』を標準項目にマッピング。シート冒頭の単位注記（単位：千円）に基づき百万円へ換算。"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "base_revenue",
+      "section": "計画：ベースケース（FY27〜FY31）",
+      "label": "売上高",
+      "unit": "百万円",
+      "case": "base",
+      "values": {
+        "FY27": 14890,
+        "FY28": 15454,
+        "FY29": 16005,
+        "FY30": 16575,
+        "FY31": 17149
+      },
+      "text_value": null,
+      "required": true,
+      "evidence": {
+        "file": "AutostaffChubu_Model_Base.xlsx",
+        "location": "PLシート F9:J9（9行・FY27〜FY31列）",
+        "quote": "売上高（Net Sales）　14,890 / 15,454 / 16,005 / 16,575 / 17,149（百万円換算）",
+        "logic": "Assumptionsシートのケース表記『Base Case』によりベースケースと判定。行ラベル『売上高（Net Sales）』を標準項目にマッピングし、単位注記（千円）に基づき百万円へ換算。"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "base_op",
+      "section": "計画：ベースケース（FY27〜FY31）",
+      "label": "営業利益",
+      "unit": "百万円",
+      "case": "base",
+      "values": {
+        "FY27": 1636,
+        "FY28": 1720,
+        "FY29": 1803,
+        "FY30": 1896,
+        "FY31": 1990
+      },
+      "text_value": null,
+      "required": true,
+      "evidence": {
+        "file": "AutostaffChubu_Model_Base.xlsx",
+        "location": "PLシート F21:J21（21行・FY27〜FY31列）",
+        "quote": "営業利益（Operating Profit）　1,636 / 1,720 / 1,803 / 1,896 / 1,990（百万円換算）",
+        "logic": "Assumptionsシートのケース表記『Base Case』によりベースケースと判定。行ラベル『営業利益（Operating Profit）』を標準項目にマッピングし、単位注記（千円）に基づき百万円へ換算。"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "base_ebitda",
+      "section": "計画：ベースケース（FY27〜FY31）",
+      "label": "EBITDA",
+      "unit": "百万円",
+      "case": "base",
+      "values": {
+        "FY27": 1750,
+        "FY28": 1836,
+        "FY29": 1921,
+        "FY30": 2016,
+        "FY31": 2111
+      },
+      "text_value": null,
+      "required": true,
+      "evidence": {
+        "file": "AutostaffChubu_Model_Base.xlsx",
+        "location": "PLシート F25:J25（25行・FY27〜FY31列）",
+        "quote": "Adj. EBITDA　1,750 / 1,836 / 1,921 / 2,016 / 2,111（百万円換算）",
+        "logic": "Assumptionsシートのケース表記『Base Case』によりベースケースと判定。行ラベル『Adj. EBITDA』を標準項目にマッピングし、単位注記（千円）に基づき百万円へ換算。"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "base_fcf",
+      "section": "計画：ベースケース（FY27〜FY31）",
+      "label": "フリー・キャッシュフロー",
+      "unit": "百万円",
+      "case": "base",
+      "values": {
+        "FY27": 997,
+        "FY28": 1054,
+        "FY29": 1124,
+        "FY30": 1198,
+        "FY31": 1273
+      },
+      "text_value": null,
+      "required": true,
+      "evidence": {
+        "file": "AutostaffChubu_Model_Base.xlsx",
+        "location": "CFシート F13:J13（13行・FY27〜FY31列）",
+        "quote": "フリー・キャッシュフロー（FCF）　997 / 1,054 / 1,124 / 1,198 / 1,273（百万円換算）",
+        "logic": "Assumptionsシートのケース表記『Base Case』によりベースケースと判定。行ラベル『フリー・キャッシュフロー（FCF）』を標準項目にマッピングし、単位注記（千円）に基づき百万円へ換算。"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "sponsor_revenue",
+      "section": "計画：スポンサーケース（FY27〜FY31）",
+      "label": "売上高",
+      "unit": "百万円",
+      "case": "sponsor",
+      "values": {
+        "FY27": 15267,
+        "FY28": 16336,
+        "FY29": 17523,
+        "FY30": 18651,
+        "FY31": 19723
+      },
+      "text_value": null,
+      "required": true,
+      "evidence": {
+        "file": "AutostaffChubu_Model_Sponsor.xlsx",
+        "location": "PLシート F9:J9（9行・FY27〜FY31列）",
+        "quote": "売上高（Net Sales）　15,267 / 16,336 / 17,523 / 18,651 / 19,723（百万円換算）",
+        "logic": "Assumptionsシートのケース表記『Sponsor Case』によりスポンサーケースと判定。行ラベル『売上高（Net Sales）』を標準項目にマッピングし、単位注記（千円）に基づき百万円へ換算。"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "sponsor_op",
+      "section": "計画：スポンサーケース（FY27〜FY31）",
+      "label": "営業利益",
+      "unit": "百万円",
+      "case": "sponsor",
+      "values": {
+        "FY27": 1785,
+        "FY28": 2071,
+        "FY29": 2393,
+        "FY30": 2712,
+        "FY31": 3039
+      },
+      "text_value": null,
+      "required": true,
+      "evidence": {
+        "file": "AutostaffChubu_Model_Sponsor.xlsx",
+        "location": "PLシート F21:J21（21行・FY27〜FY31列）",
+        "quote": "営業利益（Operating Profit）　1,785 / 2,071 / 2,393 / 2,712 / 3,039（百万円換算）",
+        "logic": "Assumptionsシートのケース表記『Sponsor Case』によりスポンサーケースと判定。行ラベル『営業利益（Operating Profit）』を標準項目にマッピングし、単位注記（千円）に基づき百万円へ換算。"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "sponsor_ebitda",
+      "section": "計画：スポンサーケース（FY27〜FY31）",
+      "label": "EBITDA",
+      "unit": "百万円",
+      "case": "sponsor",
+      "values": {
+        "FY27": 1899,
+        "FY28": 2188,
+        "FY29": 2515,
+        "FY30": 2838,
+        "FY31": 3168
+      },
+      "text_value": null,
+      "required": true,
+      "evidence": {
+        "file": "AutostaffChubu_Model_Sponsor.xlsx",
+        "location": "PLシート F25:J25（25行・FY27〜FY31列）",
+        "quote": "Adj. EBITDA　1,899 / 2,188 / 2,515 / 2,838 / 3,168（百万円換算）",
+        "logic": "Assumptionsシートのケース表記『Sponsor Case』によりスポンサーケースと判定。行ラベル『Adj. EBITDA』を標準項目にマッピングし、単位注記（千円）に基づき百万円へ換算。"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "sponsor_fcf",
+      "section": "計画：スポンサーケース（FY27〜FY31）",
+      "label": "フリー・キャッシュフロー",
+      "unit": "百万円",
+      "case": "sponsor",
+      "values": {
+        "FY27": 1064,
+        "FY28": 1240,
+        "FY29": 1467,
+        "FY30": 1708,
+        "FY31": 1953
+      },
+      "text_value": null,
+      "required": false,
+      "evidence": {
+        "file": "AutostaffChubu_Model_Sponsor.xlsx",
+        "location": "CFシート F13:J13（13行・FY27〜FY31列）",
+        "quote": "フリー・キャッシュフロー（FCF）　1,064 / 1,240 / 1,467 / 1,708 / 1,953（百万円換算）",
+        "logic": "Assumptionsシートのケース表記『Sponsor Case』によりスポンサーケースと判定。行ラベル『フリー・キャッシュフロー（FCF）』を標準項目にマッピングし、単位注記（千円）に基づき百万円へ換算。"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "goodwill",
+      "section": "ストラクチャー・B/S項目",
+      "label": "のれん（買収想定額）",
+      "unit": "百万円",
+      "case": null,
+      "values": {
+        "FY27": 5500
+      },
+      "text_value": null,
+      "required": true,
+      "evidence": {
+        "file": "AutostaffChubu_Model_Base.xlsx",
+        "location": "BSシート F13（FY27列）／Assumptionsシート D21",
+        "quote": "のれん（Goodwill）　5,500,000（千円）＝5,500百万円",
+        "logic": "モデルBSのFY27以降に計上されたのれん想定額（暫定PPA前）。"
+      },
+      "mismatch": {
+        "other_value": 5280,
+        "other_file": "DD_Financial_オートスタッフ中部.pdf",
+        "other_location": "p.31（7.2 のれん想定額の試算）",
+        "other_quote": "当法人の試算によるのれん想定額は5,280百万円である。スポンサー提出の財務モデルにはのれん5,500百万円が計上されており、220百万円の差異がある。",
+        "note": "モデル（5,500）と財務DD（5,280）で220百万円の差異。取引費用の取扱い・無形資産評価の前提差。最終PPAで確定予定。どちらを採用するか選択が必要。"
+      }
+    },
+    {
+      "key": "ev",
+      "section": "ストラクチャー・B/S項目",
+      "label": "エンタープライズ・バリュー（EV）",
+      "unit": "百万円",
+      "case": null,
+      "values": {
+        "FY27": 12000
+      },
+      "text_value": null,
+      "required": true,
+      "evidence": {
+        "file": "AutostaffChubu_Model_Base.xlsx",
+        "location": "Assumptionsシート D8",
+        "quote": "エンタープライズ・バリュー（EV）　12,000,000（千円）",
+        "logic": "Assumptionsシートのストラクチャー前提から取得。財務DD p.30の記載とも一致。"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "senior_loan",
+      "section": "ストラクチャー・B/S項目",
+      "label": "シニアローン総額",
+      "unit": "百万円",
+      "case": null,
+      "values": {
+        "FY27": 6500
+      },
+      "text_value": null,
+      "required": true,
+      "evidence": {
+        "file": "AutostaffChubu_Model_Base.xlsx",
+        "location": "Assumptionsシート D10／Debt_Scheduleシート F7",
+        "quote": "シニアローン総額　6,500,000（千円）／期間7年・年650,000千円約定弁済",
+        "logic": "Assumptionsシートおよびデットスケジュールから取得。案件登録情報と一致。"
+      },
+      "mismatch": null
+    }
+  ]
+}

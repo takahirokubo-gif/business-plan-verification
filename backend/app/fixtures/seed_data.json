@@ -1,0 +1,349 @@
+{
+  "users": [
+    {
+      "key": "tanaka",
+      "name": "田中",
+      "role": "稟議担当"
+    },
+    {
+      "key": "sato",
+      "name": "佐藤",
+      "role": "部長（決裁者）"
+    },
+    {
+      "key": "takahashi",
+      "name": "高橋",
+      "role": "稟議担当"
+    }
+  ],
+  "deals": [
+    {
+      "key": "autostaff",
+      "name": "オートスタッフ中部 LBOファイナンス",
+      "deal_type": "LBO",
+      "borrower": "株式会社ASホールディングス",
+      "target": "株式会社オートスタッフ中部",
+      "industry": "自動車製造派遣（東海地盤）",
+      "sponsor": "日本橋キャピタルパートナーズ株式会社",
+      "close_date": "2026-09-30",
+      "next_meeting_date": "2026-07-18",
+      "ev_mm": 12000,
+      "senior_mm": 6500,
+      "our_commitment_mm": 2500,
+      "equity_mm": 5500,
+      "tenor_years": 7,
+      "sponsor_ebitda_mm": 1585,
+      "summary": "日本橋キャピタルパートナーズによる自動車製造派遣大手・オートスタッフ中部のLBO。東海地区の完成車・部品メーカー向け製造派遣で地盤を持ち、稼働率88%と業界高水準。オーナー創業者の事業承継ニーズを背景としたスポンサー主導の買収案件。",
+      "owner": "tanaka",
+      "review_status": "再検討中",
+      "work_status": "シナリオ検討中",
+      "updated_at": "2026-07-12T15:30:00",
+      "created_at": "2026-07-02T10:05:00"
+    },
+    {
+      "key": "sunmedix",
+      "name": "サンメディクス事業承継ファイナンス",
+      "deal_type": "事業承継",
+      "borrower": "株式会社SMD承継",
+      "target": "株式会社サンメディクス",
+      "industry": "医療機器卸・メンテナンス",
+      "sponsor": "三田キャピタル株式会社",
+      "close_date": "2026-11-30",
+      "next_meeting_date": null,
+      "ev_mm": 9800,
+      "senior_mm": 5600,
+      "our_commitment_mm": 2800,
+      "equity_mm": 4200,
+      "tenor_years": 7,
+      "sponsor_ebitda_mm": 1310,
+      "summary": "医療機器卸・保守の地域大手。創業家の事業承継に伴うスポンサー買収。",
+      "owner": "tanaka",
+      "review_status": "検討中",
+      "work_status": "数値確定中",
+      "updated_at": "2026-07-10T11:20:00",
+      "created_at": "2026-07-08T09:30:00"
+    },
+    {
+      "key": "tokai_process",
+      "name": "東海プロセス機器 MBOファイナンス",
+      "deal_type": "MBO",
+      "borrower": "株式会社TPKホールディングス",
+      "target": "東海プロセス機器株式会社",
+      "industry": "産業機械（化学プラント向け）",
+      "sponsor": "経営陣（MBO）／静岡成長投資株式会社",
+      "close_date": "2026-08-31",
+      "next_meeting_date": null,
+      "ev_mm": 7200,
+      "senior_mm": 3800,
+      "our_commitment_mm": 1800,
+      "equity_mm": 3400,
+      "tenor_years": 7,
+      "sponsor_ebitda_mm": 980,
+      "summary": "化学プラント向けバルブ・計装機器メーカーのMBO。",
+      "owner": "takahashi",
+      "review_status": "推進",
+      "work_status": "出力済",
+      "updated_at": "2026-07-03T17:45:00",
+      "created_at": "2026-06-12T10:00:00"
+    },
+    {
+      "key": "hokusei",
+      "name": "北勢運輸 リファイナンス",
+      "deal_type": "リファイナンス",
+      "borrower": "株式会社北勢運輸",
+      "target": "株式会社北勢運輸",
+      "industry": "貨物運送（中部地盤）",
+      "sponsor": "－（既存株主継続）",
+      "close_date": "2026-09-30",
+      "next_meeting_date": null,
+      "ev_mm": null,
+      "senior_mm": 1200,
+      "our_commitment_mm": 1200,
+      "equity_mm": null,
+      "tenor_years": 5,
+      "sponsor_ebitda_mm": 310,
+      "summary": "2019年LBOの既存シニアローンのリファイナンス案件。",
+      "owner": "takahashi",
+      "review_status": "見送り",
+      "work_status": "出力済",
+      "updated_at": "2026-06-20T14:00:00",
+      "created_at": "2026-06-02T13:15:00"
+    }
+  ],
+  "memos": [
+    {
+      "deal_key": "autostaff",
+      "meeting_date": "2026-07-05",
+      "attendees": [
+        "田中（稟議担当）",
+        "佐藤（部長）"
+      ],
+      "conclusion": "続行",
+      "note": "ストレス仮説の方向性は概ね妥当。シナリオC（未払残業代）は特別補償＋エスクローでのカバーを前提に不採用として整理。次回までにA社依存（構成比28%）の独自シナリオを検討すること。",
+      "findings": [],
+      "created_by": "tanaka",
+      "created_at": "2026-07-05T13:00:00"
+    },
+    {
+      "deal_key": "autostaff",
+      "meeting_date": "2026-07-12",
+      "attendees": [
+        "田中（稟議担当）",
+        "佐藤（部長）"
+      ],
+      "conclusion": "再検討",
+      "note": "シナリオの深掘りが必要。下記3点を持ち帰り、再検討のうえ次回7/18に再相談。",
+      "findings": [
+        {
+          "target_type": "scenario",
+          "target_key": "A",
+          "text": "稼働率▲15%の根拠が業界平均のみ。対象会社の2009年実績（売上約4割減）を踏まえた深掘りケース（▲18%）を検討すること。"
+        },
+        {
+          "target_type": "scenario",
+          "target_key": "D",
+          "text": "A社契約終了シナリオの再配置率60%の根拠が弱い。営業本部長ヒアリングの結果を反映すること。"
+        },
+        {
+          "target_type": "item",
+          "target_key": "goodwill",
+          "text": "のれん想定額の不整合（モデル5,500 vs 財務DD5,280）の扱いをスポンサーに確認し、採用値の根拠を明記すること。"
+        }
+      ],
+      "created_by": "tanaka",
+      "created_at": "2026-07-12T15:30:00",
+      "status_change": {
+        "from_status": "検討中",
+        "to_status": "再検討中"
+      }
+    },
+    {
+      "deal_key": "tokai_process",
+      "meeting_date": "2026-07-03",
+      "attendees": [
+        "高橋（稟議担当）",
+        "佐藤（部長）"
+      ],
+      "conclusion": "推進",
+      "note": "ストレスシナリオ2件のヘッドルームを確認。正式稟議手続へ移行する。",
+      "findings": [],
+      "created_by": "takahashi",
+      "created_at": "2026-07-03T17:45:00",
+      "status_change": {
+        "from_status": "検討中",
+        "to_status": "推進"
+      }
+    },
+    {
+      "deal_key": "hokusei",
+      "meeting_date": "2026-06-20",
+      "attendees": [
+        "高橋（稟議担当）",
+        "佐藤（部長）"
+      ],
+      "conclusion": "見送り",
+      "note": "足元の収益性低下傾向と再レバレッジの正当化が困難なため見送り。",
+      "findings": [],
+      "created_by": "takahashi",
+      "created_at": "2026-06-20T14:00:00",
+      "status_change": {
+        "from_status": "検討中",
+        "to_status": "見送り"
+      }
+    }
+  ],
+  "history": [
+    {
+      "deal_key": "autostaff",
+      "at": "2026-07-02T10:05:00",
+      "user": "tanaka",
+      "action": "案件登録",
+      "detail": "基本情報を登録"
+    },
+    {
+      "deal_key": "autostaff",
+      "at": "2026-07-02T10:07:00",
+      "user": "tanaka",
+      "action": "資料アップロード",
+      "detail": "財務モデル2件・DDレポート4件をアップロード"
+    },
+    {
+      "deal_key": "autostaff",
+      "at": "2026-07-02T10:12:00",
+      "user": "tanaka",
+      "action": "AI解析完了",
+      "detail": "24項目を抽出（財務モデル・DDレポート4種）"
+    },
+    {
+      "deal_key": "autostaff",
+      "at": "2026-07-03T15:40:00",
+      "user": "tanaka",
+      "action": "数値確定",
+      "detail": "22項目確定・2項目保留（当期純利益／FCF実績）"
+    },
+    {
+      "deal_key": "autostaff",
+      "at": "2026-07-03T16:10:00",
+      "user": "tanaka",
+      "action": "KPI修正（チャット適用）",
+      "detail": "「大口派遣先への売上依存度」をモデル外KPIとして追加"
+    },
+    {
+      "deal_key": "autostaff",
+      "at": "2026-07-04T11:00:00",
+      "user": "tanaka",
+      "action": "KPI構造確定",
+      "detail": "16ノード・★3件で確定"
+    },
+    {
+      "deal_key": "autostaff",
+      "at": "2026-07-04T14:30:00",
+      "user": "tanaka",
+      "action": "シナリオ確定",
+      "detail": "A・B・D採用／C不採用（特別補償前提）"
+    },
+    {
+      "deal_key": "autostaff",
+      "at": "2026-07-05T09:15:00",
+      "user": "tanaka",
+      "action": "Excel出力",
+      "detail": "審査相談用サマリーを出力（保留2項目を除く）"
+    },
+    {
+      "deal_key": "autostaff",
+      "at": "2026-07-05T13:00:00",
+      "user": "tanaka",
+      "action": "審査相談メモ登録",
+      "detail": "7/5 審査相談：続行"
+    },
+    {
+      "deal_key": "autostaff",
+      "at": "2026-07-12T15:30:00",
+      "user": "tanaka",
+      "action": "審査相談メモ登録",
+      "detail": "7/12 審査相談：再検討（指摘3件）・ステータスを再検討中へ変更"
+    }
+  ],
+  "sunmedix_items": [
+    {
+      "key": "sm_revenue",
+      "section": "実績（FY24〜FY26）",
+      "label": "売上高",
+      "unit": "百万円",
+      "case": null,
+      "values": {
+        "FY24": 9820,
+        "FY25": 10150,
+        "FY26": 10480
+      },
+      "text_value": null,
+      "required": true,
+      "evidence": {
+        "file": "SunMedix_Model_Base.xlsx",
+        "location": "PLシート C9:E9",
+        "quote": "売上高　9,820 / 10,150 / 10,480（百万円）",
+        "logic": "行ラベル『売上高』を標準項目にマッピング。"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "sm_ebitda",
+      "section": "実績（FY24〜FY26）",
+      "label": "EBITDA",
+      "unit": "百万円",
+      "case": null,
+      "values": {
+        "FY24": 1110,
+        "FY25": 1180,
+        "FY26": 1240
+      },
+      "text_value": null,
+      "required": true,
+      "evidence": {
+        "file": "SunMedix_Model_Base.xlsx",
+        "location": "PLシート C22:E22",
+        "quote": "EBITDA　1,110 / 1,180 / 1,240（百万円）",
+        "logic": "営業利益＋減価償却費の構造をシート数式から確認。"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "sm_net_assets",
+      "section": "実績（FY24〜FY26）",
+      "label": "純資産",
+      "unit": "百万円",
+      "case": null,
+      "values": {
+        "FY24": 3650,
+        "FY25": 3980,
+        "FY26": 4310
+      },
+      "text_value": null,
+      "required": true,
+      "evidence": {
+        "file": "SunMedix_Model_Base.xlsx",
+        "location": "BSシート C23:E23",
+        "quote": "純資産　3,650 / 3,980 / 4,310（百万円）",
+        "logic": "行ラベル『純資産』を標準項目にマッピング。"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "sm_summary",
+      "section": "前提・定性情報",
+      "label": "事業要約",
+      "unit": "テキスト",
+      "case": null,
+      "values": null,
+      "text_value": "医療機器の卸売と保守サービスの地域大手。保守契約によるストック収益が売上の約4割を占める。",
+      "required": true,
+      "evidence": {
+        "file": "DD_Business_サンメディクス.pdf",
+        "location": "p.4（エグゼクティブサマリー）",
+        "quote": "医療機器の販売および保守サービスを主力事業とする。",
+        "logic": "事業DDのエグゼクティブサマリーから要約。"
+      },
+      "mismatch": null
+    }
+  ]
+}
