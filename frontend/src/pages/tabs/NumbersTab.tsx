@@ -117,8 +117,50 @@ export function NumbersTab({ full, refresh, dealId }: {
     doAction('confirm', extra)
   }
 
+  const USER_NAMES: Record<string, string> = { tanaka: '田中', sato: '佐藤', takahashi: '高橋' }
+  const deal = full.deal
+  const basicInfo: [string, string][] = [
+    ['スポンサー', deal.sponsor ?? '－'],
+    ['対象会社の業種', deal.industry ?? '－'],
+    ['クローズ予定日', deal.close_date?.replaceAll('-', '/') ?? '－'],
+    ['次回審査相談日', deal.next_meeting_date?.replaceAll('-', '/') ?? '－'],
+    ['エクイティ', deal.equity_mm != null ? `${deal.equity_mm.toLocaleString()}百万円` : '－'],
+    ['ローン期間', deal.tenor_years != null ? `${deal.tenor_years}年` : '－'],
+    ['スポンサー提示EBITDA（速報）', deal.sponsor_ebitda_mm != null ? `${deal.sponsor_ebitda_mm.toLocaleString()}百万円` : '－'],
+    ['担当者', USER_NAMES[deal.owner ?? ''] ?? deal.owner ?? '－'],
+    ['登録日', deal.created_at ? new Date(deal.created_at).toLocaleDateString('ja-JP') : '－'],
+  ]
+
   return (
     <div>
+      {/* 案件基本情報（概要に載せきれない情報） */}
+      <section className="card mb-4">
+        <div className="border-b border-surface-container-high bg-surface-container-low/50 px-4 py-2.5 text-[13px] font-bold">
+          案件基本情報
+        </div>
+        <div className="grid grid-cols-3 gap-x-8 gap-y-2 px-4 py-3">
+          {basicInfo.map(([k, v]) => (
+            <div key={k} className="flex items-baseline gap-2 text-[12.5px]">
+              <span className="w-44 shrink-0 text-outline">{k}</span>
+              <span className="font-medium">{v}</span>
+            </div>
+          ))}
+        </div>
+        {full.documents.length > 0 && (
+          <div className="border-t border-surface-container-low px-4 py-3">
+            <div className="mb-1.5 text-[11px] font-medium text-outline">アップロード資料（{full.documents.length}件）</div>
+            <div className="flex flex-wrap gap-2">
+              {full.documents.map((d) => (
+                <span key={d.id} className="badge-base badge-neutral" title={d.identified_detail ?? ''}>
+                  <Icon name={d.filename.endsWith('.pdf') ? 'picture_as_pdf' : 'table_chart'} className="text-[13px]" />
+                  {d.identified_label ?? d.slot_label}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </section>
+
       {/* 確定進捗 */}
       <div className="card flex items-center gap-5 px-5 py-3">
         <div className="text-[13px] font-bold">確定進捗</div>
@@ -374,11 +416,11 @@ export function NumbersTab({ full, refresh, dealId }: {
 
           {/* この項目への指摘（審査相談） */}
           {full.findings.filter((f) => f.target_type === 'item' && f.target_key === selected.key).map((f) => (
-            <div key={f.id} className="mt-4 rounded border border-amber-300 bg-amber-50 p-3 text-[12px]">
-              <div className="flex items-center gap-1 font-bold text-amber-800">
+            <div key={f.id} className="mt-4 rounded border border-surface-container-high bg-surface-container-low/60 p-3 text-[12px]">
+              <div className="flex items-center gap-1 font-bold text-on-surface-variant">
                 <Icon name="feedback" className="text-[14px]" /> 前回審査相談での指摘
               </div>
-              <p className="mt-1 text-amber-900">{f.text}</p>
+              <p className="mt-1 text-on-surface-variant">{f.text}</p>
             </div>
           ))}
         </SlidePanel>

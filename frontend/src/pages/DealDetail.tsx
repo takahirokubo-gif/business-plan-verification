@@ -13,7 +13,7 @@ import { ExportTab } from './tabs/ExportTab'
 import { MemoTab } from './tabs/MemoTab'
 
 const TABS = [
-  { key: 'numbers', label: '数値確定' },
+  { key: 'numbers', label: '案件詳細' },
   { key: 'kpi', label: 'KPI構造' },
   { key: 'scenario', label: 'シナリオ' },
   { key: 'export', label: 'エクスポート' },
@@ -102,6 +102,13 @@ export function DealDetail() {
             <Icon name="history" className="text-[16px]" /> 操作履歴
           </button>
         </div>
+
+        {/* 案件概要（案件名とタブの間） */}
+        {deal.summary && (
+          <p className="mt-3 rounded border border-surface-container-high bg-white px-4 py-2.5 text-[12.5px] leading-relaxed text-on-surface-variant">
+            {deal.summary}
+          </p>
+        )}
 
         {/* タブ */}
         <div className="mt-4 flex gap-1 border-b border-surface-container-high">

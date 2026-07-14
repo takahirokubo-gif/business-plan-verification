@@ -173,6 +173,7 @@ class ChatBody(BaseModel):
     context: str  # kpi / scenario
     message: str
     user: str
+    target: str | None = None  # 対象（シナリオkey または KPIノードid）。未選択はNone
 
 
 @router.post("/chat")
@@ -182,10 +183,12 @@ def chat(deal_id: int, body: ChatBody, db: Session = Depends(get_db)):
         node_ids=[n.node_id for n in deal.kpi_nodes],
         card_keys=[s.key for s in deal.scenarios],
         stars=[n.node_id for n in deal.kpi_nodes if n.star],
+        target=body.target,
     )
     result = get_extractor().chat(body.context, body.message, state)
+    target_label = f"（対象: {body.target}）" if body.target else ""
     add_history(db, deal, body.user, "チャット指示",
-                f"[{body.context}] {body.message[:60]}")
+                f"[{body.context}]{target_label} {body.message[:60]}")
     db.commit()
     return result
 

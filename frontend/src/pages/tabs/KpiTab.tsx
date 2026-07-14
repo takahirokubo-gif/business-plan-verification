@@ -25,9 +25,9 @@ function NodeCard({ node, depth, onSelect, highlight }: {
       {depth > 0 && <Icon name="subdirectory_arrow_right" className="-ml-1 text-[14px] text-outline-variant" />}
       {node.star && <Icon name="star" className="text-[16px] text-amber-500" fill />}
       <span className="text-[13px] font-medium">{node.label}</span>
-      {node.badge && <Badge kind="ai">{node.badge}</Badge>}
+      {node.badge && <Badge kind="neutral">{node.badge}</Badge>}
       <OriginBadge origin={node.origin} />
-      {node.added_via_chat && <Badge kind="success">チャット追加</Badge>}
+      {node.added_via_chat && <Badge kind="neutral">チャット追加</Badge>}
       <span className="font-data-tabular ml-auto text-[12px] text-on-surface-variant">{node.value_text}</span>
     </div>
   )
@@ -170,11 +170,11 @@ export function KpiTab({ full, refresh, dealId, stage1Done }: {
         </div>
 
         {kpiFindings.map((f) => (
-          <div key={f.id} className="mt-3 rounded border border-amber-300 bg-amber-50 p-3 text-[12px]">
-            <div className="flex items-center gap-1 font-bold text-amber-800">
+          <div key={f.id} className="mt-3 rounded border border-surface-container-high bg-surface-container-low/60 p-3 text-[12px]">
+            <div className="flex items-center gap-1 font-bold text-on-surface-variant">
               <Icon name="feedback" className="text-[14px]" /> 前回審査相談での指摘（KPI構造）
             </div>
-            <p className="mt-1 text-amber-900">{f.text}</p>
+            <p className="mt-1 text-on-surface-variant">{f.text}</p>
           </div>
         ))}
       </div>
@@ -188,6 +188,10 @@ export function KpiTab({ full, refresh, dealId, stage1Done }: {
           renderDiff={renderDiff}
           onApply={applyDiff}
           title="AIと修正する"
+          targetLabel="対象ブランチ"
+          targetOptions={nodes
+            .filter((n) => nodes.some((c) => c.parent_id === n.node_id))
+            .map((n) => ({ value: n.node_id, label: n.label }))}
         />
       </div>
 
@@ -204,8 +208,8 @@ export function KpiTab({ full, refresh, dealId, stage1Done }: {
         >
           <div className="mb-3 flex flex-wrap gap-1.5">
             <OriginBadge origin={selected.origin} />
-            {selected.badge && <Badge kind="ai">{selected.badge}</Badge>}
-            {selected.added_via_chat && <Badge kind="success">チャットで追加</Badge>}
+            {selected.badge && <Badge kind="neutral">{selected.badge}</Badge>}
+            {selected.added_via_chat && <Badge kind="neutral">チャットで追加</Badge>}
           </div>
           {selected.value_text && (
             <div className="mb-3 rounded bg-surface-container-low/60 p-3">

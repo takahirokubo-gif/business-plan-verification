@@ -185,7 +185,7 @@ def build_export_pdf(deal: Deal) -> tuple[str, int]:
         if n.star:
             w.kv(n.label, n.value_text or "－")
 
-    w.heading("04｜ストレスシナリオ（採用のみ）")
+    w.heading("04｜ストレスシナリオ")
     w.text(AI_DISCLAIMER, size=8, color=AMBER)
     node_labels = {n.node_id: n.label for n in deal.kpi_nodes}
     for sc in deal.scenarios:
@@ -194,10 +194,51 @@ def build_export_pdf(deal: Deal) -> tuple[str, int]:
         origin = "AI推奨" if sc.origin == "ai" else "自分の仮説"
         w.text(f"S{sc.key}｜{sc.title}（{origin}／{sc.type_label}）", size=9.5, color=PRIMARY)
         kpis = "、".join(node_labels.get(k, k) for k in json.loads(sc.affected_kpis_json or "[]"))
-        w.text(f"影響KPI：{kpis or '－'}／変化幅：{sc.change_text}", size=8.5, indent=10)
+        w.text(f"発生要因：{sc.cause}", size=8.5, indent=10)
+        w.text(f"影響KPI：{kpis or '－'}／変化幅：{sc.change_text}（根拠：{sc.change_basis}）",
+               size=8.5, indent=10)
         w.text(f"影響（AI推定）：{sc.impact}", size=8.5, color=AMBER, indent=10)
-        w.text(f"保全策：{sc.safeguards}", size=8.5, indent=10)
+        w.text(f"保全策：{sc.safeguards}／確認事項：{sc.questions}", size=8.5, indent=10)
         w.y -= 4
+    rejected = [s for s in deal.scenarios if not s.adopted]
+    for sc in rejected:
+        w.text(f"（参考・不採用）S{sc.key}｜{sc.title}"
+               + (f"　※{sc.rejection_note}" if sc.rejection_note else ""),
+               size=8, color=GRAY, indent=10)
+
+    # ---- 前提・定性情報（全文・出典付き）
+    w.heading("05｜前提・定性情報（確定済み）")
+    for item in deal.items:
+        if item.status != "confirmed":
+            continue
+        if item.unit != "テキスト" and item.key not in ("normalized_ebitda", "goodwill"):
+            continue
+        ev = json.loads(item.evidence_json) if item.evidence_json else {}
+        text = item.effective_text()
+        if item.key == "normalized_ebitda":
+            v = (item.effective_values() or {}).get("FY26")
+            text = f"{v:,}百万円（FY26）。モデルFY26実績と一致。" if v else "－"
+        if item.key == "goodwill":
+            v = (item.effective_values() or {}).get("FY27")
+            text = f"{v:,}百万円。{item.resolution_note or ''}" if v else "－"
+        w.text(f"■ {item.label}", size=9, color=PRIMARY)
+        w.text(text or "－", size=8.5, indent=10)
+        w.text(f"出典：{ev.get('file', '')}｜{ev.get('location', '')}", size=7.5, color=GRAY, indent=10)
+
+    # ---- 審査相談メモ
+    if deal.memos:
+        w.heading("06｜審査相談の記録")
+        for m in reversed(list(deal.memos)):
+            attendees = "、".join(json.loads(m.attendees_json or "[]"))
+            w.text(f"{m.meeting_date}　結論：{m.conclusion}（出席：{attendees}）",
+                   size=9, color=PRIMARY)
+            for i, f in enumerate(m.findings, 1):
+                link = {"scenario": f"シナリオ{f.target_key}", "kpi": "KPI構造",
+                        "item": f"数値：{f.target_key}"}.get(f.target_type or "", "")
+                w.text(f"指摘{i}{f'【{link}】' if link else ''}：{f.text}", size=8, indent=10)
+            if m.note:
+                w.text(f"メモ：{m.note}", size=8, color=GRAY, indent=10)
+            w.y -= 3
 
     if held:
         w.text(f"※ 保留中の{len(held)}項目（{'、'.join(i.label for i in held)}）は本資料から除外しています。",

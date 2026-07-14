@@ -136,6 +136,8 @@ def build_workbook(case: str) -> Workbook:
         ("売上債権回転日数", 45, "0"),
         ("買収時現金調整（取引費用等）", -750_000, NUM_FMT),
         ("のれん想定額（暫定PPA前）", spec.GOODWILL, NUM_FMT),
+        ("", None, None),
+        ("スポンサー提示EBITDA（速報・ティーザー記載）", spec.DEAL["sponsor_ebitda_mm"] * 1000, NUM_FMT),
     ]
     r = 7
     for label, value, fmt in rows:

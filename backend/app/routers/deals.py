@@ -74,6 +74,78 @@ def create_deal(body: DealCreate, db: Session = Depends(get_db)):
     return deal.to_dict()
 
 
+class DraftBody(BaseModel):
+    user: str | None = None
+
+
+@router.post("/deals/draft")
+def create_draft(body: DraftBody, db: Session = Depends(get_db)):
+    """資料アップロード起点の登録フロー用の下書き案件。"""
+    deal = Deal(name="（下書き）新規案件", deal_type="LBO", borrower="", target="",
+                owner=body.user, review_status="検討中")
+    db.add(deal)
+    db.flush()
+    add_history(db, deal, body.user, "案件登録（下書き）", "資料アップロードを開始")
+    db.commit()
+    return deal.to_dict()
+
+
+class DealPatch(BaseModel):
+    name: str | None = None
+    deal_type: str | None = None
+    borrower: str | None = None
+    target: str | None = None
+    industry: str | None = None
+    sponsor: str | None = None
+    close_date: str | None = None
+    next_meeting_date: str | None = None
+    ev_mm: int | None = None
+    senior_mm: int | None = None
+    our_commitment_mm: int | None = None
+    equity_mm: int | None = None
+    tenor_years: int | None = None
+    sponsor_ebitda_mm: int | None = None
+    summary: str | None = None
+    owner: str | None = None
+    user: str | None = None
+
+
+@router.patch("/deals/{deal_id}")
+def update_deal(deal_id: int, body: DealPatch, db: Session = Depends(get_db)):
+    deal = _get_deal(db, deal_id)
+    data = body.model_dump(exclude_unset=True, exclude={"user"})
+    for k, v in data.items():
+        setattr(deal, k, v)
+    add_history(db, deal, body.user, "案件情報を更新",
+                "登録内容を確定" if "name" in data else "")
+    db.commit()
+    return deal.to_dict()
+
+
+@router.delete("/deals/{deal_id}")
+def delete_deal(deal_id: int, db: Session = Depends(get_db)):
+    deal = _get_deal(db, deal_id)
+    db.delete(deal)
+    db.commit()
+    return dict(deleted=deal_id)
+
+
+@router.post("/deals/{deal_id}/extract-info")
+def extract_deal_info(deal_id: int, user: str | None = None,
+                      db: Session = Depends(get_db)):
+    """アップロード済み資料から案件基本情報をAIで読み取る（フォームへの自動入力用）。"""
+    deal = _get_deal(db, deal_id)
+    if not deal.documents:
+        raise HTTPException(400, "資料がアップロードされていません")
+    docs = [dict(filename=d.filename, slot=d.slot, stored_path=d.stored_path)
+            for d in deal.documents]
+    result = get_extractor().extract_deal_info(docs)
+    add_history(db, deal, user, "案件情報の自動読み取り",
+                f"{len(result.get('fields', {}))}フィールドを資料から抽出")
+    db.commit()
+    return result
+
+
 def _get_deal(db: Session, deal_id: int) -> Deal:
     deal = db.get(Deal, deal_id)
     if not deal:
@@ -133,10 +205,12 @@ def upload_document(deal_id: int, slot: str = Form(...), user: str = Form(None),
     add_history(db, deal, user, "資料アップロード", f"{file.filename}（{slot}）")
     db.commit()
     result = doc.to_dict()
-    # 案件照合（社名の一致チェック）
+    # 案件照合（社名の一致チェック）。対象会社が未設定（下書き）の場合は判定しない
     company = info.get("company") or ""
-    result["company_match"] = bool(company) and (
-        company in deal.target or deal.target in company)
+    if company and deal.target:
+        result["company_match"] = company in deal.target or deal.target in company
+    else:
+        result["company_match"] = None
     return result
 
 

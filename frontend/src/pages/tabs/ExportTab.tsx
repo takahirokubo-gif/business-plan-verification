@@ -141,16 +141,46 @@ export function ExportTab({ full, refresh, dealId }: {
         <div className="mt-5">
           <div className="flex items-center gap-2 text-[12px] font-bold text-primary-container">
             04｜ストレスシナリオ（採用{adopted.length}件）
-            <Badge kind="warning">AI推定・モデル再計算なし</Badge>
+            <Badge kind="neutral">AI推定・モデル再計算なし</Badge>
           </div>
           <div className="mt-2 space-y-2">
             {adopted.map((s) => (
               <div key={s.key} className="rounded border border-surface-container-high px-3 py-2 text-[12px]">
                 <div className="font-bold">S{s.key}：{s.title}</div>
                 <div className="mt-0.5 text-on-surface-variant">{s.change_text}</div>
-                <div className="mt-0.5 text-[11.5px] text-amber-800">{s.impact}</div>
+                <div className="mt-0.5 text-[11.5px] text-on-surface-variant">{s.impact}</div>
               </div>
             ))}
+          </div>
+        </div>
+
+        <div className="mt-5">
+          <div className="text-[12px] font-bold text-primary-container">05｜前提・定性情報（確定済み）</div>
+          <div className="mt-2 space-y-1.5">
+            {full.items.filter((i) => i.status === 'confirmed' && i.unit === 'テキスト').map((i) => (
+              <div key={i.key} className="text-[12px]">
+                <span className="font-medium">{i.label}：</span>
+                <span className="text-on-surface-variant">{i.effective_text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-5">
+          <div className="text-[12px] font-bold text-primary-container">
+            06｜審査相談の記録（{full.memos.length}件）
+          </div>
+          <div className="mt-2 space-y-1 text-[12px] text-on-surface-variant">
+            {full.memos.map((m) => (
+              <div key={m.id}>
+                {m.meeting_date.replaceAll('-', '/')}　結論：{m.conclusion}
+                {m.findings.length > 0 && `（指摘${m.findings.length}件）`}
+              </div>
+            ))}
+          </div>
+          <div className="mt-3 text-[10px] text-outline">
+            ※ 出力ファイルには、各数値の出典（参照ファイル・箇所）、KPI構造の参照元、
+            不採用シナリオ（参考）、審査相談メモの全文が収録されます。
           </div>
         </div>
       </div>

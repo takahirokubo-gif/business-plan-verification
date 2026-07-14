@@ -15,19 +15,27 @@ interface Message {
  * ステージ2・3の右側常駐チャットパネル。
  * AIの提案は必ず「変更差分プレビュー → 適用」を挟む（直接反映しない）。
  */
-export function ChatPanel({ dealId, context, suggestions, renderDiff, onApply, title }: {
+export interface ChatTargetOption {
+  value: string
+  label: string
+}
+
+export function ChatPanel({ dealId, context, suggestions, renderDiff, onApply, title, targetOptions, targetLabel }: {
   dealId: number
   context: 'kpi' | 'scenario'
   suggestions: string[]
   renderDiff: (diff: ChatDiff) => React.ReactNode
   onApply: (diff: ChatDiff) => Promise<void>
   title: string
+  targetOptions?: ChatTargetOption[]
+  targetLabel?: string
 }) {
   const { userKey } = useUser()
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [busy, setBusy] = useState(false)
   const [suggestionIdx, setSuggestionIdx] = useState(0)
+  const [target, setTarget] = useState('')
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -42,10 +50,12 @@ export function ChatPanel({ dealId, context, suggestions, renderDiff, onApply, t
     const message = (text ?? input).trim() || placeholder
     if (!message || busy) return
     setInput('')
-    setMessages((m) => [...m, { role: 'user', text: message }])
+    const targetOpt = targetOptions?.find((t) => t.value === target)
+    const displayText = targetOpt ? `〔対象：${targetOpt.label}〕${message}` : message
+    setMessages((m) => [...m, { role: 'user', text: displayText }])
     setBusy(true)
     try {
-      const res = await api.chat(dealId, context, message, userKey)
+      const res = await api.chat(dealId, context, message, userKey, target || undefined)
       setMessages((m) => [...m, {
         role: 'ai', text: res.reply, diff: res.diff,
         diffState: res.diff ? 'pending' : undefined,
@@ -148,6 +158,21 @@ export function ChatPanel({ dealId, context, suggestions, renderDiff, onApply, t
         <div ref={bottomRef} />
       </div>
       <div className="border-t border-surface-container-high p-3">
+        {targetOptions && targetOptions.length > 0 && (
+          <label className="mb-2 flex items-center gap-2 text-[11px] text-on-surface-variant">
+            <span className="shrink-0">{targetLabel ?? '対象'}：</span>
+            <select
+              className="input-base !py-1 !text-[11px]"
+              value={target}
+              onChange={(e) => setTarget(e.target.value)}
+            >
+              <option value="">全体（指定なし）</option>
+              {targetOptions.map((t) => (
+                <option key={t.value} value={t.value}>{t.label}</option>
+              ))}
+            </select>
+          </label>
+        )}
         <div className="flex gap-2">
           <input
             className="input-base !text-[12px]"

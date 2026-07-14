@@ -20,6 +20,7 @@ def _load(name: str):
 class MockExtractor(Extractor):
     def __init__(self):
         self._identify = _load("identify.json")["files"]
+        self._deal_info = _load("deal_info_autostaff.json")
         self._extraction = _load("extraction_autostaff.json")
         self._kpi_tree = _load("kpi_tree_autostaff.json")
         self._scenarios = _load("scenarios_autostaff.json")
@@ -31,6 +32,11 @@ class MockExtractor(Extractor):
         if not info:
             raise UnknownSampleFileError()
         return info
+
+    # ---- 案件基本情報の読み取り（S2の自動入力）
+    def extract_deal_info(self, documents: list[dict]) -> dict:
+        time.sleep(min(MOCK_DELAY_SECONDS, 2.0))
+        return self._deal_info
 
     # ---- 抽出（数値確定タブの入力）
     def extract_items(self, deal: dict, documents: list[dict]) -> list[dict]:
@@ -45,23 +51,31 @@ class MockExtractor(Extractor):
     def propose_scenarios(self, deal: dict, documents: list[dict]) -> list[dict]:
         return self._scenarios["cards"]
 
-    # ---- チャット（台本方式）
+    # ---- チャット（台本方式・対象選択に対応）
     def chat(self, context: str, message: str, state: dict) -> dict:
         conf = self._chat.get(context) or {}
+        target = state.get("target")  # シナリオのkey または KPIノードid（未選択はNone）
         time.sleep(min(MOCK_DELAY_SECONDS, 1.5))
         for script in conf.get("scripts", []):
             if any(t in message for t in script["triggers"]):
-                diff = script.get("diff")
+                diff = json.loads(json.dumps(script.get("diff"))) if script.get("diff") else None
                 # 適用済みの差分には「適用済み」の応答を返す（例：追加済みノード）
                 if diff and diff.get("type") == "add_node":
                     existing = state.get("node_ids") or []
                     if diff["node"]["id"] in existing:
                         return dict(reply="「大口派遣先への売上依存度」は既にKPIツリーに"
                                           "追加されています。", diff=None)
+                    # 対象ブランチが選択されていればそこに追加する
+                    if target and target in existing:
+                        diff["node"]["parent"] = target
                 if diff and diff.get("type") == "add_card":
                     existing = state.get("card_keys") or []
                     if diff["card"]["key"] in existing:
                         return dict(reply="このシナリオは既に追加されています。", diff=None)
+                # 対象シナリオが選択されていればそのカードへの修正として返す
+                if diff and diff.get("type") == "update_card" and target:
+                    if target in (state.get("card_keys") or []):
+                        diff["card_key"] = target
                 return dict(reply=script["reply"], diff=diff)
         return dict(reply=conf.get("fallback", "対応できませんでした。"), diff=None)
 

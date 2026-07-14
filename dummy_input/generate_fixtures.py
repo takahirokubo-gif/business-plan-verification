@@ -440,6 +440,46 @@ def build_chat_scripts(kpi_tree: dict, scenarios: dict) -> dict:
     )
 
 
+# ---------------------------------------------------------------- 案件基本情報の自動抽出
+
+def build_deal_info() -> dict:
+    """案件登録（S2）の自動抽出：アップロード資料から基本情報を読み取る（値の拾い上げのみ）。"""
+    return dict(
+        fields=dict(
+            name=spec.DEAL["name"],
+            deal_type=spec.DEAL["deal_type"],
+            borrower=spec.DEAL["borrower"],
+            target=spec.DEAL["target"],
+            industry=spec.DEAL["industry"],
+            sponsor=spec.DEAL["sponsor"],
+            close_date=spec.DEAL["close_date"],
+            ev_mm=spec.DEAL["ev_mm"],
+            senior_mm=spec.DEAL["senior_mm"],
+            equity_mm=spec.DEAL["equity_mm"],
+            tenor_years=spec.DEAL["tenor_years"],
+            sponsor_ebitda_mm=spec.DEAL["sponsor_ebitda_mm"],
+            summary=spec.DEAL["summary"],
+        ),
+        sources=dict(
+            name="対象会社名＋案件スキームから自動生成",
+            deal_type="財務DDレポート p.30（LBOストラクチャーの概要）",
+            borrower="財務DDレポート p.30（SPC：株式会社ASホールディングス）",
+            target="財務モデル Coverシート／各DDレポート表紙",
+            industry="事業DDレポート p.4（1.1 対象会社の概要）",
+            sponsor="財務モデル Coverシート（作成者）",
+            close_date="Assumptionsシート（クローズ想定：2026年9月末）",
+            ev_mm="Assumptionsシート D8",
+            senior_mm="Assumptionsシート D10／Debt_Scheduleシート",
+            equity_mm="Assumptionsシート D9",
+            tenor_years="Assumptionsシート D12",
+            sponsor_ebitda_mm="Assumptionsシート D23（スポンサー提示・ティーザー速報値）",
+            summary="事業DDレポート p.4〜5（エグゼクティブサマリー）から要約",
+        ),
+        note="本行取組額・担当者・審査相談予定日は行内情報のため自動抽出の対象外です。"
+             "内容を確認・修正のうえ登録を確定してください。",
+    )
+
+
 # ---------------------------------------------------------------- ファイル識別（案件照合）
 
 def build_identify() -> dict:
@@ -751,6 +791,7 @@ def main():
 
     outputs = {
         "identify.json": identify,
+        "deal_info_autostaff.json": build_deal_info(),
         "extraction_autostaff.json": extraction,
         "kpi_tree_autostaff.json": kpi_tree,
         "scenarios_autostaff.json": scenarios,

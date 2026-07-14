@@ -131,6 +131,36 @@ IDENTIFY_SCHEMA = {
     "required": ["company", "doc_type", "label", "detail"],
 }
 
+DEAL_INFO_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "fields": {
+            "type": "object",
+            "properties": {
+                "name": {"type": "string", "description": "案件名（対象会社名＋スキーム）"},
+                "deal_type": {"type": "string", "enum": ["LBO", "MBO", "事業承継", "リファイナンス"]},
+                "borrower": {"type": "string", "description": "借入人（SPC）"},
+                "target": {"type": "string", "description": "対象会社"},
+                "industry": {"type": ["string", "null"]},
+                "sponsor": {"type": ["string", "null"]},
+                "close_date": {"type": ["string", "null"], "description": "YYYY-MM-DD"},
+                "ev_mm": {"type": ["number", "null"], "description": "EV（百万円）"},
+                "senior_mm": {"type": ["number", "null"]},
+                "equity_mm": {"type": ["number", "null"]},
+                "tenor_years": {"type": ["number", "null"]},
+                "sponsor_ebitda_mm": {"type": ["number", "null"],
+                                      "description": "スポンサー提示EBITDA（速報値・百万円）"},
+                "summary": {"type": ["string", "null"], "description": "案件概要の要約（3文程度）"},
+            },
+            "required": ["name", "deal_type", "borrower", "target"],
+        },
+        "sources": {"type": "object",
+                    "description": "各フィールドの出典（ファイル・シート/セルまたはページ）"},
+        "note": {"type": "string"},
+    },
+    "required": ["fields", "sources"],
+}
+
 CHAT_SCHEMA = {
     "type": "object",
     "properties": {
@@ -215,6 +245,24 @@ class AnthropicExtractor(Extractor):
         prompt = (f"次のファイルの社名と資料種別を判定してください。\n"
                   f"ファイル名: {filename}\n先頭部分の内容:\n{digest[:8000]}")
         return self._call(prompt, IDENTIFY_SCHEMA, "identify_document")
+
+    def extract_deal_info(self, documents: list[dict]) -> dict:
+        parts = []
+        for doc in documents:
+            p = Path(doc["stored_path"])
+            parts.append(f"--- ファイル: {doc['filename']}（{doc['slot']}）---")
+            if p.suffix == ".xlsx":
+                parts.append(_excel_digest(p)[:12000])
+            else:
+                parts.append(_pdf_digest(p, max_pages=8))
+        parts.append(
+            "\n上記資料から案件の基本情報（案件名・案件種別・借入人SPC・対象会社・業種・"
+            "スポンサー・クローズ予定日・EV・シニアローン総額・エクイティ・期間・"
+            "スポンサー提示EBITDA・案件概要）を読み取ってください。"
+            "各フィールドの出典（ファイル＋シート/セルまたはページ）を sources に必ず記載すること。"
+            "本行取組額・担当者・審査相談予定日は行内情報のため対象外。"
+            "資料に無い項目は null にすること（推測しない）。")
+        return self._call("\n".join(parts), DEAL_INFO_SCHEMA, "extract_deal_info")
 
     def extract_items(self, deal: dict, documents: list[dict]) -> list[dict]:
         parts = [f"案件情報: {json.dumps(deal, ensure_ascii=False)}", ""]

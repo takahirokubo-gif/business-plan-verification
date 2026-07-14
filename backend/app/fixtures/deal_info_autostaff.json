@@ -1,0 +1,33 @@
+{
+  "fields": {
+    "name": "オートスタッフ中部 LBOファイナンス",
+    "deal_type": "LBO",
+    "borrower": "株式会社ASホールディングス",
+    "target": "株式会社オートスタッフ中部",
+    "industry": "自動車製造派遣（東海地盤）",
+    "sponsor": "日本橋キャピタルパートナーズ株式会社",
+    "close_date": "2026-09-30",
+    "ev_mm": 12000,
+    "senior_mm": 6500,
+    "equity_mm": 5500,
+    "tenor_years": 7,
+    "sponsor_ebitda_mm": 1585,
+    "summary": "日本橋キャピタルパートナーズによる自動車製造派遣大手・オートスタッフ中部のLBO。東海地区の完成車・部品メーカー向け製造派遣で地盤を持ち、稼働率88%と業界高水準。オーナー創業者の事業承継ニーズを背景としたスポンサー主導の買収案件。"
+  },
+  "sources": {
+    "name": "対象会社名＋案件スキームから自動生成",
+    "deal_type": "財務DDレポート p.30（LBOストラクチャーの概要）",
+    "borrower": "財務DDレポート p.30（SPC：株式会社ASホールディングス）",
+    "target": "財務モデル Coverシート／各DDレポート表紙",
+    "industry": "事業DDレポート p.4（1.1 対象会社の概要）",
+    "sponsor": "財務モデル Coverシート（作成者）",
+    "close_date": "Assumptionsシート（クローズ想定：2026年9月末）",
+    "ev_mm": "Assumptionsシート D8",
+    "senior_mm": "Assumptionsシート D10／Debt_Scheduleシート",
+    "equity_mm": "Assumptionsシート D9",
+    "tenor_years": "Assumptionsシート D12",
+    "sponsor_ebitda_mm": "Assumptionsシート D23（スポンサー提示・ティーザー速報値）",
+    "summary": "事業DDレポート p.4〜5（エグゼクティブサマリー）から要約"
+  },
+  "note": "本行取組額・担当者・審査相談予定日は行内情報のため自動抽出の対象外です。内容を確認・修正のうえ登録を確定してください。"
+}

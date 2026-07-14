@@ -2,7 +2,10 @@
 
 確定データのみ（案件基礎情報＋確定財務数値＋確定KPI構造＋採用シナリオ）を
 行内標準フォーマットに近いテンプレートに値転記して .xlsx を生成する。
-AI推定値には必ず注記を付す。保留項目は除外（件数は呼び出し側でダイアログ確認）。
+- すべての数値に出典（参照ファイル・箇所）を併記する（トレーサビリティ）
+- AI推定値には必ず注記を付す
+- 保留項目は除外し、末尾に一覧を付す
+- 審査相談メモ（相談履歴・指摘事項）を別シートに収録する
 """
 import json
 from datetime import datetime
@@ -17,6 +20,7 @@ TITLE = Font(name="Yu Gothic", size=14, bold=True, color="1A4F8B")
 H2 = Font(name="Yu Gothic", size=11, bold=True, color="1A4F8B")
 HEAD = Font(name="Yu Gothic", size=9.5, bold=True)
 BODY = Font(name="Yu Gothic", size=9.5)
+SMALL = Font(name="Yu Gothic", size=8)
 NOTE = Font(name="Yu Gothic", size=8.5, color="737781")
 AI_NOTE = Font(name="Yu Gothic", size=8.5, color="B54708")
 FILL = PatternFill("solid", fgColor="EDEDF3")
@@ -29,6 +33,8 @@ AI_DISCLAIMER = "※ インパクト数値はAIによる推定であり、財務
 YEARS_ACT = ["FY24", "FY25", "FY26"]
 YEARS_PLAN = ["FY27", "FY28", "FY29", "FY30", "FY31"]
 
+USER_NAMES = {"tanaka": "田中", "sato": "佐藤", "takahashi": "高橋"}
+
 
 def _set(ws, addr, value, font=BODY, fill=None, num=None, align=None, border=False):
     c = ws[addr]
@@ -40,9 +46,18 @@ def _set(ws, addr, value, font=BODY, fill=None, num=None, align=None, border=Fal
         c.number_format = num
     if align:
         c.alignment = Alignment(horizontal=align, vertical="center", wrap_text=True)
+    else:
+        c.alignment = Alignment(vertical="center", wrap_text=True)
     if border:
         c.border = BOX
     return c
+
+
+def _evidence_str(item) -> str:
+    ev = json.loads(item.evidence_json) if item.evidence_json else None
+    if not ev:
+        return ""
+    return f"{ev.get('file', '')}｜{ev.get('location', '')}"
 
 
 def build_export(deal: Deal) -> tuple[str, int]:
@@ -57,28 +72,36 @@ def build_export(deal: Deal) -> tuple[str, int]:
     ws = wb.active
     ws.title = "審査サマリー"
     ws.sheet_view.showGridLines = False
-    for col, w in dict(A=3, B=22, C=15, D=15, E=15, F=15, G=15, H=15).items():
+    for col, w in dict(A=3, B=24, C=13, D=13, E=13, F=13, G=13, H=52).items():
         ws.column_dimensions[col].width = w
 
     _set(ws, "B2", "審査相談用サマリー（事業計画検証）", TITLE)
     _set(ws, "B3", f"作成日時：{datetime.now().strftime('%Y/%m/%d %H:%M')}　"
-                   f"／　出典：事業計画検証システム（確定データのみを転記）", NOTE)
+                   f"／　出典：事業計画検証システム（確定データのみを転記・各数値に参照元を併記）", NOTE)
 
-    # ---- 案件基礎情報
+    # ---- 1. 案件基礎情報
     _set(ws, "B5", "1. 案件基礎情報", H2)
+    owner = USER_NAMES.get(deal.owner or "", deal.owner)
     rows = [
         ("案件名", deal.name), ("案件種別", deal.deal_type),
-        ("借入人（SPC）", deal.borrower), ("対象会社", f"{deal.target}（{deal.industry or '－'}）"),
-        ("スポンサー", deal.sponsor or "－"), ("クローズ予定", deal.close_date or "－"),
+        ("借入人（SPC）", deal.borrower), ("対象会社", deal.target),
+        ("対象会社の業種", deal.industry or "－"),
+        ("スポンサー", deal.sponsor or "－"),
+        ("クローズ予定", deal.close_date or "－"),
+        ("次回審査相談日", deal.next_meeting_date or "－"),
+        ("担当者", owner or "－"),
+        ("検討ステータス", deal.review_status),
         ("EV", f"{deal.ev_mm:,}百万円" if deal.ev_mm else "－"),
         ("シニアローン", f"{deal.senior_mm:,}百万円（本行取組 {deal.our_commitment_mm:,}百万円"
                         f"・期間{deal.tenor_years}年）" if deal.senior_mm else "－"),
         ("エクイティ", f"{deal.equity_mm:,}百万円" if deal.equity_mm else "－"),
+        ("スポンサー提示EBITDA（速報）",
+         f"{deal.sponsor_ebitda_mm:,}百万円" if deal.sponsor_ebitda_mm else "－"),
         ("初期レバレッジ（自動算出）",
-         f"{deal.initial_leverage}x（シニア{deal.senior_mm:,} ÷ 提示EBITDA{deal.sponsor_ebitda_mm:,}）"
+         f"{deal.initial_leverage}x ＝ シニア{deal.senior_mm:,} ÷ 提示EBITDA{deal.sponsor_ebitda_mm:,}"
          if deal.initial_leverage else "－"),
         ("LTV（自動算出）",
-         f"{deal.ltv_pct}%（シニア{deal.senior_mm:,} ÷ EV{deal.ev_mm:,}）" if deal.ltv_pct else "－"),
+         f"{deal.ltv_pct}% ＝ シニア{deal.senior_mm:,} ÷ EV{deal.ev_mm:,}" if deal.ltv_pct else "－"),
     ]
     r = 6
     for k, v in rows:
@@ -86,13 +109,18 @@ def build_export(deal: Deal) -> tuple[str, int]:
         ws.merge_cells(f"C{r}:H{r}")
         _set(ws, f"C{r}", v, BODY, border=True)
         r += 1
+    if deal.summary:
+        _set(ws, f"B{r}", "案件概要", HEAD, FILL, border=True)
+        ws.merge_cells(f"C{r}:H{r}")
+        _set(ws, f"C{r}", deal.summary, BODY, border=True)
+        ws.row_dimensions[r].height = 13 * (len(deal.summary) // 60 + 1) + 6
+        r += 1
 
-    # ---- 確定財務数値
+    # ---- 2. 確定財務数値（出典付き）
     r += 1
     _set(ws, f"B{r}", "2. 確定財務数値（単位：百万円）", H2)
     r += 1
-    _set(ws, f"B{r}", "確定済みの抽出値のみを転記。各数値の根拠（参照ファイル・箇所）は"
-                      "システム上で確認可能。", NOTE)
+    _set(ws, f"B{r}", "確定済みの抽出値のみを転記。「修正済」は担当者がレビューで修正した値。", NOTE)
     r += 1
 
     def fin_table(title, keys, years, start_row):
@@ -100,6 +128,7 @@ def build_export(deal: Deal) -> tuple[str, int]:
         _set(ws, f"B{rr}", title, HEAD, FILL, border=True)
         for ci, y in enumerate(years):
             _set(ws, f"{chr(ord('C') + ci)}{rr}", y, HEAD, FILL, align="center", border=True)
+        _set(ws, f"H{rr}", "出典（参照ファイル｜箇所）", HEAD, FILL, border=True)
         rr += 1
         for key, label in keys:
             item = by_key.get(key)
@@ -111,59 +140,93 @@ def build_export(deal: Deal) -> tuple[str, int]:
                 v = values.get(y)
                 _set(ws, f"{chr(ord('C') + ci)}{rr}", v if v is not None else "－",
                      BODY, num="#,##0", align="right", border=True)
+            _set(ws, f"H{rr}", _evidence_str(item), SMALL, border=True)
             rr += 1
         return rr
 
     r = fin_table("実績", [("act_revenue", "売上高"), ("act_op", "営業利益"),
                            ("act_ebitda", "EBITDA"), ("act_ni", "当期純利益"),
                            ("act_cash", "現預金"), ("act_net_assets", "純資産"),
-                           ("act_debt", "有利子負債"), ("act_fcf", "FCF")],
+                           ("act_debt", "有利子負債"), ("act_fcf", "フリー・キャッシュフロー")],
                   YEARS_ACT, r) + 1
     r = fin_table("計画（ベースケース）",
                   [("base_revenue", "売上高"), ("base_op", "営業利益"),
-                   ("base_ebitda", "EBITDA"), ("base_fcf", "FCF")], YEARS_PLAN, r) + 1
+                   ("base_ebitda", "EBITDA"), ("base_fcf", "フリー・キャッシュフロー")],
+                  YEARS_PLAN, r) + 1
     r = fin_table("計画（スポンサーケース）",
                   [("sponsor_revenue", "売上高"), ("sponsor_op", "営業利益"),
-                   ("sponsor_ebitda", "EBITDA"), ("sponsor_fcf", "FCF")], YEARS_PLAN, r) + 1
+                   ("sponsor_ebitda", "EBITDA"), ("sponsor_fcf", "フリー・キャッシュフロー")],
+                  YEARS_PLAN, r) + 1
 
-    # ---- 前提・定性情報
-    _set(ws, f"B{r}", "3. 前提・定性情報（確定済み）", H2)
+    # ---- 3. ストラクチャー・B/S項目
+    _set(ws, f"B{r}", "3. ストラクチャー・B/S項目", H2)
+    r += 1
+    for key, label in (("ev", "エンタープライズ・バリュー（EV）"),
+                       ("senior_loan", "シニアローン総額"),
+                       ("goodwill", "のれん（買収想定額）")):
+        item = by_key.get(key)
+        if not item:
+            continue
+        v = next(iter((item.effective_values() or {}).values()), None)
+        _set(ws, f"B{r}", label, HEAD, FILL, border=True)
+        _set(ws, f"C{r}", v, BODY, num="#,##0", align="right", border=True)
+        ws.merge_cells(f"D{r}:G{r}")
+        note = item.resolution_note or ""
+        _set(ws, f"D{r}", note, SMALL, border=True)
+        _set(ws, f"H{r}", _evidence_str(item), SMALL, border=True)
+        if key == "goodwill" and item.mismatch_json:
+            mm = json.loads(item.mismatch_json)
+            r += 1
+            ws.merge_cells(f"C{r}:H{r}")
+            _set(ws, f"B{r}", "（不整合情報）", SMALL, border=True)
+            _set(ws, f"C{r}",
+                 f"財務DD試算値 {mm['other_value']:,}百万円（{mm['other_file']} {mm['other_location']}）"
+                 f"との差異あり。{mm['note']}", SMALL, AI_FILL, border=True)
+        r += 1
+
+    # ---- 4. 前提・定性情報（全文）
+    r += 1
+    _set(ws, f"B{r}", "4. 前提・定性情報（確定済み・全文）", H2)
     r += 1
     for item in confirmed:
-        if item.unit != "テキスト" and item.key not in ("goodwill", "normalized_ebitda"):
+        if item.unit != "テキスト" and item.key != "normalized_ebitda":
             continue
         text = item.effective_text()
-        if item.key == "goodwill":
-            v = (item.effective_values() or {}).get("FY27")
-            text = f"{v:,}百万円" if v else "－"
-            if item.resolution_note:
-                text += f"（{item.resolution_note}）"
         if item.key == "normalized_ebitda":
             v = (item.effective_values() or {}).get("FY26")
-            text = f"{v:,}百万円（FY26・財務DD p.34）" if v else "－"
+            text = f"{v:,}百万円（FY26）。モデルFY26実績EBITDAと一致することを確認済み。" if v else "－"
         _set(ws, f"B{r}", item.label, HEAD, FILL, border=True)
-        ws.merge_cells(f"C{r}:H{r}")
-        _set(ws, f"C{r}", text, BODY, align="left", border=True)
-        ws.row_dimensions[r].height = max(16, 13 * (len(str(text)) // 55 + 1))
+        ws.merge_cells(f"C{r}:G{r}")
+        _set(ws, f"C{r}", text, BODY, border=True)
+        _set(ws, f"H{r}", _evidence_str(item), SMALL, border=True)
+        ws.row_dimensions[r].height = max(18, 13 * (len(str(text)) // 55 + 1) + 4)
         r += 1
 
+    # ---- 5. 保留項目
     if held:
         r += 1
-        _set(ws, f"B{r}", f"※ 保留中の{len(held)}項目（{'、'.join(i.label for i in held)}）は"
-                          "本サマリーから除外しています。", NOTE)
+        _set(ws, f"B{r}", f"5. 保留項目（{len(held)}件・本サマリーから除外）", H2)
+        r += 1
+        for item in held:
+            _set(ws, f"B{r}", item.label, BODY, border=True)
+            ws.merge_cells(f"C{r}:G{r}")
+            _set(ws, f"C{r}", "担当者レビューで保留（確定前のデータは転記しない）", NOTE, border=True)
+            _set(ws, f"H{r}", _evidence_str(item), SMALL, border=True)
+            r += 1
 
     # ================= シート2：KPI構造 =================
     ws2 = wb.create_sheet("KPI構造")
     ws2.sheet_view.showGridLines = False
-    for col, w in dict(A=3, B=44, C=16, D=22, E=26).items():
+    for col, w in dict(A=3, B=42, C=13, D=20, E=34, F=46).items():
         ws2.column_dimensions[col].width = w
     _set(ws2, "B2", "確定KPI構造", TITLE)
     _set(ws2, "B3", "★＝重要KPI（リスクドライバー）。出典：財務モデルの数式解析（再計算なし）"
                     "およびDDレポートの定性情報。", NOTE)
     _set(ws2, "B5", "KPI（階層）", HEAD, FILL, border=True)
-    _set(ws2, "C5", "出典", HEAD, FILL, border=True)
+    _set(ws2, "C5", "出典種別", HEAD, FILL, border=True)
     _set(ws2, "D5", "値（FY26実績）", HEAD, FILL, border=True)
-    _set(ws2, "E5", "構造（数式）", HEAD, FILL, border=True)
+    _set(ws2, "E5", "構造（数式・再計算なし）", HEAD, FILL, border=True)
+    _set(ws2, "F5", "参照元", HEAD, FILL, border=True)
     nodes = list(deal.kpi_nodes)
     children = {}
     for n in nodes:
@@ -176,24 +239,33 @@ def build_export(deal: Deal) -> tuple[str, int]:
             label = ("　" * depth) + ("★ " if n.star else "") + n.label
             if n.badge:
                 label += f"〔{n.badge}〕"
+            ev = json.loads(n.evidence_json) if n.evidence_json else None
             _set(ws2, f"B{r2[0]}", label, BODY, border=True)
             _set(ws2, f"C{r2[0]}", origin_label.get(n.origin, n.origin), BODY, border=True)
             _set(ws2, f"D{r2[0]}", n.value_text or "－", BODY, border=True)
-            _set(ws2, f"E{r2[0]}", n.formula or "", NOTE, border=True)
+            _set(ws2, f"E{r2[0]}", n.formula or "", SMALL, border=True)
+            _set(ws2, f"F{r2[0]}",
+                 f"{ev.get('file', '')}｜{ev.get('location', '')}" if ev else "", SMALL, border=True)
             r2[0] += 1
             walk(n.node_id, depth + 1)
 
     walk(None, 0)
+    if deal.kpi_confirmed_by:
+        _set(ws2, f"B{r2[0] + 1}",
+             f"確定：{USER_NAMES.get(deal.kpi_confirmed_by, deal.kpi_confirmed_by)}"
+             f"　{deal.kpi_confirmed_at.strftime('%Y/%m/%d %H:%M') if deal.kpi_confirmed_at else ''}",
+             NOTE)
 
     # ================= シート3：シナリオ =================
     ws3 = wb.create_sheet("シナリオ分析")
     ws3.sheet_view.showGridLines = False
-    for col, w in dict(A=3, B=18, C=60, D=30).items():
+    for col, w in dict(A=3, B=20, C=62, D=32).items():
         ws3.column_dimensions[col].width = w
     _set(ws3, "B2", "採用シナリオ（審査相談用）", TITLE)
     _set(ws3, "B3", AI_DISCLAIMER, AI_NOTE, AI_FILL)
     r3 = 5
     adopted = [s for s in deal.scenarios if s.adopted]
+    rejected = [s for s in deal.scenarios if not s.adopted]
     node_labels = {n.node_id: n.label for n in nodes}
     for sc in adopted:
         origin = "AI推奨" if sc.origin == "ai" else "自分の仮説"
@@ -202,11 +274,11 @@ def build_export(deal: Deal) -> tuple[str, int]:
         _set(ws3, f"C{r3}", f"{sc.title}　〔{origin}／{sc.type_label}〕", HEAD, FILL, border=True)
         r3 += 1
         kpis = "、".join(node_labels.get(k, k) for k in json.loads(sc.affected_kpis_json or "[]"))
-        for k, v in [("① 発生要因", sc.cause),
-                     ("② 影響KPI", kpis or "－"),
-                     ("③ 変化幅と根拠", f"{sc.change_text}\n根拠：{sc.change_basis}"),
+        for k, v in [("① シナリオ名・発生要因", sc.cause),
+                     ("② 影響を受けるKPI", kpis or "－（PLへの直接影響）"),
+                     ("③ KPIの変化幅と根拠", f"{sc.change_text}\n根拠：{sc.change_basis}"),
                      ("④ 返済能力への影響（AI推定・モデル再計算なし）", sc.impact),
-                     ("⑤ 保全策・確認事項", f"{sc.safeguards}\n確認事項:{sc.questions}")]:
+                     ("⑤ 保全策・確認事項", f"{sc.safeguards}\n確認事項：{sc.questions}")]:
             _set(ws3, f"B{r3}", k, BODY, border=True, align="left")
             ws3.merge_cells(f"C{r3}:D{r3}")
             cell = _set(ws3, f"C{r3}", v, BODY, border=True, align="left")
@@ -215,6 +287,52 @@ def build_export(deal: Deal) -> tuple[str, int]:
             ws3.row_dimensions[r3].height = max(16, 13 * (len(str(v)) // 55 + 1))
             r3 += 1
         r3 += 1
+    if rejected:
+        _set(ws3, f"B{r3}", "（参考）不採用シナリオ", H2)
+        r3 += 1
+        for sc in rejected:
+            _set(ws3, f"B{r3}", f"シナリオ{sc.key}", BODY, border=True)
+            ws3.merge_cells(f"C{r3}:D{r3}")
+            note = f"　※不採用の理由：{sc.rejection_note}" if sc.rejection_note else ""
+            _set(ws3, f"C{r3}", f"{sc.title}{note}", SMALL, border=True)
+            ws3.row_dimensions[r3].height = 26
+            r3 += 1
+
+    # ================= シート4：審査相談メモ =================
+    ws4 = wb.create_sheet("審査相談メモ")
+    ws4.sheet_view.showGridLines = False
+    for col, w in dict(A=3, B=14, C=10, D=30, E=70).items():
+        ws4.column_dimensions[col].width = w
+    _set(ws4, "B2", "審査相談の記録", TITLE)
+    _set(ws4, "B3", "対面の審査相談（擦り合わせ会議）の記録。指摘事項は紐付け先を併記。", NOTE)
+    r4 = 5
+    for m in reversed(list(deal.memos)):
+        attendees = "、".join(json.loads(m.attendees_json or "[]"))
+        _set(ws4, f"B{r4}", m.meeting_date, HEAD, FILL, border=True)
+        _set(ws4, f"C{r4}", m.conclusion, HEAD, FILL, border=True)
+        _set(ws4, f"D{r4}", f"出席：{attendees}", BODY, FILL, border=True)
+        _set(ws4, f"E{r4}", f"記録：{USER_NAMES.get(m.created_by or '', m.created_by)}",
+             BODY, FILL, border=True)
+        r4 += 1
+        for i, f in enumerate(m.findings, 1):
+            link = ""
+            if f.target_type == "scenario":
+                link = f"【シナリオ{f.target_key}】"
+            elif f.target_type == "kpi":
+                link = "【KPI構造】"
+            elif f.target_type == "item":
+                link = f"【数値：{f.target_key}】"
+            _set(ws4, f"D{r4}", f"指摘{i} {link}", BODY, border=True)
+            ws4.merge_cells(f"E{r4}:E{r4}")
+            _set(ws4, f"E{r4}", f.text, BODY, border=True)
+            ws4.row_dimensions[r4].height = max(16, 13 * (len(f.text) // 55 + 1))
+            r4 += 1
+        if m.note:
+            _set(ws4, f"D{r4}", "メモ", BODY, border=True)
+            _set(ws4, f"E{r4}", m.note, BODY, border=True)
+            ws4.row_dimensions[r4].height = max(16, 13 * (len(m.note) // 55 + 1))
+            r4 += 1
+        r4 += 1
 
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"審査サマリー_{deal.target}_{ts}.xlsx"

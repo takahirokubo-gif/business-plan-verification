@@ -19,15 +19,11 @@ const ORIGIN_LABEL: Record<string, string> = {
   dd: 'DD由来',
   manual: '手動追加',
 }
-const ORIGIN_CLASS: Record<string, string> = {
-  model: 'badge-info',
-  dd: 'badge-ai',
-  manual: 'badge-neutral',
-}
 
+/** 出典バッジ。色情報は警告系に限定する方針のため、グレー系で統一。 */
 export function OriginBadge({ origin }: { origin: string }) {
   return (
-    <span className={`badge-base ${ORIGIN_CLASS[origin] ?? 'badge-neutral'}`}>
+    <span className="badge-base badge-neutral">
       出典 {ORIGIN_LABEL[origin] ?? origin}
     </span>
   )

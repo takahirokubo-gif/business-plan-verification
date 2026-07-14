@@ -56,10 +56,23 @@ export const api = {
   kpiApply: (dealId: number, diff: unknown, user: string) =>
     request(`/api/deals/${dealId}/kpi/apply`, { method: 'POST', body: JSON.stringify({ diff, user }) }),
 
-  chat: (dealId: number, context: 'kpi' | 'scenario', message: string, user: string) =>
+  chat: (dealId: number, context: 'kpi' | 'scenario', message: string, user: string, target?: string) =>
     request<ChatResult>(`/api/deals/${dealId}/chat`, {
-      method: 'POST', body: JSON.stringify({ context, message, user }),
+      method: 'POST', body: JSON.stringify({ context, message, user, target: target ?? null }),
     }),
+
+  createDraft: (user: string) =>
+    request<{ id: number }>('/api/deals/draft', { method: 'POST', body: JSON.stringify({ user }) }),
+
+  updateDeal: (dealId: number, body: Record<string, unknown>) =>
+    request<{ id: number }>(`/api/deals/${dealId}`, { method: 'PATCH', body: JSON.stringify(body) }),
+
+  deleteDeal: (dealId: number) =>
+    request<{ deleted: number }>(`/api/deals/${dealId}`, { method: 'DELETE' }),
+
+  extractDealInfo: (dealId: number, user: string) =>
+    request<{ fields: Record<string, unknown>; sources: Record<string, string>; note: string }>(
+      `/api/deals/${dealId}/extract-info?user=${encodeURIComponent(user)}`, { method: 'POST' }),
 
   scenarioAdopt: (dealId: number, key: string, adopted: boolean, user: string, rejectionNote?: string) =>
     request(`/api/deals/${dealId}/scenarios/${key}/adopt`, {

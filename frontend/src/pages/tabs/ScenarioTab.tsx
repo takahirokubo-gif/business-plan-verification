@@ -1,22 +1,15 @@
+import { useState } from 'react'
 import { api } from '../../api'
 import { Icon } from '../../components/Icon'
-import { Badge } from '../../components/Badge'
 import { ChatPanel } from '../../components/ChatPanel'
 import { useUser } from '../../context/UserContext'
 import type { ChatDiff, DealFull, Scenario } from '../../types'
 
-const TYPE_BADGE: Record<string, 'info' | 'warning' | 'error' | 'ai'> = {
-  トップライン: 'info',
-  コスト: 'warning',
-  イベント: 'error',
-  自分の仮説: 'ai',
-}
-
 function AdoptToggle({ adopted, onChange }: { adopted: boolean; onChange: (v: boolean) => void }) {
   return (
     <button
-      onClick={() => onChange(!adopted)}
-      className={`relative h-6 w-11 rounded-full transition-colors ${adopted ? 'bg-primary-container' : 'bg-outline-variant'}`}
+      onClick={(e) => { e.stopPropagation(); onChange(!adopted) }}
+      className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${adopted ? 'bg-primary-container' : 'bg-outline-variant'}`}
       title={adopted ? '採用中（クリックで不採用）' : '不採用（クリックで採用）'}
     >
       <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-all ${adopted ? 'left-[22px]' : 'left-0.5'}`} />
@@ -24,14 +17,18 @@ function AdoptToggle({ adopted, onChange }: { adopted: boolean; onChange: (v: bo
   )
 }
 
-function Section({ no, title, children, ai }: {
-  no: string; title: string; children: React.ReactNode; ai?: boolean
+function Section({ no, title, children, note }: {
+  no: string; title: string; children: React.ReactNode; note?: string
 }) {
   return (
-    <div className={`rounded border px-3 py-2 ${ai ? 'border-amber-200 bg-amber-50/60' : 'border-surface-container-low bg-surface-container-low/40'}`}>
+    <div className="rounded border border-surface-container-low bg-surface-container-low/40 px-3 py-2">
       <div className="flex items-center gap-1.5 text-[11px] font-bold text-on-surface-variant">
         {no} {title}
-        {ai && <Badge kind="warning"><Icon name="smart_toy" className="text-[11px]" /> AI推定・モデル再計算なし</Badge>}
+        {note && (
+          <span className="badge-base badge-neutral">
+            <Icon name="smart_toy" className="text-[11px]" /> {note}
+          </span>
+        )}
       </div>
       <div className="mt-1 text-[12.5px] leading-relaxed">{children}</div>
     </div>
@@ -45,7 +42,17 @@ export function ScenarioTab({ full, refresh, dealId }: {
 }) {
   const { userKey } = useUser()
   const scenarios = full.scenarios
+  const [openKeys, setOpenKeys] = useState<Set<string>>(new Set())
   const nodeLabel = (id: string) => full.kpi_nodes.find((n) => n.node_id === id)?.label ?? id
+
+  const toggleOpen = (key: string) => {
+    setOpenKeys((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
+  }
 
   const adoptToggle = async (sc: Scenario, adopted: boolean) => {
     await api.scenarioAdopt(dealId, sc.key, adopted, userKey)
@@ -106,6 +113,10 @@ export function ScenarioTab({ full, refresh, dealId }: {
 
   const applyDiff = async (diff: ChatDiff) => {
     await api.scenariosApply(dealId, diff, userKey)
+    if (diff.type === 'add_card') {
+      const key = (diff.card as { key?: string }).key
+      if (key) setOpenKeys((prev) => new Set(prev).add(key))
+    }
     await refresh()
   }
 
@@ -115,22 +126,49 @@ export function ScenarioTab({ full, refresh, dealId }: {
         <div className="mb-3 flex items-center justify-between">
           <div className="text-[14px] font-bold">検証シナリオ</div>
           <div className="text-[11px] text-outline">
-            採用トグルON＝確定シナリオ（エクスポート対象）。カードの修正は右のチャットから。
+            行をクリックで詳細を展開。採用トグルON＝確定シナリオ（エクスポート対象）。
           </div>
         </div>
 
-        <div className="space-y-4">
+        {/* シナリオ一覧（アコーディオン行） */}
+        <div className="card divide-y divide-surface-container-low">
           {scenarios.map((sc) => {
             const findings = full.findings.filter((f) => f.target_type === 'scenario' && f.target_key === sc.key)
+            const open = openKeys.has(sc.key)
             return (
-              <div key={sc.id} className={`card ${!sc.adopted ? 'opacity-80' : ''}`}>
-                <div className="flex items-center gap-2.5 border-b border-surface-container-low px-4 py-3">
-                  <Badge kind={sc.origin === 'ai' ? 'ai' : 'info'}>
-                    {sc.origin === 'ai' ? 'AI推奨' : '自分の仮説'}
-                  </Badge>
-                  {sc.type_label && <Badge kind={TYPE_BADGE[sc.type_label] ?? 'neutral'}>{sc.type_label}</Badge>}
-                  <span className="text-[14px] font-bold">{sc.title}</span>
-                  <div className="ml-auto flex items-center gap-2">
+              <div key={sc.id}>
+                {/* 行 */}
+                <div
+                  className={`flex cursor-pointer items-center gap-3 px-4 py-3 hover:bg-surface-container-low/50 ${!sc.adopted ? 'opacity-70' : ''}`}
+                  onClick={() => toggleOpen(sc.key)}
+                >
+                  <Icon name={open ? 'expand_more' : 'chevron_right'} className="shrink-0 text-[20px] text-outline" />
+                  <span className="w-8 shrink-0 text-[12px] font-bold text-outline">S{sc.key}</span>
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-[13.5px] font-bold">{sc.title}</div>
+                    <div className="mt-0.5 flex items-center gap-2 text-[11px] text-outline">
+                      <span>
+                        {sc.origin === 'ai' ? 'AI推奨' : '自分の仮説'}
+                        {sc.type_label && sc.type_label !== (sc.origin === 'ai' ? 'AI推奨' : '自分の仮説') && `｜${sc.type_label}`}
+                      </span>
+                      {sc.affected_kpis.length > 0 && (
+                        <span className="truncate">
+                          影響KPI：{sc.affected_kpis.map(nodeLabel).join('・')}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-2">
+                    {findings.length > 0 && (
+                      <span className="badge-base badge-neutral" title="前回審査相談での指摘あり">
+                        <Icon name="feedback" className="text-[12px]" /> 指摘{findings.length}
+                      </span>
+                    )}
+                    {sc.stale_reason && (
+                      <span className="badge-base badge-warning" title={sc.stale_reason}>
+                        <Icon name="warning" className="text-[12px]" /> 上流変更
+                      </span>
+                    )}
                     <span className={`text-[11px] font-medium ${sc.adopted ? 'text-primary-container' : 'text-outline'}`}>
                       {sc.adopted ? '採用' : '不採用'}
                     </span>
@@ -138,53 +176,59 @@ export function ScenarioTab({ full, refresh, dealId }: {
                   </div>
                 </div>
 
-                {sc.stale_reason && (
-                  <div className="mx-4 mt-3 flex items-center justify-between rounded border border-amber-300 bg-amber-50 px-3 py-2">
-                    <div className="flex items-center gap-1.5 text-[12px] text-amber-800">
-                      <Icon name="warning" className="text-[15px]" /> {sc.stale_reason}
+                {/* 詳細（アコーディオン展開） */}
+                {open && (
+                  <div className="border-t border-surface-container-low bg-surface-container-low/20 px-4 pb-4 pt-3">
+                    {sc.stale_reason && (
+                      <div className="mb-3 flex items-center justify-between rounded border border-amber-300 bg-amber-50 px-3 py-2">
+                        <div className="flex items-center gap-1.5 text-[12px] text-amber-800">
+                          <Icon name="warning" className="text-[15px]" /> {sc.stale_reason}
+                        </div>
+                        <button
+                          className="shrink-0 text-[11px] font-medium text-amber-800 underline"
+                          onClick={(e) => { e.stopPropagation(); clearStale(sc) }}
+                        >
+                          再確認済みにする
+                        </button>
+                      </div>
+                    )}
+                    {findings.map((f) => (
+                      <div key={f.id} className="mb-3 rounded border border-surface-container-high bg-white px-3 py-2 text-[12px]">
+                        <div className="flex items-center gap-1 font-bold text-on-surface-variant">
+                          <Icon name="feedback" className="text-[13px]" />
+                          前回審査相談での指摘（{f.meeting_date?.replaceAll('-', '/')}）
+                        </div>
+                        <p className="mt-0.5 text-on-surface-variant">{f.text}</p>
+                      </div>
+                    ))}
+                    {!sc.adopted && sc.rejection_note && (
+                      <div className="mb-3 rounded bg-surface-container-low px-3 py-2 text-[12px] text-on-surface-variant">
+                        <span className="font-medium">不採用メモ：</span>{sc.rejection_note}
+                      </div>
+                    )}
+                    <div className="space-y-2">
+                      <Section no="①" title="シナリオ名・発生要因">{sc.cause}</Section>
+                      <Section no="②" title="影響を受けるKPI">
+                        <div className="flex flex-wrap gap-1.5">
+                          {sc.affected_kpis.length ? sc.affected_kpis.map((k) => (
+                            <span key={k} className="badge-base badge-neutral">{nodeLabel(k)}</span>
+                          )) : <span className="text-outline">－（PLへの直接影響）</span>}
+                        </div>
+                      </Section>
+                      <Section no="③" title="KPIの変化幅と根拠">
+                        <div className="font-medium">{sc.change_text}</div>
+                        <div className="mt-0.5 text-[11.5px] text-on-surface-variant">根拠：{sc.change_basis}</div>
+                      </Section>
+                      <Section no="④" title="返済能力への影響" note="AI推定・モデル再計算なし">
+                        {sc.impact}
+                      </Section>
+                      <Section no="⑤" title="保全策・確認事項">
+                        <div>{sc.safeguards}</div>
+                        <div className="mt-0.5 text-[11.5px] text-on-surface-variant">確認事項：{sc.questions}</div>
+                      </Section>
                     </div>
-                    <button className="shrink-0 text-[11px] font-medium text-amber-800 underline" onClick={() => clearStale(sc)}>
-                      再確認済みにする
-                    </button>
                   </div>
                 )}
-
-                {findings.map((f) => (
-                  <div key={f.id} className="mx-4 mt-3 rounded border border-amber-300 bg-amber-50 px-3 py-2 text-[12px]">
-                    <div className="flex items-center gap-1 font-bold text-amber-800">
-                      <Icon name="feedback" className="text-[13px]" /> 前回審査相談での指摘（{f.meeting_date?.replaceAll('-', '/')}）
-                    </div>
-                    <p className="mt-0.5 text-amber-900">{f.text}</p>
-                  </div>
-                ))}
-
-                {!sc.adopted && sc.rejection_note && (
-                  <div className="mx-4 mt-3 rounded bg-surface-container-low px-3 py-2 text-[12px] text-on-surface-variant">
-                    <span className="font-medium">不採用メモ：</span>{sc.rejection_note}
-                  </div>
-                )}
-
-                <div className="space-y-2 p-4">
-                  <Section no="①" title="発生要因">{sc.cause}</Section>
-                  <Section no="②" title="影響を受けるKPI">
-                    <div className="flex flex-wrap gap-1.5">
-                      {sc.affected_kpis.length ? sc.affected_kpis.map((k) => (
-                        <span key={k} className="badge-base badge-info">
-                          <Icon name="star" className="text-[11px]" /> {nodeLabel(k)}
-                        </span>
-                      )) : <span className="text-outline">－（PLへの直接影響）</span>}
-                    </div>
-                  </Section>
-                  <Section no="③" title="KPIの変化幅と根拠">
-                    <div className="font-medium">{sc.change_text}</div>
-                    <div className="mt-0.5 text-[11.5px] text-on-surface-variant">根拠：{sc.change_basis}</div>
-                  </Section>
-                  <Section no="④" title="返済能力への影響" ai>{sc.impact}</Section>
-                  <Section no="⑤" title="保全策・確認事項">
-                    <div>{sc.safeguards}</div>
-                    <div className="mt-0.5 text-[11.5px] text-on-surface-variant">確認事項：{sc.questions}</div>
-                  </Section>
-                </div>
               </div>
             )
           })}
@@ -205,6 +249,11 @@ export function ScenarioTab({ full, refresh, dealId }: {
           renderDiff={renderDiff}
           onApply={applyDiff}
           title="AIとブラッシュアップ"
+          targetLabel="対象シナリオ"
+          targetOptions={scenarios.map((s) => ({
+            value: s.key,
+            label: `シナリオ${s.key}：${s.title.length > 16 ? `${s.title.slice(0, 16)}…` : s.title}`,
+          }))}
         />
       </div>
     </div>

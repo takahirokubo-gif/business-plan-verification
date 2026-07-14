@@ -83,6 +83,8 @@ def validate_excel():
               f"{case}: Assumptions EV = 12,000,000千円")
         check(ws_a["D21"].value == spec.GOODWILL,
               f"{case}: Assumptions のれん想定 = {spec.GOODWILL:,}千円")
+        check(ws_a["D23"].value == spec.DEAL["sponsor_ebitda_mm"] * 1000,
+              f"{case}: Assumptions 提示EBITDA（速報）= {spec.DEAL['sponsor_ebitda_mm']:,}百万円")
         cover = wb[L.SHEET_COVER]
         check(spec.CASE_LABEL[case] in str(cover["B8"].value),
               f"{case}: Coverにケース名（{spec.CASE_LABEL[case]}）")
@@ -178,6 +180,13 @@ def validate_fixtures():
     # identify
     ident = json.loads((FIXTURES / "identify.json").read_text(encoding="utf-8"))
     check(set(ident["files"].keys()) == all_files, "identify: 6ファイルすべてに対応")
+    # 案件基本情報の自動抽出
+    dinfo = json.loads((FIXTURES / "deal_info_autostaff.json").read_text(encoding="utf-8"))
+    check(dinfo["fields"]["ev_mm"] == spec.DEAL["ev_mm"]
+          and dinfo["fields"]["sponsor_ebitda_mm"] == spec.DEAL["sponsor_ebitda_mm"],
+          "deal_info: EV・提示EBITDAが正本と一致")
+    check(set(dinfo["fields"].keys()) == set(dinfo["sources"].keys()),
+          "deal_info: 全フィールドに出典がある")
 
 
 def validate_ground_truth():

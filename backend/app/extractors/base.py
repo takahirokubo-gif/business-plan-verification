@@ -25,6 +25,13 @@ class Extractor(ABC):
         """
 
     @abstractmethod
+    def extract_deal_info(self, documents: list[dict]) -> dict:
+        """アップロード資料から案件基本情報（案件名・借入人・対象会社・ストラクチャー等）を
+        読み取る（値の拾い上げのみ・行内情報は対象外）。
+        returns: {fields: {...}, sources: {field: 出典}, note}
+        """
+
+    @abstractmethod
     def extract_items(self, deal: dict, documents: list[dict]) -> list[dict]:
         """財務モデル・DDレポート群から、定性情報・実績・予測数値を抽出する。
         すべての項目に根拠3点セット（参照ファイル・箇所・論理）を付ける。
