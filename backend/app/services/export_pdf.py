@@ -9,11 +9,13 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 
-from ..config import EXPORT_DIR
+from ..config import ASSETS_DIR, EXPORT_DIR
 from ..models import Deal
 
 FONT = "JPExport"
+# 同梱フォント（サーバーレス環境用）を最優先。ローカルのフォントはフォールバック
 _FONT_CANDIDATES = [
+    str(ASSETS_DIR / "NotoSansJP-VariableFont_wght.ttf"),
     os.path.expanduser("~/Library/Fonts/NotoSansJP-VariableFont_wght.ttf"),
     "/System/Library/Fonts/Supplemental/Arial Unicode.ttf",
 ]

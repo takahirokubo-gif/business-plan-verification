@@ -5,7 +5,8 @@
 数日かかっていた「資料読解→数値転記→ストレス仮説」の工程を数十分に圧縮し、
 **案件受領後すぐに決裁者と審査相談（論点の擦り合わせ）ができる状態**を作る。
 
-要件定義の正本：`../docs/要件定義_事業計画検証Lv1_v5.md`
+要件定義の正本：[docs/要件定義_事業計画検証Lv1_v5.md](docs/要件定義_事業計画検証Lv1_v5.md)
+（UIリファレンスは `docs/ui_reference/`）
 
 ## 設計原則
 
@@ -36,6 +37,23 @@ npm run dev                               # http://localhost:5173
 
 - APIポートは **8010**（コベナンツ・モニタリングの8000と共存するため）。
   変更する場合は `frontend/vite.config.ts` のproxyも合わせる
+
+## デプロイ（Vercel・Basic認証付き）
+
+Vercel Python Serverless Function 1本（`api/index.py`）で画面・APIの全リクエストを
+処理する構成（`vercel.json` の rewrites）。DBは `/tmp` のSQLiteで、コールドスタート
+ごとに自動シードされる＝常にクリーンなデモ状態で立ち上がる。
+
+```bash
+cd frontend && npm run build     # dist を生成（.vercelignore が dist を含めて配信）
+vercel --prod                    # デプロイ
+```
+
+環境変数（Vercelダッシュボード or `vercel env add`）:
+
+- `SHARE_USER` / `SHARE_PASSWORD` … Basic認証のID・パスワード（必須。空だと認証なし）
+- `EXTRACTOR_MODE=mock`（既定）
+- PDF出力用の日本語フォントは `backend/app/assets/` に同梱（Noto Sans JP・SIL OFL）
 - mockモードはAPIキー不要で全フローが動く。実API切替は `backend/.env` の
   `EXTRACTOR_MODE=anthropic` ＋ `ANTHROPIC_API_KEY`（プロンプト・スキーマ実装済み。
   動作確認はmockで実施）

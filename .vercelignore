@@ -1,0 +1,25 @@
+# .vercelignore がある場合、.gitignore ベースの除外は無効になる
+# （frontend/dist をアップロードに含めるために必要）
+
+.git
+.claude
+docs
+node_modules
+frontend/node_modules
+frontend/src
+frontend/public
+backend/.venv
+backend/tests
+backend/uploads
+backend/exports
+backend/app.db
+*.db
+*.sqlite3
+
+# 機密情報は絶対にアップロードしない（環境変数はVercel側で設定する）
+.env
+backend/.env
+
+__pycache__
+*.pyc
+.DS_Store

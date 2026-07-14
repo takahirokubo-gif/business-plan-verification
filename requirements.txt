@@ -1,0 +1,9 @@
+# Vercel Python Serverless Function の依存（api/index.py）
+fastapi
+sqlalchemy
+openpyxl
+python-multipart
+python-dotenv
+anthropic
+pypdf
+reportlab

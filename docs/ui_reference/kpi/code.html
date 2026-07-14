@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ja"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>融資管理システム - KPI構造</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Noto+Sans+JP:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#737781",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "tertiary-fixed": "#ffdcc3",
+                        "on-surface": "#1a1c20",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-fixed": "#0b1c30",
+                        "background": "#f9f9ff",
+                        "surface-dim": "#d9d9df",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb77e",
+                        "surface-variant": "#e2e2e8",
+                        "surface-container-low": "#f3f3f9",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-tertiary-fixed": "#2f1500",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-tertiary-container": "#ffae6b",
+                        "outline-variant": "#c2c6d1",
+                        "on-primary-fixed": "#001c3b",
+                        "secondary-container": "#d0e1fb",
+                        "on-primary-container": "#9bc2ff",
+                        "surface-container-high": "#e8e8ed",
+                        "on-primary": "#ffffff",
+                        "inverse-primary": "#a6c8ff",
+                        "inverse-on-surface": "#f0f0f6",
+                        "surface-tint": "#2f5f9c",
+                        "tertiary-container": "#793f00",
+                        "surface-bright": "#f9f9ff",
+                        "secondary": "#505f76",
+                        "on-background": "#1a1c20",
+                        "inverse-surface": "#2e3035",
+                        "on-surface-variant": "#424750",
+                        "tertiary": "#582c00",
+                        "surface-container": "#ededf3",
+                        "primary-fixed-dim": "#a6c8ff",
+                        "primary-container": "#1a4f8b",
+                        "on-tertiary-fixed-variant": "#6e3900",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed-variant": "#0c4783",
+                        "error-container": "#ffdad6",
+                        "surface": "#f9f9ff",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#e2e2e8",
+                        "primary-fixed": "#d5e3ff",
+                        "primary": "#00386c",
+                        "on-secondary-container": "#54647a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-padding": "24px",
+                        "unit": "4px",
+                        "stack-sm": "8px",
+                        "sidebar-width": "260px",
+                        "stack-lg": "32px",
+                        "gutter": "16px",
+                        "stack-md": "16px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Inter"],
+                        "body-md": ["Noto Sans JP"],
+                        "headline-sm": ["Noto Sans JP"],
+                        "display-lg": ["Noto Sans JP"],
+                        "data-tabular": ["Inter"],
+                        "headline-md": ["Noto Sans JP"],
+                        "caption": ["Noto Sans JP"],
+                        "body-lg": ["Noto Sans JP"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-sm": ["18px", { "lineHeight": "1.4", "fontWeight": "700" }],
+                        "display-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "data-tabular": ["14px", { "lineHeight": "1.5", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "caption": ["12px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .tree-line-v {
+            position: absolute;
+            left: -16px;
+            top: 24px;
+            bottom: -12px;
+            width: 1px;
+            background-color: #e2e8f0;
+        }
+        .tree-line-h {
+            position: absolute;
+            left: -16px;
+            top: 12px;
+            width: 12px;
+            height: 1px;
+            background-color: #e2e8f0;
+        }
+        .tree-node-last > .tree-line-v {
+            bottom: auto;
+            height: 12px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased h-screen overflow-hidden flex flex-col">
+<!-- TopNavBar (Shared Component JSON) -->
+<header class="bg-surface-container-lowest border-b border-outline-variant h-12 w-full fixed top-0 z-20 flex items-center justify-between pl-[284px] pr-gutter">
+<div class="flex items-center gap-4">
+<span class="hidden font-headline-sm font-bold text-primary">融資管理システム</span>
+<div class="flex items-center gap-6">
+<a class="text-outline hover:text-primary font-label-sm transition-colors" href="#">案件一覧</a>
+<a class="text-primary font-bold font-label-sm transition-colors" href="#">事業計画検証</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border border-outline-variant flex-shrink-0">
+<img alt="田中 稟議担当 Avatar" class="w-full h-full object-cover" data-alt="A detailed headshot portrait of a Japanese male banking professional in his 30s. He is wearing a crisp white shirt and a dark navy blue suit. The lighting is soft and even, suggesting a bright modern office environment. He has a subtle, friendly smile. The image is cropped tightly to the head and shoulders." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDxuA-ily0FXUcv6oFhoiO0gHqMH0B_U7zaREhPgLCF5QxYaL34snkkC3r_iFvnTgxex5HVfA-Y6vRUCKAENduRO-AWOQVQARC-Vt9zNA_fQBFSynHjqwLmG_UgZVgQfQrojF5YYpSG5439KcbiJ1WMdQszw2h6WFtE7-EGsBXl1pb4iMU7oukSDPwp_OkyVbi5lelhlHN64BObghQDyLY05ksmAmtmT1ugZvanp2JcQmSEuFeEGNOun5GIZF1ySlToKFs0DUN7dQ"/>
+</div>
+<span class="font-label-sm text-on-surface-variant">田中 稟議担当</span>
+</div>
+</div>
+</header>
+<!-- SideNavBar (Shared Component JSON) -->
+<nav class="bg-surface-container-low border-r border-outline-variant w-sidebar-width h-screen fixed left-0 top-0 z-30 flex flex-col py-container-padding">
+<div class="px-container-padding mb-8">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-white text-lg" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+</div>
+<div>
+<h1 class="font-headline-sm font-bold text-primary truncate">融資管理システム</h1>
+<p class="font-caption text-on-surface-variant truncate">事業計画検証</p>
+</div>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto flex flex-col gap-1 px-3">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer" href="#">
+<span class="material-symbols-outlined">list_alt</span>
+<span class="font-body-md font-medium">案件一覧</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-secondary-fixed border-l-4 border-primary text-on-secondary-fixed font-bold transition-colors cursor-pointer" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add_chart</span>
+<span class="font-body-md">新規案件登録</span>
+</a>
+</div>
+<div class="px-3 mt-auto flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md font-medium">設定</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-body-md font-medium">ヘルプ</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="ml-sidebar-width mt-12 flex-1 flex flex-col overflow-hidden bg-background">
+<!-- Context Header -->
+<div class="bg-surface-container-lowest border-b border-outline-variant px-container-padding py-stack-md flex-shrink-0">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-3">
+<h2 class="font-headline-md text-on-surface">オートスタッフ中部 LBOファイナンス</h2>
+<div class="flex items-center gap-2">
+<!-- Badges -->
+<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-[#1A4F8B]/10 text-primary-container leading-tight">検討中</span>
+<span class="px-2 py-0.5 rounded text-[11px] font-bold border border-outline text-on-surface-variant leading-tight">KPI確定中</span>
+</div>
+</div>
+<div class="font-caption text-on-surface-variant flex items-center flex-wrap gap-x-2 gap-y-1">
+<span>LBO</span>
+<span class="text-outline-variant">|</span>
+<span>借入人：株式会社ASホールディングス</span>
+<span class="text-outline-variant">|</span>
+<span>対象会社：株式会社オートスタッフ中部</span>
+<span class="text-outline-variant">|</span>
+<span class="font-data-tabular">EV 120億円</span>
+<span class="text-outline-variant">|</span>
+<span>シニア<span class="font-data-tabular">65</span>億円（本行<span class="font-data-tabular">25</span>億円）</span>
+</div>
+</div>
+<!-- Tabs -->
+<div class="flex items-center gap-6 mt-6 border-b border-surface-variant -mb-stack-md">
+<a class="pb-3 px-1 font-body-md text-on-surface-variant hover:text-on-surface border-b-2 border-transparent transition-colors" href="#">数値確定</a>
+<a class="pb-3 px-1 font-body-md text-primary-container font-bold border-b-2 border-primary-container" href="#">KPI構造</a>
+<a class="pb-3 px-1 font-body-md text-on-surface-variant hover:text-on-surface border-b-2 border-transparent transition-colors" href="#">シナリオ</a>
+<a class="pb-3 px-1 font-body-md text-on-surface-variant hover:text-on-surface border-b-2 border-transparent transition-colors" href="#">エクスポート</a>
+<a class="pb-3 px-1 font-body-md text-on-surface-variant hover:text-on-surface border-b-2 border-transparent transition-colors flex items-center gap-1" href="#">
+                    審査相談メモ
+                </a>
+</div>
+</div>
+<!-- 2 Column Layout -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Left Column: KPI Tree Canvas (70%) -->
+<div class="flex-[7] p-container-padding overflow-y-auto bg-background">
+<div class="bg-surface-container-lowest border border-surface-variant rounded-lg flex flex-col h-full shadow-sm">
+<!-- Card Header -->
+<div class="px-gutter py-3 border-b border-surface-variant flex items-center justify-between bg-surface-container-lowest rounded-t-lg sticky top-0 z-10">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container">account_tree</span>
+<h3 class="font-headline-sm text-on-surface">KPI構造 (AI提案)</h3>
+</div>
+<button class="bg-primary-container text-white px-4 py-2 rounded font-body-md font-medium hover:bg-primary transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">check</span>
+                            KPI構造を確定
+                        </button>
+</div>
+<!-- Card Body (Tree Canvas) -->
+<div class="p-gutter overflow-x-auto flex-1">
+<div class="min-w-[600px] py-2">
+<!-- Root: 売上高 -->
+<div class="mb-4">
+<div class="flex items-center gap-2 px-3 py-2 bg-surface-container-low rounded border border-surface-variant inline-flex font-bold">
+                                    売上高
+                                </div>
+<div class="ml-6 relative mt-2 pl-4">
+<!-- Child 1: 稼働人数 -->
+<div class="relative pb-2 tree-node">
+<div class="tree-line-v"></div>
+<div class="tree-line-h"></div>
+<div class="flex items-center gap-2 group">
+<div class="px-3 py-1.5 bg-surface-container-lowest border border-surface-variant rounded flex items-center gap-2 hover:border-outline-variant transition-colors">
+<span>稼働人数</span>
+<span class="material-symbols-outlined text-[#F59E0B] text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<span class="font-caption text-outline text-[11px] px-1.5 py-0.5 bg-surface-container-low rounded border border-surface-variant">出典：モデル数式</span>
+</div>
+<!-- Grandchildren of 稼働人数 -->
+<div class="ml-6 relative mt-2 pl-4">
+<div class="relative pb-2 tree-node">
+<div class="tree-line-v"></div>
+<div class="tree-line-h"></div>
+<div class="flex items-center gap-2">
+<div class="px-3 py-1 bg-surface-container-lowest border border-surface-variant rounded text-sm">前期末登録者数</div>
+<span class="font-caption text-outline text-[11px] px-1.5 py-0.5 bg-surface-container-low rounded border border-surface-variant">出典：モデル数式</span>
+</div>
+</div>
+<div class="relative pb-2 tree-node">
+<div class="tree-line-v"></div>
+<div class="tree-line-h"></div>
+<div class="flex items-center gap-2">
+<div class="px-3 py-1 bg-surface-container-lowest border border-surface-variant rounded text-sm flex items-center gap-1">
+                                                        新規採用数
+                                                        <span class="material-symbols-outlined text-[#F59E0B] text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<span class="font-caption text-outline text-[11px] px-1.5 py-0.5 bg-surface-container-low rounded border border-surface-variant">出典：モデル数式</span>
+</div>
+</div>
+<div class="relative tree-node-last">
+<div class="tree-line-v"></div>
+<div class="tree-line-h"></div>
+<div class="flex items-center gap-2">
+<div class="px-3 py-1 bg-surface-container-lowest border border-surface-variant rounded text-sm flex items-center gap-1">
+                                                        稼働率
+                                                        <span class="material-symbols-outlined text-[#F59E0B] text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<span class="font-caption text-primary-container text-[11px] px-1.5 py-0.5 bg-primary-container/10 rounded border border-primary-container/20 font-medium">出典：DD由来</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Child 2: 月間平均稼働時間 -->
+<div class="relative pb-2 tree-node mt-2">
+<div class="tree-line-v"></div>
+<div class="tree-line-h"></div>
+<div class="flex items-center gap-2">
+<div class="px-3 py-1.5 bg-surface-container-lowest border border-surface-variant rounded">月間平均稼働時間</div>
+<span class="font-caption text-outline text-[11px] px-1.5 py-0.5 bg-surface-container-low rounded border border-surface-variant">出典：モデル数式</span>
+</div>
+</div>
+<!-- Child 3: 派遣単価 -->
+<div class="relative pb-2 tree-node">
+<div class="tree-line-v"></div>
+<div class="tree-line-h"></div>
+<div class="flex items-center gap-2">
+<div class="px-3 py-1.5 bg-surface-container-lowest border border-surface-variant rounded">派遣単価（円/h）</div>
+<span class="font-caption text-outline text-[11px] px-1.5 py-0.5 bg-surface-container-low rounded border border-surface-variant">出典：モデル数式</span>
+</div>
+</div>
+<!-- NEW: 大口派遣先への売上依存度 -->
+<div class="relative tree-node-last">
+<div class="tree-line-v"></div>
+<div class="tree-line-h"></div>
+<div class="flex items-center gap-2">
+<div class="px-3 py-1.5 bg-[#10B981]/10 border border-[#10B981]/30 rounded flex items-center gap-2 ring-1 ring-[#10B981]/50">
+<span class="text-on-surface font-medium">大口派遣先への売上依存度 (上位3社 62%)</span>
+<span class="material-symbols-outlined text-[#F59E0B] text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<span class="font-caption text-[#10B981] text-[11px] px-1.5 py-0.5 bg-surface-container-lowest rounded border border-[#10B981]/30 font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">add</span> 手動追加・モデル外
+                                            </span>
+<span class="font-caption text-primary-container text-[11px] px-1.5 py-0.5 bg-primary-container/10 rounded border border-primary-container/20 font-medium">出典：DD p.18</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Root: 売上原価 -->
+<div class="mb-4 mt-8">
+<div class="flex items-center gap-2 px-3 py-2 bg-surface-container-low rounded border border-surface-variant inline-flex font-bold">
+                                    売上原価
+                                </div>
+<div class="ml-6 relative mt-2 pl-4">
+<div class="relative tree-node-last">
+<div class="tree-line-v"></div>
+<div class="tree-line-h"></div>
+<div class="flex items-center gap-2">
+<div class="px-3 py-1.5 bg-surface-container-lowest border border-surface-variant rounded flex items-center gap-2">
+<span>スタッフ時給</span>
+<span class="material-symbols-outlined text-[#F59E0B] text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<span class="font-caption text-primary-container text-[11px] px-1.5 py-0.5 bg-primary-container/10 rounded border border-primary-container/20 font-medium">出典：DD由来</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Root: 販管費 -->
+<div class="mt-8">
+<div class="flex items-center gap-2 px-3 py-2 bg-surface-container-low rounded border border-surface-variant inline-flex font-bold">
+                                    販管費
+                                </div>
+<div class="ml-6 relative mt-2 pl-4">
+<div class="relative pb-2 tree-node">
+<div class="tree-line-v"></div>
+<div class="tree-line-h"></div>
+<div class="flex items-center gap-2">
+<div class="px-3 py-1.5 bg-surface-container-lowest border border-surface-variant rounded">
+                                                採用費 <span class="text-outline text-sm">（＝ 新規採用数 × 採用CPA <span class="material-symbols-outlined text-[#F59E0B] text-[14px] align-middle" style="font-variation-settings: 'FILL' 1;">star</span>）</span>
+</div>
+<span class="font-caption text-outline text-[11px] px-1.5 py-0.5 bg-surface-container-low rounded border border-surface-variant">出典：モデル数式</span>
+</div>
+</div>
+<div class="relative tree-node-last">
+<div class="tree-line-v"></div>
+<div class="tree-line-h"></div>
+<div class="flex items-center gap-2">
+<div class="px-3 py-1.5 bg-surface-container-lowest border border-surface-variant rounded">本社固定費</div>
+<span class="font-caption text-outline text-[11px] px-1.5 py-0.5 bg-surface-container-low rounded border border-surface-variant">出典：モデル数式</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: AI Chat Panel (30%) -->
+<div class="flex-[3] border-l border-surface-variant bg-surface-container-lowest flex flex-col min-w-[320px]">
+<!-- Panel Header -->
+<div class="px-gutter py-3 border-b border-surface-variant flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container">smart_toy</span>
+<h3 class="font-headline-sm text-on-surface">AIと修正する</h3>
+</div>
+</div>
+<!-- Chat History -->
+<div class="flex-1 overflow-y-auto p-gutter flex flex-col gap-6 bg-background">
+<!-- User Message -->
+<div class="flex flex-col gap-1 items-end">
+<div class="bg-surface-container-highest text-on-surface px-4 py-2.5 rounded-lg rounded-tr-none max-w-[90%] text-sm border border-outline-variant/30">
+                            事業DDにあった上位3社への売上依存度をKPIに追加して。あと重要KPIに指定して
+                        </div>
+<span class="text-[10px] text-outline px-1">14:22</span>
+</div>
+<!-- AI Message -->
+<div class="flex flex-col gap-1 items-start">
+<div class="flex items-center gap-2 mb-1">
+<div class="w-6 h-6 rounded bg-primary-container/10 flex items-center justify-center flex-shrink-0 border border-primary-container/20">
+<span class="material-symbols-outlined text-primary-container text-[14px]">smart_toy</span>
+</div>
+<span class="text-[11px] font-bold text-on-surface-variant">審査アシスタントAI</span>
+</div>
+<div class="bg-surface-container-lowest text-on-surface p-0 rounded-lg rounded-tl-none max-w-full text-sm border border-surface-variant shadow-sm w-full overflow-hidden">
+<div class="p-3 border-b border-surface-variant bg-surface-container-lowest">
+<p class="mb-0">事業DDレポート p.18 の記載（上位3社で売上の62%）をもとに、以下の変更案を作成しました。</p>
+</div>
+<!-- AI Change Preview Card -->
+<div class="p-3 bg-surface-container-low">
+<div class="text-xs font-bold text-on-surface-variant mb-2">KPI構造 変更プレビュー</div>
+<div class="flex flex-col gap-1.5 mb-3">
+<div class="text-[12px] bg-[#10B981]/10 text-[#047857] px-2 py-1.5 rounded border border-[#10B981]/20 font-medium flex items-start gap-1.5">
+<span class="material-symbols-outlined text-[16px] mt-0.5">add_circle</span>
+<span>追加：大口派遣先への売上依存度<br/><span class="text-[10px] opacity-80 font-normal">（売上高の子ノード、出典：事業DD p.18）</span></span>
+</div>
+<div class="text-[12px] bg-[#10B981]/10 text-[#047857] px-2 py-1.5 rounded border border-[#10B981]/20 font-medium flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">star</span>
+<span>重要KPIに指定（★）</span>
+</div>
+</div>
+<div class="flex items-center gap-2 pt-2 border-t border-surface-variant/50">
+<button class="flex-1 bg-surface-container-lowest border border-outline-variant hover:border-primary-container hover:text-primary-container text-on-surface text-xs font-bold py-1.5 rounded transition-colors text-center">
+                                        適用
+                                    </button>
+<button class="px-2 py-1.5 text-xs text-outline hover:text-error transition-colors underline">
+                                        破棄
+                                    </button>
+</div>
+</div>
+</div>
+<span class="text-[10px] text-outline px-1 mt-1">14:23</span>
+</div>
+</div>
+<!-- Input Area -->
+<div class="p-3 border-t border-surface-variant bg-surface-container-lowest">
+<div class="relative flex items-center">
+<textarea class="w-full bg-background border border-surface-variant rounded text-sm py-2 pl-3 pr-10 focus:ring-1 focus:ring-primary-container focus:border-primary-container resize-none" placeholder="修正指示を入力..." rows="2"></textarea>
+<button class="absolute right-2 bottom-2 w-7 h-7 flex items-center justify-center rounded text-primary-container hover:bg-primary-container/10 transition-colors">
+<span class="material-symbols-outlined text-[20px]">send</span>
+</button>
+</div>
+<div class="mt-2 flex items-center gap-2 text-[10px] text-outline">
+<span class="material-symbols-outlined text-[14px]">info</span>
+                        AIの提案は必ず内容を確認してください
+                    </div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ja"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>案件一覧 - 融資管理システム</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Noto+Sans+JP:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-error": "#ffffff",
+                      "surface-tint": "#2f5f9c",
+                      "on-surface-variant": "#424750",
+                      "on-background": "#1a1c20",
+                      "on-secondary-fixed": "#0b1c30",
+                      "on-surface": "#1a1c20",
+                      "error-container": "#ffdad6",
+                      "tertiary-container": "#793f00",
+                      "on-tertiary": "#ffffff",
+                      "error": "#ba1a1a",
+                      "background": "#f9f9ff",
+                      "secondary-fixed": "#d3e4fe",
+                      "secondary-container": "#d0e1fb",
+                      "on-primary-fixed": "#001c3b",
+                      "on-secondary": "#ffffff",
+                      "surface-variant": "#e2e2e8",
+                      "on-tertiary-fixed-variant": "#6e3900",
+                      "surface-container-highest": "#e2e2e8",
+                      "inverse-primary": "#a6c8ff",
+                      "on-tertiary-fixed": "#2f1500",
+                      "inverse-surface": "#2e3035",
+                      "on-secondary-container": "#54647a",
+                      "inverse-on-surface": "#f0f0f6",
+                      "surface-bright": "#f9f9ff",
+                      "tertiary": "#582c00",
+                      "surface-dim": "#d9d9df",
+                      "primary": "#00386c",
+                      "on-primary-container": "#9bc2ff",
+                      "on-tertiary-container": "#ffae6b",
+                      "surface-container-high": "#e8e8ed",
+                      "on-primary": "#ffffff",
+                      "surface-container": "#ededf3",
+                      "surface": "#f9f9ff",
+                      "surface-container-low": "#f3f3f9",
+                      "outline-variant": "#c2c6d1",
+                      "on-secondary-fixed-variant": "#38485d",
+                      "outline": "#737781",
+                      "primary-fixed-dim": "#a6c8ff",
+                      "tertiary-fixed": "#ffdcc3",
+                      "primary-fixed": "#d5e3ff",
+                      "primary-container": "#1a4f8b",
+                      "surface-container-lowest": "#ffffff",
+                      "secondary-fixed-dim": "#b7c8e1",
+                      "secondary": "#505f76",
+                      "tertiary-fixed-dim": "#ffb77e",
+                      "on-error-container": "#93000a",
+                      "on-primary-fixed-variant": "#0c4783"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "stack-md": "16px",
+                      "gutter": "16px",
+                      "sidebar-width": "260px",
+                      "stack-sm": "8px",
+                      "unit": "4px",
+                      "container-padding": "24px",
+                      "stack-lg": "32px"
+              },
+              "fontFamily": {
+                      "label-sm": ["Inter"],
+                      "headline-md": ["Noto Sans JP"],
+                      "caption": ["Noto Sans JP"],
+                      "data-tabular": ["Inter"],
+                      "body-lg": ["Noto Sans JP"],
+                      "body-md": ["Noto Sans JP"],
+                      "headline-sm": ["Noto Sans JP"],
+                      "display-lg": ["Noto Sans JP"]
+              },
+              "fontSize": {
+                      "label-sm": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                      "caption": ["12px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                      "data-tabular": ["14px", {"lineHeight": "1.5", "fontWeight": "500"}],
+                      "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "body-md": ["14px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "headline-sm": ["18px", {"lineHeight": "1.4", "fontWeight": "700"}],
+                      "display-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+              }
+            },
+          }
+        }
+    </script>
+<style>
+        .tabular-nums { font-variant-numeric: tabular-nums; }
+        .badge-amber { background-color: rgba(245, 158, 11, 0.1); color: #d97706; }
+        .badge-blue { background-color: rgba(26, 79, 139, 0.1); color: #1a4f8b; }
+        .badge-green { background-color: rgba(16, 185, 129, 0.1); color: #059669; }
+        .badge-gray { background-color: rgba(100, 116, 139, 0.1); color: #475569; }
+        
+        .badge-outline { border: 1px solid #E2E8F0; color: #424750; font-size: 11px; padding: 2px 6px; border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-[#F8F9FA] text-on-background font-body-md antialiased min-h-screen overflow-x-hidden">
+<!-- TopNavBar -->
+<header class="bg-surface-container-lowest h-12 w-full fixed top-0 z-10 border-b border-outline-variant flex items-center justify-between pl-[284px] pr-gutter">
+<div class="flex items-center gap-6">
+<nav class="hidden md:flex items-center gap-6">
+<a class="font-label-sm text-label-sm text-primary font-bold cursor-default" href="#">案件一覧</a>
+<a class="font-label-sm text-label-sm text-outline hover:text-primary transition-colors cursor-default" href="#">事業計画検証</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="flex items-center gap-2">
+<img class="w-6 h-6 rounded-full object-cover border border-outline-variant" data-alt="A small circular avatar placeholder image for a professional user profile in a corporate banking application. Modern, clean, and minimalist style, light mode, white background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVlUbGtltutabfC-6-CL0vrWqod8fIBU-H3Rui6JpRRrGdU8SM4SFQ_WdMflL3DRUZ3lc7Gb6Rj5NZklZOvdrmERlPGAlRgbRqfCHCb_TRyiwVZWNvCGnSz-FRhFakg3KH2QtsyvhrmR0oi-WfMqOARSKxfWIhJI9tkuP5j4Zn4WiEfK7CcUoFE33qEoUrHW9gLa4jW1pckrqpjtthN55RlvlBAqHS2x-OtzQHhvMNfOY28iKitfvwhWO4Vovcl2MlmWm38NQOciY"/>
+<span class="font-label-sm text-label-sm text-on-surface-variant">田中 稟議担当</span>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="bg-surface-container-low w-sidebar-width h-screen fixed left-0 top-0 border-r border-outline-variant flex flex-col py-container-padding z-20">
+<div class="px-gutter mb-8">
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">account_balance</span>
+                融資管理システム
+            </h1>
+<p class="font-caption text-caption text-on-surface-variant mt-1">事業計画検証</p>
+</div>
+<nav class="flex-1 flex flex-col gap-1 px-2">
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-fixed border-l-4 border-primary text-on-secondary-fixed font-bold rounded-r transition-all duration-200 cursor-pointer" href="#">
+<span class="material-symbols-outlined">list_alt</span>
+<span class="font-body-md text-body-md">案件一覧</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant border-l-4 border-transparent hover:bg-surface-container-high rounded-r transition-all duration-200 cursor-pointer" href="#">
+<span class="material-symbols-outlined">add_chart</span>
+<span class="font-body-md text-body-md">新規案件登録</span>
+</a>
+</nav>
+<div class="mt-auto flex flex-col gap-1 px-2 border-t border-outline-variant pt-4">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high rounded transition-all duration-200 cursor-pointer" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md text-body-md">設定</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high rounded transition-all duration-200 cursor-pointer" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-body-md text-body-md">ヘルプ</span>
+</a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="ml-sidebar-width pt-[72px] p-container-padding pb-12">
+<!-- Header Section -->
+<div class="flex justify-between items-center mb-6">
+<h2 class="font-headline-md text-headline-md text-on-surface">案件一覧</h2>
+<button class="bg-primary-container text-white px-4 py-2 rounded font-body-md text-body-md font-medium hover:bg-primary transition-colors flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                新規案件を登録
+            </button>
+</div>
+<!-- Filter Section -->
+<div class="flex justify-between items-center mb-4 border-b border-outline-variant pb-2">
+<div class="flex gap-6">
+<button class="font-body-md text-body-md font-bold text-primary border-b-2 border-primary pb-2 -mb-[9px]">すべて(4)</button>
+<button class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors pb-2">検討中(1)</button>
+<button class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors pb-2">再検討中(1)</button>
+<button class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors pb-2">推進(1)</button>
+<button class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors pb-2">保留(0)</button>
+<button class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors pb-2">見送り(1)</button>
+</div>
+<div class="flex items-center gap-2">
+<label class="font-caption text-caption text-on-surface-variant">作業ステータス:</label>
+<select class="border border-outline-variant rounded bg-white text-body-md px-3 py-1 focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container">
+<option>すべて</option>
+<option>シナリオ検討中</option>
+<option>数値確定中</option>
+<option>出力済</option>
+</select>
+</div>
+</div>
+<!-- Data Table -->
+<div class="bg-surface-container-lowest border border-[#E2E8F0] rounded-DEFAULT overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-[#F8F9FA] border-b border-[#E2E8F0]">
+<th class="py-3 px-4 font-caption text-caption text-on-surface-variant font-medium">案件名</th>
+<th class="py-3 px-4 font-caption text-caption text-on-surface-variant font-medium">借入人（SPC）／対象会社</th>
+<th class="py-3 px-4 font-caption text-caption text-on-surface-variant font-medium text-right">本行取組額</th>
+<th class="py-3 px-4 font-caption text-caption text-on-surface-variant font-medium">検討ステータス</th>
+<th class="py-3 px-4 font-caption text-caption text-on-surface-variant font-medium">作業ステータス</th>
+<th class="py-3 px-4 font-caption text-caption text-on-surface-variant font-medium">担当者</th>
+<th class="py-3 px-4 font-caption text-caption text-on-surface-variant font-medium">次回審査相談日</th>
+<th class="py-3 px-4 font-caption text-caption text-on-surface-variant font-medium">最終更新日</th>
+<th class="py-3 px-4 font-caption text-caption text-on-surface-variant font-medium"></th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md text-on-surface divide-y divide-[#E2E8F0]">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-3 px-4 font-medium text-primary-container">オートスタッフ中部 LBOファイナンス</td>
+<td class="py-3 px-4 text-on-surface-variant">
+<div class="font-caption">株式会社ASホールディングス</div>
+<div class="font-caption text-outline">株式会社オートスタッフ中部</div>
+</td>
+<td class="py-3 px-4 text-right font-data-tabular tabular-nums">25億円</td>
+<td class="py-3 px-4">
+<span class="inline-block px-2 py-1 rounded text-xs font-bold badge-amber">再検討中</span>
+</td>
+<td class="py-3 px-4">
+<span class="badge-outline">シナリオ検討中</span>
+</td>
+<td class="py-3 px-4">田中</td>
+<td class="py-3 px-4 font-data-tabular tabular-nums text-on-surface-variant">2026/07/18</td>
+<td class="py-3 px-4 font-data-tabular tabular-nums text-on-surface-variant">2026/07/12</td>
+<td class="py-3 px-4 text-right">
+<a class="text-primary-container hover:underline font-label-sm text-label-sm opacity-0 group-hover:opacity-100 transition-opacity" href="#">開く</a>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-3 px-4 font-medium text-primary-container">サンメディクス事業承継ファイナンス</td>
+<td class="py-3 px-4 text-on-surface-variant">
+<div class="font-caption">株式会社SMD承継</div>
+<div class="font-caption text-outline">株式会社サンメディクス</div>
+</td>
+<td class="py-3 px-4 text-right font-data-tabular tabular-nums">28億円</td>
+<td class="py-3 px-4">
+<span class="inline-block px-2 py-1 rounded text-xs font-bold badge-blue">検討中</span>
+</td>
+<td class="py-3 px-4">
+<span class="badge-outline">数値確定中</span>
+</td>
+<td class="py-3 px-4">田中</td>
+<td class="py-3 px-4 text-on-surface-variant">未定</td>
+<td class="py-3 px-4 font-data-tabular tabular-nums text-on-surface-variant">2026/07/10</td>
+<td class="py-3 px-4 text-right">
+<a class="text-primary-container hover:underline font-label-sm text-label-sm opacity-0 group-hover:opacity-100 transition-opacity" href="#">開く</a>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-3 px-4 font-medium text-primary-container">東東海プロセス機器 MBOファイナンス</td>
+<td class="py-3 px-4 text-on-surface-variant">
+<div class="font-caption">株式会社TPKホールディングス</div>
+<div class="font-caption text-outline">東海プロセス機器株式会社</div>
+</td>
+<td class="py-3 px-4 text-right font-data-tabular tabular-nums">18億円</td>
+<td class="py-3 px-4">
+<span class="inline-block px-2 py-1 rounded text-xs font-bold badge-green">推進</span>
+</td>
+<td class="py-3 px-4">
+<span class="badge-outline">出力済</span>
+</td>
+<td class="py-3 px-4">高橋</td>
+<td class="py-3 px-4 text-on-surface-variant">－</td>
+<td class="py-3 px-4 font-data-tabular tabular-nums text-on-surface-variant">2026/07/03</td>
+<td class="py-3 px-4 text-right">
+<a class="text-primary-container hover:underline font-label-sm text-label-sm opacity-0 group-hover:opacity-100 transition-opacity" href="#">開く</a>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-3 px-4 font-medium text-primary-container">北勢運輸 リファイナンス</td>
+<td class="py-3 px-4 text-on-surface-variant">
+<div class="font-caption">株式会社北勢運輸</div>
+<div class="font-caption text-transparent select-none">-</div>
+</td>
+<td class="py-3 px-4 text-right font-data-tabular tabular-nums">12億円</td>
+<td class="py-3 px-4">
+<span class="inline-block px-2 py-1 rounded text-xs font-bold badge-gray">見送り</span>
+</td>
+<td class="py-3 px-4">
+<span class="badge-outline">出力済</span>
+</td>
+<td class="py-3 px-4">高橋</td>
+<td class="py-3 px-4 text-on-surface-variant">－</td>
+<td class="py-3 px-4 font-data-tabular tabular-nums text-on-surface-variant">2026/06/20</td>
+<td class="py-3 px-4 text-right">
+<a class="text-primary-container hover:underline font-label-sm text-label-sm opacity-0 group-hover:opacity-100 transition-opacity" href="#">開く</a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</main>
+</body></html>

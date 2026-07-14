@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ja"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>融資管理システム - 審査相談メモ</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed": "#d3e4fe",
+                    "primary-fixed-dim": "#a6c8ff",
+                    "primary-container": "#1a4f8b",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "surface-variant": "#e2e2e8",
+                    "outline": "#737781",
+                    "on-background": "#1a1c20",
+                    "primary": "#00386c",
+                    "outline-variant": "#c2c6d1",
+                    "inverse-on-surface": "#f0f0f6",
+                    "on-tertiary": "#ffffff",
+                    "surface-dim": "#d9d9df",
+                    "surface-container-highest": "#e2e2e8",
+                    "on-primary-container": "#9bc2ff",
+                    "tertiary-fixed": "#ffdcc3",
+                    "on-error-container": "#93000a",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed-dim": "#ffb77e",
+                    "tertiary": "#582c00",
+                    "surface-container": "#ededf3",
+                    "on-secondary-fixed": "#0b1c30",
+                    "on-surface-variant": "#424750",
+                    "on-secondary-fixed-variant": "#38485d",
+                    "on-secondary": "#ffffff",
+                    "surface-tint": "#2f5f9c",
+                    "secondary-container": "#d0e1fb",
+                    "inverse-primary": "#a6c8ff",
+                    "on-secondary-container": "#54647a",
+                    "tertiary-container": "#793f00",
+                    "background": "#f9f9ff",
+                    "on-tertiary-fixed": "#2f1500",
+                    "surface-bright": "#f9f9ff",
+                    "on-tertiary-fixed-variant": "#6e3900",
+                    "primary-fixed": "#d5e3ff",
+                    "on-primary-fixed": "#001c3b",
+                    "error-container": "#ffdad6",
+                    "secondary": "#505f76",
+                    "surface-container-high": "#e8e8ed",
+                    "secondary-fixed-dim": "#b7c8e1",
+                    "on-surface": "#1a1c20",
+                    "surface": "#f9f9ff",
+                    "on-tertiary-container": "#ffae6b",
+                    "inverse-surface": "#2e3035",
+                    "on-primary-fixed-variant": "#0c4783",
+                    "surface-container-low": "#f3f3f9"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "stack-md": "16px",
+                    "gutter": "16px",
+                    "stack-sm": "8px",
+                    "unit": "4px",
+                    "sidebar-width": "260px",
+                    "container-padding": "24px",
+                    "stack-lg": "32px"
+            },
+            "fontFamily": {
+                    "display-lg": [
+                            "Noto Sans JP"
+                    ],
+                    "label-sm": [
+                            "Inter"
+                    ],
+                    "headline-md": [
+                            "Noto Sans JP"
+                    ],
+                    "data-tabular": [
+                            "Inter"
+                    ],
+                    "body-md": [
+                            "Noto Sans JP"
+                    ],
+                    "headline-sm": [
+                            "Noto Sans JP"
+                    ],
+                    "caption": [
+                            "Noto Sans JP"
+                    ],
+                    "body-lg": [
+                            "Noto Sans JP"
+                    ]
+            },
+            "fontSize": {
+                    "display-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "label-sm": [
+                            "12px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-md": [
+                            "24px",
+                            {
+                                    "lineHeight": "1.3",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "data-tabular": [
+                            "14px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "body-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-sm": [
+                            "18px",
+                            {
+                                    "lineHeight": "1.4",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "caption": [
+                            "12px",
+                            {
+                                    "lineHeight": "1.4",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-lg": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        .timeline-line {
+            position: absolute;
+            top: 24px;
+            bottom: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            background-color: #E2E8F0;
+            z-index: 0;
+        }
+        .timeline-node {
+            position: relative;
+            z-index: 1;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #ffffff;
+            border: 2px solid #1a4f8b;
+        }
+        .last-timeline-line {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md antialiased h-screen overflow-hidden flex">
+<!-- SideNavBar -->
+<nav class="w-sidebar-width h-screen fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant flex flex-col py-container-padding z-20 hidden md:flex">
+<div class="px-container-padding mb-8">
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary">融資管理システム</h1>
+<p class="font-caption text-caption text-on-surface-variant mt-1">事業計画検証</p>
+</div>
+<div class="flex-1 px-4 space-y-1">
+<!-- Active Tab -->
+<a class="flex items-center px-4 py-3 rounded-DEFAULT bg-secondary-fixed border-l-4 border-primary text-on-secondary-fixed font-bold transition-all duration-200" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]" data-icon="list_alt" style="font-variation-settings: 'FILL' 1;">list_alt</span>
+<span>案件一覧</span>
+</a>
+<!-- Inactive Tab -->
+<a class="flex items-center px-4 py-3 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high cursor-pointer transition-all duration-200" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]" data-icon="add_chart">add_chart</span>
+<span>新規案件登録</span>
+</a>
+</div>
+<div class="px-4 mt-auto space-y-1">
+<a class="flex items-center px-4 py-3 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high cursor-pointer transition-all duration-200" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]" data-icon="settings">settings</span>
+<span>設定</span>
+</a>
+<a class="flex items-center px-4 py-3 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high cursor-pointer transition-all duration-200" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]" data-icon="help">help</span>
+<span>ヘルプ</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col h-screen md:pl-[260px]">
+<!-- TopNavBar -->
+<header class="h-12 w-full flex items-center justify-between px-gutter border-b border-outline-variant bg-surface-container-lowest z-10 shrink-0">
+<div class="flex items-center">
+<!-- Mobile Logo (Hidden on Desktop) -->
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary md:hidden mr-6">融資管理システム</h1>
+<!-- Nav Links -->
+<nav class="hidden md:flex space-x-6">
+<a class="text-primary font-bold hover:text-primary transition-colors cursor-default text-label-sm font-label-sm" href="#">案件一覧</a>
+<a class="text-outline hover:text-primary transition-colors text-label-sm font-label-sm" href="#">事業計画検証</a>
+</nav>
+</div>
+<div class="flex items-center space-x-4">
+<button class="text-on-surface-variant hover:bg-surface-container-high p-1 rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="flex items-center pl-4 border-l border-outline-variant">
+<span class="font-body-md text-body-md text-on-surface mr-2">田中 稟議担当</span>
+<div class="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed font-bold text-caption overflow-hidden">
+<img alt="田中 稟議担当 Avatar" class="w-full h-full object-cover" data-alt="A small, professional headshot portrait of a Japanese male loan officer in a navy suit, against a clean light grey background, high resolution, corporate banking context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC14PRyDwuL-M3XDO4ulR1uLR3VjeiQwI-sr8pLk4DTdlofTcK2pefq-ukPQnLNkYFmjajOlLWebJvngp6a07nE0onLZMHBXpp9dCz-47_wLPsnypT62v7QbzPqjOAcOLFTPUB8bacwBDdMvqoQgwBmR3q-JPcwxKcEWPjdS445ERXlLgHElzSN63MDCIPoUFtgHdWz3gWikb3rwHCI-ZwemMKEHU22rg5iYb3RmpS75M891VAqEAt5BlWppIKXgMhmrba3RNAz834"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Scrollable Content Canvas -->
+<main class="flex-1 overflow-y-auto bg-surface-container-low p-container-padding">
+<div class="max-w-5xl mx-auto space-y-stack-lg pb-12">
+<!-- Header & Status Controls -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-DEFAULT p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface mb-2">審査相談メモ</h2>
+<div class="flex items-center gap-3">
+<span class="font-label-sm text-label-sm text-on-surface-variant">検討ステータス</span>
+<select class="bg-surface-container-lowest border-outline-variant rounded-DEFAULT text-body-md focus:border-primary focus:ring-1 focus:ring-primary h-8 py-0 pl-3 pr-8 w-40 cursor-pointer">
+<option selected="" value="review">再検討中</option>
+<option value="progress">進行中</option>
+<option value="hold">保留</option>
+</select>
+</div>
+</div>
+<button class="bg-primary-container text-on-primary px-4 py-2 rounded-DEFAULT font-label-sm text-label-sm flex items-center hover:bg-primary transition-colors">
+<span class="material-symbols-outlined text-[18px] mr-1" data-icon="add">add</span>
+                        審査相談メモを追加
+                    </button>
+</div>
+<!-- Timeline Layout -->
+<div class="space-y-stack-md">
+<!-- Item 1: 2026/07/12 -->
+<div class="flex gap-6 relative">
+<!-- Timeline Left -->
+<div class="w-24 shrink-0 flex flex-col items-center pt-6 relative">
+<span class="font-data-tabular text-data-tabular text-on-surface-variant mb-2">2026/07/12</span>
+<div class="timeline-node"></div>
+<div class="timeline-line"></div>
+</div>
+<!-- Card Right -->
+<div class="flex-1 bg-surface-container-lowest border border-outline-variant rounded-DEFAULT overflow-hidden">
+<!-- Card Header -->
+<div class="border-b border-outline-variant bg-[#F8F9FA] px-6 py-4 flex flex-wrap justify-between items-center gap-4">
+<div class="flex items-center gap-3">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">第2回審査相談</h3>
+<!-- Status Badge (Amber Tint for '再検討') -->
+<span class="inline-flex items-center px-2 py-1 rounded bg-[#FFF8E1] text-[#F57F17] font-label-sm text-[11px]">
+                                        再検討
+                                    </span>
+</div>
+<div class="flex items-center gap-4 text-caption text-on-surface-variant">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="groups">groups</span>
+<span>佐藤部長, 田中, 高橋</span>
+</div>
+<div class="flex items-center gap-1 border-l border-outline-variant pl-4">
+<span class="material-symbols-outlined text-[16px]" data-icon="edit_document">edit_document</span>
+<span>記録: 田中</span>
+</div>
+</div>
+</div>
+<!-- Card Body -->
+<div class="p-6 space-y-6">
+<!-- Pointers List -->
+<div>
+<h4 class="font-label-sm text-label-sm text-on-surface-variant mb-3 border-l-2 border-primary pl-2">指摘事項</h4>
+<ul class="space-y-4">
+<li class="flex items-start gap-3">
+<span class="font-data-tabular text-on-surface-variant w-4 shrink-0 pt-0.5 text-right text-[12px]">1.</span>
+<div>
+<p class="text-body-md text-on-surface leading-relaxed">「稼働率-15%は前回の半導体ショック実績では-18%。もう1段深いケースで感応度を確認」</p>
+<a class="inline-flex items-center mt-1 px-2 py-1 border border-outline-variant rounded bg-[#F8F9FA] text-primary font-caption text-[11px] hover:border-primary transition-colors group" href="#">
+<span class="material-symbols-outlined text-[14px] mr-1 group-hover:text-primary" data-icon="link">link</span>
+                                                    シナリオ：稼働率低下
+                                                </a>
+</div>
+</li>
+<li class="flex items-start gap-3">
+<span class="font-data-tabular text-on-surface-variant w-4 shrink-0 pt-0.5 text-right text-[12px]">2.</span>
+<div>
+<p class="text-body-md text-on-surface leading-relaxed">「単価スライド条項の有無をスポンサー経由で確認のうえ、コストショックの前提に反映」</p>
+<a class="inline-flex items-center mt-1 px-2 py-1 border border-outline-variant rounded bg-[#F8F9FA] text-primary font-caption text-[11px] hover:border-primary transition-colors group" href="#">
+<span class="material-symbols-outlined text-[14px] mr-1 group-hover:text-primary" data-icon="link">link</span>
+                                                    シナリオ：採用コスト高騰
+                                                </a>
+</div>
+</li>
+<li class="flex items-start gap-3">
+<span class="font-data-tabular text-on-surface-variant w-4 shrink-0 pt-0.5 text-right text-[12px]">3.</span>
+<div>
+<p class="text-body-md text-on-surface leading-relaxed">「大口派遣先依存はシナリオ化して定量で見たい」</p>
+<a class="inline-flex items-center mt-1 px-2 py-1 border border-outline-variant rounded bg-[#F8F9FA] text-primary font-caption text-[11px] hover:border-primary transition-colors group" href="#">
+<span class="material-symbols-outlined text-[14px] mr-1 group-hover:text-primary" data-icon="link">link</span>
+                                                    KPI構造
+                                                </a>
+</div>
+</li>
+</ul>
+</div>
+<!-- Free Text Memo -->
+<div>
+<h4 class="font-label-sm text-label-sm text-on-surface-variant mb-2 border-l-2 border-outline pl-2">メモ</h4>
+<div class="bg-[#F8F9FA] border border-outline-variant rounded-DEFAULT p-4 text-body-md text-on-surface whitespace-pre-wrap">次回日程は来週水曜14時を予定。
+上記指摘事項のうち、1と3について優先的にモデル反映を行い、火曜中には事前共有すること。</div>
+</div>
+</div>
+<!-- Card Footer / System Log -->
+<div class="border-t border-outline-variant bg-[#F8F9FA] px-6 py-3 flex items-center gap-2 text-caption text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" data-icon="history">history</span>
+<span>この記録により検討ステータスが「検討中 → 再検討中」に更新されました</span>
+</div>
+</div>
+</div>
+<!-- Item 2: 2026/07/05 -->
+<div class="flex gap-6 relative">
+<!-- Timeline Left -->
+<div class="w-24 shrink-0 flex flex-col items-center pt-6 relative">
+<span class="font-data-tabular text-data-tabular text-on-surface-variant mb-2">2026/07/05</span>
+<div class="timeline-node"></div>
+<div class="timeline-line last-timeline-line"></div>
+</div>
+<!-- Card Right -->
+<div class="flex-1 bg-surface-container-lowest border border-outline-variant rounded-DEFAULT overflow-hidden">
+<!-- Card Header -->
+<div class="border-b border-outline-variant bg-[#F8F9FA] px-6 py-4 flex flex-wrap justify-between items-center gap-4">
+<div class="flex items-center gap-3">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">第1回審査相談</h3>
+<!-- Status Badge (Green Tint for '続行') -->
+<span class="inline-flex items-center px-2 py-1 rounded bg-[#E8F5E9] text-[#2E7D32] font-label-sm text-[11px]">
+                                        続行
+                                    </span>
+</div>
+<div class="flex items-center gap-4 text-caption text-on-surface-variant">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="groups">groups</span>
+<span>佐藤部長, 田中</span>
+</div>
+<div class="flex items-center gap-1 border-l border-outline-variant pl-4">
+<span class="material-symbols-outlined text-[16px]" data-icon="edit_document">edit_document</span>
+<span>記録: 田中</span>
+</div>
+</div>
+</div>
+<!-- Card Body -->
+<div class="p-6 space-y-6">
+<!-- Pointers List -->
+<div>
+<h4 class="font-label-sm text-label-sm text-on-surface-variant mb-3 border-l-2 border-primary pl-2">指摘事項</h4>
+<ul class="space-y-4">
+<li class="flex items-start gap-3">
+<span class="font-data-tabular text-on-surface-variant w-4 shrink-0 pt-0.5 text-right text-[12px]">1.</span>
+<div>
+<p class="text-body-md text-on-surface leading-relaxed">法務DDにおける残業代未払いリスクに関する定量根拠が弱い。過去3年分の実態調査結果と照合のこと。</p>
+</div>
+</li>
+</ul>
+</div>
+<!-- Free Text Memo -->
+<div>
+<h4 class="font-label-sm text-label-sm text-on-surface-variant mb-2 border-l-2 border-outline pl-2">メモ</h4>
+<div class="bg-[#F8F9FA] border border-outline-variant rounded-DEFAULT p-4 text-body-md text-on-surface whitespace-pre-wrap">初回検討時の認識合わせ。
+大枠のストラクチャーについては合意。モデル詳細の精査は次回以降に持ち越し。</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

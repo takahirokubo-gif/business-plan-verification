@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+
+<html lang="ja"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>融資管理システム - エクスポート</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+JP:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "primary-fixed": "#d5e3ff",
+                        "tertiary": "#582c00",
+                        "secondary-fixed": "#d3e4fe",
+                        "surface-tint": "#2f5f9c",
+                        "tertiary-fixed-dim": "#ffb77e",
+                        "secondary-container": "#d0e1fb",
+                        "surface-bright": "#f9f9ff",
+                        "surface-container-highest": "#e2e2e8",
+                        "primary-fixed-dim": "#a6c8ff",
+                        "surface-variant": "#e2e2e8",
+                        "on-error": "#ffffff",
+                        "primary-container": "#1a4f8b",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f3f3f9",
+                        "surface-container-high": "#e8e8ed",
+                        "on-primary-fixed": "#001c3b",
+                        "on-surface-variant": "#424750",
+                        "outline": "#737781",
+                        "on-secondary": "#ffffff",
+                        "tertiary-container": "#793f00",
+                        "surface-dim": "#d9d9df",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#0c4783",
+                        "inverse-surface": "#2e3035",
+                        "surface": "#f9f9ff",
+                        "on-tertiary-fixed": "#2f1500",
+                        "inverse-primary": "#a6c8ff",
+                        "outline-variant": "#c2c6d1",
+                        "on-primary-container": "#9bc2ff",
+                        "on-background": "#1a1c20",
+                        "error": "#ba1a1a",
+                        "surface-container": "#ededf3",
+                        "tertiary-fixed": "#ffdcc3",
+                        "on-surface": "#1a1c20",
+                        "on-tertiary-container": "#ffae6b",
+                        "secondary": "#505f76",
+                        "on-secondary-fixed": "#0b1c30",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-container": "#54647a",
+                        "on-tertiary-fixed-variant": "#6e3900",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "inverse-on-surface": "#f0f0f6",
+                        "on-primary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "background": "#f9f9ff",
+                        "primary": "#00386c"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "stack-md": "16px",
+                        "stack-sm": "8px",
+                        "sidebar-width": "260px",
+                        "stack-lg": "32px",
+                        "gutter": "16px",
+                        "container-padding": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Noto Sans JP"],
+                        "body-md": ["Noto Sans JP"],
+                        "body-lg": ["Noto Sans JP"],
+                        "label-sm": ["Inter"],
+                        "display-lg": ["Noto Sans JP"],
+                        "headline-sm": ["Noto Sans JP"],
+                        "caption": ["Noto Sans JP"],
+                        "data-tabular": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "body-md": ["14px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "display-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-sm": ["18px", { "lineHeight": "1.4", "fontWeight": "700" }],
+                        "caption": ["12px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "data-tabular": ["14px", { "lineHeight": "1.5", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased overflow-x-hidden">
+<!-- TopNavBar -->
+<header class="bg-surface-container-lowest dark:bg-surface h-12 w-full fixed top-0 z-10 border-b border-outline-variant dark:border-outline flex items-center justify-between pl-[284px] pr-gutter">
+<div class="hidden">融資管理システム</div>
+<div class="flex items-center gap-6">
+<nav class="flex items-center gap-6">
+<a class="text-outline dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed-dim cursor-default font-label-sm text-label-sm" href="#">案件一覧</a>
+<a class="text-primary dark:text-primary-fixed-dim font-bold cursor-default font-label-sm text-label-sm" href="#">事業計画検証</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-outline dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center overflow-hidden border border-outline-variant">
+<img alt="田中 稟議担当 Avatar" class="object-cover w-full h-full" data-alt="A small circular avatar of a professional Japanese loan officer with dark hair, wearing a dark suit and white shirt, set against a neutral light grey background, high-key corporate lighting, minimalist style, perfect for a modern banking application UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAN3m7qo69FpT-XZ8LrjLEssnTMFmWl7lQT68P2Cmssv_zbCtdgz8jnSME-y9_uapS-QFIjBVgvFz6APGV-8aM8mMLjgsm3gpkJNohQCC0K8EwM7ZTfJCAHXs639B8BiTFBjpBwrc0y5BrGiCBzeKVKp5jw_zXgjlIQcIRBexmT1XUUmu9gHhMYOyze4T3E4Hy8U3kKmSxuZW_vmLwZ0puFL83gdBENDbcnEzvrVJ6ohkG-obi2qMUcaM8gbrlcfIS84UytH1xrjUE"/>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">田中 稟議担当</span>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="bg-surface-container-low dark:bg-surface-dim w-sidebar-width h-screen fixed left-0 top-0 border-r border-outline-variant dark:border-outline flex flex-col py-container-padding z-20">
+<div class="px-container-padding mb-8">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-primary flex items-center justify-center text-white font-bold">
+<span class="material-symbols-outlined">account_balance</span>
+</div>
+<div>
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary-fixed-dim">融資管理システム</h1>
+<p class="font-caption text-caption text-on-surface-variant">事業計画検証</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 px-4">
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-on-surface hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all duration-200 cursor-pointer font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="list_alt">list_alt</span>
+                        案件一覧
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-on-surface hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all duration-200 cursor-pointer font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="add_chart">add_chart</span>
+                        新規案件登録
+                    </a>
+</li>
+</ul>
+</nav>
+<div class="mt-auto px-4 border-t border-outline-variant pt-4">
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-on-surface hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all duration-200 cursor-pointer font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                        設定
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-on-surface hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all duration-200 cursor-pointer font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+                        ヘルプ
+                    </a>
+</li>
+</ul>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="ml-sidebar-width mt-12 p-container-padding min-h-screen">
+<!-- Breadcrumb & Title -->
+<div class="mb-stack-lg flex items-center justify-between">
+<div>
+<nav aria-label="Breadcrumb" class="flex text-on-surface-variant font-caption text-caption mb-1">
+<ol class="inline-flex items-center space-x-1 md:space-x-2">
+<li class="inline-flex items-center">
+<a class="hover:text-primary transition-colors" href="#">案件一覧</a>
+</li>
+<li>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-sm mx-1">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">AS Holdings</a>
+</div>
+</li>
+<li>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-sm mx-1">chevron_right</span>
+<span class="text-on-background">エクスポート</span>
+</div>
+</li>
+</ol>
+</nav>
+<h2 class="font-headline-md text-headline-md text-on-background">資料出力</h2>
+</div>
+<!-- Contextual Tabs for the active project -->
+<div class="flex bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden h-10">
+<a class="px-4 py-2 text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container-low transition-colors border-r border-outline-variant flex items-center" href="#">前提・財務</a>
+<a class="px-4 py-2 text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container-low transition-colors border-r border-outline-variant flex items-center" href="#">構造・ドライバー</a>
+<a class="px-4 py-2 text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container-low transition-colors border-r border-outline-variant flex items-center" href="#">シナリオ分析</a>
+<a class="px-4 py-2 bg-primary-container text-on-primary-container font-label-sm text-label-sm flex items-center font-bold" href="#">エクスポート</a>
+</div>
+</div>
+<div class="flex flex-col xl:flex-row gap-gutter items-start">
+<!-- Left Column: Report Preview (approx 65%) -->
+<div class="w-full xl:w-[65%] flex flex-col items-center">
+<!-- A4 Paper Preview Container -->
+<div class="bg-surface-container-lowest w-full max-w-[794px] aspect-[1/1.414] border border-outline-variant shadow-sm rounded p-8 flex flex-col mx-auto mb-4 relative overflow-hidden">
+<!-- Header -->
+<div class="flex justify-between items-end border-b-2 border-primary pb-2 mb-6">
+<h3 class="font-headline-sm text-headline-sm text-primary tracking-tight">審査相談資料｜オートスタッフ中部 LBOファイナンス</h3>
+<div class="text-right">
+<p class="font-caption text-caption text-on-surface-variant">作成日 2026/07/14</p>
+<p class="font-caption text-caption text-on-surface-variant">田中 稟議担当</p>
+</div>
+</div>
+<!-- Section 1: 案件概要 -->
+<div class="mb-6">
+<div class="flex items-center gap-2 mb-2 bg-surface-container-low p-1 border-l-4 border-primary">
+<span class="font-label-sm text-label-sm text-primary">01</span>
+<h4 class="font-label-sm text-label-sm text-on-background font-bold">案件概要</h4>
+</div>
+<div class="grid grid-cols-2 gap-4 border border-outline-variant p-4 text-sm bg-surface-bright">
+<div class="grid grid-cols-[100px_1fr] gap-2 border-b border-outline-variant border-dashed pb-2">
+<span class="text-on-surface-variant">案件スキーム:</span>
+<span class="font-medium text-on-background">LBO</span>
+</div>
+<div class="grid grid-cols-[100px_1fr] gap-2 border-b border-outline-variant border-dashed pb-2">
+<span class="text-on-surface-variant">スポンサー:</span>
+<span class="font-medium text-on-background">AS Holdings</span>
+</div>
+<div class="grid grid-cols-[100px_1fr] gap-2 border-b border-outline-variant border-dashed pb-2">
+<span class="text-on-surface-variant">対象会社:</span>
+<span class="font-medium text-on-background">オートスタッフ中部</span>
+</div>
+<div class="grid grid-cols-[100px_1fr] gap-2 border-b border-outline-variant border-dashed pb-2">
+<span class="text-on-surface-variant">業種:</span>
+<span class="font-medium text-on-background">人材派遣業</span>
+</div>
+</div>
+<div class="grid grid-cols-4 gap-2 mt-4 text-center">
+<div class="bg-surface-container-low p-2 rounded">
+<p class="text-xs text-on-surface-variant">EV</p>
+<p class="font-data-tabular text-data-tabular text-primary font-bold">120<span class="text-xs font-normal text-on-surface-variant ml-1">億円</span></p>
+</div>
+<div class="bg-surface-container-low p-2 rounded">
+<p class="text-xs text-on-surface-variant">Senior</p>
+<p class="font-data-tabular text-data-tabular text-primary font-bold">65<span class="text-xs font-normal text-on-surface-variant ml-1">億円</span></p>
+<p class="text-[10px] text-on-surface-variant">(当行 25億円)</p>
+</div>
+<div class="bg-surface-container-low p-2 rounded">
+<p class="text-xs text-on-surface-variant">Leverage</p>
+<p class="font-data-tabular text-data-tabular text-primary font-bold">4.1<span class="text-xs font-normal text-on-surface-variant ml-1">x</span></p>
+</div>
+<div class="bg-surface-container-low p-2 rounded">
+<p class="text-xs text-on-surface-variant">LTV</p>
+<p class="font-data-tabular text-data-tabular text-primary font-bold">54<span class="text-xs font-normal text-on-surface-variant ml-1">%</span></p>
+</div>
+</div>
+<div class="mt-4 text-sm text-on-surface-variant leading-relaxed">
+                            東海エリアを地盤とする製造業向け人材派遣会社。特定優良顧客との長年の取引実績により安定的なキャッシュフローを創出。本件は創業オーナーからの事業承継を目的としたファンドによるバイアウト案件であり、レバレッジ水準は適正レンジに収まっている。
+                        </div>
+</div>
+<!-- Section 2: 確定財務ハイライト -->
+<div class="mb-6">
+<div class="flex items-center gap-2 mb-2 bg-surface-container-low p-1 border-l-4 border-primary">
+<span class="font-label-sm text-label-sm text-primary">02</span>
+<h4 class="font-label-sm text-label-sm text-on-background font-bold">確定財務ハイライト</h4>
+<span class="text-[10px] text-on-surface-variant ml-auto">(単位: 百万円)</span>
+</div>
+<div class="border border-outline-variant overflow-hidden rounded">
+<table class="w-full text-sm">
+<thead class="bg-surface-container-low border-b border-outline-variant">
+<tr>
+<th class="py-1 px-2 text-left font-normal text-on-surface-variant w-[20%]">項目</th>
+<th class="py-1 px-2 text-right font-data-tabular text-data-tabular text-on-surface-variant w-[20%]">FY26</th>
+<th class="py-1 px-2 text-right font-data-tabular text-data-tabular text-on-surface-variant w-[20%]">FY27</th>
+<th class="py-1 px-2 text-right font-data-tabular text-data-tabular text-on-surface-variant w-[20%]">FY28</th>
+<th class="py-1 px-2 text-right font-data-tabular text-data-tabular text-on-surface-variant w-[20%]">FY29</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b border-outline-variant border-dashed">
+<td class="py-1 px-2 text-on-background">Sales</td>
+<td class="py-1 px-2 text-right font-data-tabular text-data-tabular">8,240</td>
+<td class="py-1 px-2 text-right font-data-tabular text-data-tabular">8,450</td>
+<td class="py-1 px-2 text-right font-data-tabular text-data-tabular">8,620</td>
+<td class="py-1 px-2 text-right font-data-tabular text-data-tabular">8,800</td>
+</tr>
+<tr class="border-b border-outline-variant border-dashed">
+<td class="py-1 px-2 text-on-background">EBITDA</td>
+<td class="py-1 px-2 text-right font-data-tabular text-data-tabular">1,580</td>
+<td class="py-1 px-2 text-right font-data-tabular text-data-tabular">1,620</td>
+<td class="py-1 px-2 text-right font-data-tabular text-data-tabular">1,650</td>
+<td class="py-1 px-2 text-right font-data-tabular text-data-tabular">1,700</td>
+</tr>
+<tr>
+<td class="py-1 px-2 text-on-background">FCF</td>
+<td class="py-1 px-2 text-right font-data-tabular text-data-tabular text-primary">850</td>
+<td class="py-1 px-2 text-right font-data-tabular text-data-tabular text-primary">910</td>
+<td class="py-1 px-2 text-right font-data-tabular text-data-tabular text-primary">940</td>
+<td class="py-1 px-2 text-right font-data-tabular text-data-tabular text-primary">980</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Section 3: 重要KPI -->
+<div class="mb-6">
+<div class="flex items-center gap-2 mb-2 bg-surface-container-low p-1 border-l-4 border-primary">
+<span class="font-label-sm text-label-sm text-primary">03</span>
+<h4 class="font-label-sm text-label-sm text-on-background font-bold">重要KPI</h4>
+</div>
+<ul class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+<li class="flex items-center justify-between border-b border-outline-variant border-dashed pb-1">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-[#EAB308]">star</span>
+<span class="text-on-surface-variant">稼働率</span>
+</div>
+<span class="font-data-tabular text-data-tabular font-medium text-on-background">88%</span>
+</li>
+<li class="flex items-center justify-between border-b border-outline-variant border-dashed pb-1">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-[#EAB308]">star</span>
+<span class="text-on-surface-variant">新規採用数</span>
+</div>
+<span class="font-data-tabular text-data-tabular font-medium text-on-background">1,200人/年</span>
+</li>
+<li class="flex items-center justify-between border-b border-outline-variant border-dashed pb-1">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-[#EAB308]">star</span>
+<span class="text-on-surface-variant">採用CPA</span>
+</div>
+<span class="font-data-tabular text-data-tabular font-medium text-on-background">250千円</span>
+</li>
+<li class="flex items-center justify-between border-b border-outline-variant border-dashed pb-1">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-[#EAB308]">star</span>
+<span class="text-on-surface-variant">離職率</span>
+</div>
+<span class="font-data-tabular text-data-tabular font-medium text-on-background">15%</span>
+</li>
+</ul>
+</div>
+<!-- Section 4: ストレスシナリオ -->
+<div class="mb-4">
+<div class="flex items-center gap-2 mb-2 bg-surface-container-low p-1 border-l-4 border-primary">
+<span class="font-label-sm text-label-sm text-primary">04</span>
+<h4 class="font-label-sm text-label-sm text-on-background font-bold">ストレスシナリオ（採用2件）</h4>
+</div>
+<div class="bg-surface-bright border border-outline-variant p-3 rounded text-sm">
+<div class="flex justify-between items-center mb-2 pb-2 border-b border-outline-variant border-dashed">
+<span class="font-medium text-on-background">S1: マクロ悪化シナリオ（稼働率-5%）</span>
+<div class="flex gap-4">
+<span class="text-on-surface-variant">DSCR(Min): <span class="font-data-tabular text-data-tabular text-error">0.8x</span></span>
+<span class="text-on-surface-variant">Lev(Max): <span class="font-data-tabular text-data-tabular text-error">5.0x</span></span>
+</div>
+</div>
+<div class="flex justify-between items-center pb-1">
+<span class="font-medium text-on-background">S2: 採用競争激化シナリオ（CPA+20%）</span>
+<div class="flex gap-4">
+<span class="text-on-surface-variant">DSCR(Min): <span class="font-data-tabular text-data-tabular text-on-background">1.1x</span></span>
+<span class="text-on-surface-variant">Lev(Max): <span class="font-data-tabular text-data-tabular text-on-background">4.5x</span></span>
+</div>
+</div>
+<p class="text-[10px] text-on-surface-variant mt-2 text-right">※AIによる推定影響度を反映</p>
+</div>
+</div>
+<!-- Page Number -->
+<div class="absolute bottom-4 left-0 right-0 text-center font-caption text-caption text-outline">
+                        - 1 -
+                    </div>
+</div>
+<!-- Page 2 Thumbnail -->
+<div class="flex items-center gap-2 text-on-surface-variant opacity-70">
+<span class="material-symbols-outlined text-sm">insert_drive_file</span>
+<span class="font-caption text-caption">2nd Page (詳細明細)</span>
+</div>
+</div>
+<!-- Right Column: Output Settings Panel (approx 35%) -->
+<div class="w-full xl:w-[35%] flex flex-col gap-4 sticky top-16">
+<!-- Main Settings Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6">
+<h3 class="font-headline-sm text-headline-sm text-on-background mb-4">出力設定</h3>
+<!-- Warning Block -->
+<div class="bg-[#FEF3C7] border border-[#F59E0B] rounded p-3 mb-6 flex items-start gap-2">
+<span class="material-symbols-outlined text-[#D97706] text-sm mt-0.5">warning</span>
+<div class="text-sm text-[#92400E]">
+<p class="font-medium mb-1">⚠ 保留が3項目あります。保留項目を除いて出力します。</p>
+<a class="text-[#D97706] underline font-medium hover:text-[#B45309] transition-colors" href="#">保留項目を確認</a>
+</div>
+</div>
+<!-- Include Contents Checkboxes -->
+<div class="mb-6">
+<h4 class="font-label-sm text-label-sm text-on-surface-variant mb-3">含めるコンテンツ</h4>
+<div class="space-y-2">
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="rounded border-outline-variant text-primary focus:ring-primary w-4 h-4" type="checkbox"/>
+<span class="text-sm text-on-background">案件概要</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="rounded border-outline-variant text-primary focus:ring-primary w-4 h-4" type="checkbox"/>
+<span class="text-sm text-on-background">前提情報</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="rounded border-outline-variant text-primary focus:ring-primary w-4 h-4" type="checkbox"/>
+<span class="text-sm text-on-background">確定財務数値</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="rounded border-outline-variant text-primary focus:ring-primary w-4 h-4" type="checkbox"/>
+<span class="text-sm text-on-background">KPI構造</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="rounded border-outline-variant text-primary focus:ring-primary w-4 h-4" type="checkbox"/>
+<span class="text-sm text-on-background">確定シナリオ</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="rounded border-outline-variant text-primary focus:ring-primary w-4 h-4" type="checkbox"/>
+<span class="text-sm text-on-surface-variant">推定根拠の明細</span>
+</label>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-col gap-3 mb-4">
+<button class="bg-primary hover:bg-primary-container text-white font-medium py-3 px-4 rounded transition-colors flex items-center justify-center gap-2 w-full text-sm">
+<span class="material-symbols-outlined text-lg">download</span>
+                            Excelをダウンロード (.xlsx)
+                        </button>
+<button class="bg-surface-container-lowest border border-outline-variant hover:bg-surface-container-low text-on-background font-medium py-2 px-4 rounded transition-colors flex items-center justify-center gap-2 w-full text-sm">
+<span class="material-symbols-outlined text-lg">picture_as_pdf</span>
+                            PDFをダウンロード
+                        </button>
+</div>
+<p class="text-xs text-on-surface-variant leading-relaxed bg-surface-container-low p-2 rounded">
+                        ※Excelは行内標準フォーマットに準拠したテンプレートへの値転記で出力されます（数式・再計算は含まれません）。
+                    </p>
+</div>
+<!-- Export History List -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4">
+<h4 class="font-label-sm text-label-sm text-on-surface-variant mb-3 border-b border-outline-variant pb-2">出力履歴</h4>
+<ul class="space-y-3">
+<li class="flex items-start justify-between text-sm">
+<div>
+<div class="flex items-center gap-1 text-on-background font-medium">
+<span class="material-symbols-outlined text-sm text-[#107C41]">description</span>
+<span>Excel (.xlsx)</span>
+</div>
+<div class="text-xs text-on-surface-variant mt-1">2026/07/14 10:30 • 田中</div>
+</div>
+<button class="text-primary hover:underline text-xs">再DL</button>
+</li>
+<li class="flex items-start justify-between text-sm">
+<div>
+<div class="flex items-center gap-1 text-on-background font-medium">
+<span class="material-symbols-outlined text-sm text-[#B91C1C]">picture_as_pdf</span>
+<span>PDF</span>
+</div>
+<div class="text-xs text-on-surface-variant mt-1">2026/07/13 18:45 • 田中</div>
+</div>
+<button class="text-primary hover:underline text-xs">再DL</button>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</main>
+<!-- Script for active state logic in SideNav -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const spans = document.querySelectorAll('span.material-symbols-outlined');
+            spans.forEach(span => {
+                if(span.hasAttribute('data-icon')) {
+                    span.textContent = span.getAttribute('data-icon');
+                }
+            });
+        });
+    </script>
+</body></html>
