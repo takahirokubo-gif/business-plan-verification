@@ -206,6 +206,84 @@ def validate_expected():
           "auto_calc: レバレッジ4.3x・LTV53%")
 
 
+def validate_answers():
+    """答え（expected_output.json）の正しさの検証。
+
+    全24項目について、期待値の「根拠」として指定したセル／ページに、
+    本当にその期待値が存在することを突き合わせる（答えの答え合わせ）。
+    """
+    print("[6] 答えの正当性（期待値⇔根拠位置の突き合わせ）")
+    exp = json.loads((HERE / "expected_output.json").read_text(encoding="utf-8"))
+    wbs = {fname: load_workbook(HERE / fname, data_only=True)
+           for fname in spec.MODEL_FILES.values()}
+    readers = {fname: PdfReader(HERE / fname) for fname in spec.DD_FILES.values()}
+
+    range_pat = __import__("re").compile(
+        r"^(?P<sheet>[^!]+)!(?P<c1>[A-Z]+)(?P<r1>\d+)(?::(?P<c2>[A-Z]+)(?P<r2>\d+))?$")
+
+    for it in exp["items"]:
+        ev = it["evidence"]
+        if "page" in ev:
+            # PDF根拠：ページ本文に期待値（または期待キーワード）が存在すること
+            page_text = (readers[ev["file"]].pages[ev["page"] - 1].extract_text()
+                         or "").replace("\n", "")
+            if it.get("values"):
+                v = list(it["values"].values())[0]
+                ok = f"{v:,}" in page_text or str(v) in page_text.replace(",", "")
+                check(ok, f"{it['key']}: {ev['file']} p.{ev['page']} に期待値 {v:,}")
+            else:
+                groups = it.get("text_expects") or []
+                hit = sum(1 for g in groups if any(kw in page_text for kw in g))
+                tol = it.get("page_tolerance", 0)
+                if hit < len(groups) and tol:
+                    extra = (readers[ev["file"]].pages[ev["page"] + tol - 1]
+                             .extract_text() or "").replace("\n", "")
+                    page_text += extra
+                    hit = sum(1 for g in groups if any(kw in page_text for kw in g))
+                check(hit == len(groups),
+                      f"{it['key']}: {ev['file']} p.{ev['page']}±{tol} に期待キーワード"
+                      f"（{hit}/{len(groups)}群）")
+        else:
+            # Excel根拠：指定セル範囲のキャッシュ値が期待値と一致すること
+            m = range_pat.match(ev["location"])
+            check(bool(m), f"{it['key']}: 根拠セル表記が正しい（{ev['location']}）")
+            if not m:
+                continue
+            ws = wbs[ev["file"]][m.group("sheet")]
+            if m.group("c2"):
+                cols = [chr(c) for c in range(ord(m.group("c1")), ord(m.group("c2")) + 1)]
+                got = [ws[f"{c}{m.group('r1')}"].value for c in cols]
+            else:
+                got = [ws[f"{m.group('c1')}{m.group('r1')}"].value]
+            want = list(it["values"].values())
+            check(got == want,
+                  f"{it['key']}: {ev['file']} {ev['location']} = {want}（実際 {got}）")
+
+    # deal_infoの根拠：inpシート・Coverに各値が存在すること
+    ws_i = wbs[spec.MODEL_FILES["base"]]["inp"]
+    di = exp["deal_info"]["fields"]
+    check(ws_i[f"D{L.INP_STRUCT_ROWS['ev'][0]}"].value == di["ev_mm"],
+          "deal_info: EVがinpシートに存在")
+    check(ws_i[f"D{L.INP_STRUCT_ROWS['equity'][0]}"].value == di["equity_mm"],
+          "deal_info: エクイティがinpシートに存在")
+    check(ws_i[f"D{L.INP_STRUCT_ROWS['tenor'][0]}"].value == di["tenor_years"],
+          "deal_info: ローン期間がinpシートに存在")
+    # 行内情報（ハルシネーション検査対象）が資料に存在しないこと
+    blob_parts = []
+    for fname, wb in wbs.items():
+        for ws in wb.worksheets:
+            for row in ws.iter_rows():
+                for c in row:
+                    if c.value is not None:
+                        blob_parts.append(str(c.value))
+    for fname, r in readers.items():
+        for p in r.pages:
+            blob_parts.append(p.extract_text() or "")
+    blob = "".join(blob_parts).replace(",", "").replace("\n", "")
+    check("本行取組" not in blob and "2000百万円" not in blob,
+          "行内情報（本行取組額2,000）はどの資料にも存在しない")
+
+
 def validate_ground_truth():
     print("[5] GROUND_TRUTH.md")
     current = (HERE / "GROUND_TRUTH.md").read_text(encoding="utf-8")
@@ -219,6 +297,7 @@ def main():
     validate_pdfs()
     validate_expected()
     validate_ground_truth()
+    validate_answers()
     print()
     if errors:
         print(f"NG: {len(errors)}件の不整合")

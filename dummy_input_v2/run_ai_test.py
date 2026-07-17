@@ -248,13 +248,22 @@ def score_items(raw) -> dict:
     ev_ok = sum(1 for r in rows if r.get("evidence_ok"))
     req_rows = [r for r in rows if r["required"]]
     req_full = sum(1 for r in req_rows if r["value_score"] >= 1.0)
+    req_ev = sum(1 for r in req_rows if r.get("evidence_ok"))
     mm = [r for r in rows if r.get("mismatch_ok") is not None]
+    # 合格ライン（ユーザー決定）：必須項目の値一致率100%・根拠一致率90%
+    value_rate = req_full / len(req_rows) if req_rows else 0.0
+    evidence_rate = req_ev / len(req_rows) if req_rows else 0.0
     return dict(
         found=f"{n_found}/{len(rows)}",
         value_exact=f"{val_full}/{len(rows)}",
         required_value_exact=f"{req_full}/{len(req_rows)}",
+        required_evidence=f"{req_ev}/{len(req_rows)}",
         evidence_ok=f"{ev_ok}/{len(rows)}",
         mismatch=f"{sum(1 for r in mm if r['mismatch_ok'])}/{len(mm)}",
+        required_value_rate=round(value_rate, 3),
+        required_evidence_rate=round(evidence_rate, 3),
+        passed=bool(value_rate >= 1.0 and evidence_rate >= 0.90),
+        pass_criteria="必須項目：値一致率100% かつ 根拠一致率90%以上",
         rows=rows,
     )
 
@@ -405,10 +414,14 @@ def build_report(results: dict) -> str:
         w("")
     if "items" in results:
         r = results["items"]
-        w("## items（抽出24項目）")
-        w(f"- 項目発見: {r['found']} ／ 値完全一致: {r['value_exact']}"
-          f"（必須のみ: {r['required_value_exact']}）")
-        w(f"- 根拠（ファイル＋箇所）一致: {r['evidence_ok']} ／ 不整合検知: {r['mismatch']}")
+        verdict = "🟢 合格" if r["passed"] else "🔴 不合格"
+        w(f"## items（抽出24項目）: **{verdict}**")
+        w(f"- 合格ライン: {r['pass_criteria']}")
+        w(f"- 必須項目の値一致率: {r['required_value_rate']:.0%}"
+          f"（{r['required_value_exact']}）／ 必須項目の根拠一致率: "
+          f"{r['required_evidence_rate']:.0%}（{r['required_evidence']}）")
+        w(f"- 参考（全24項目）: 発見 {r['found']} ／ 値完全一致 {r['value_exact']}"
+          f" ／ 根拠一致 {r['evidence_ok']} ／ 不整合検知 {r['mismatch']}")
         w("")
         w("| key | 発見 | 値 | 根拠 | 不整合 | メモ |")
         w("|---|---|---|---|---|---|")
