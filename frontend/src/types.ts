@@ -47,11 +47,16 @@ export interface Evidence {
 }
 
 export interface Mismatch {
-  other_value: number
-  other_file: string
-  other_location: string
-  other_quote: string
-  note: string
+  other_value?: number | null
+  other_file?: string
+  other_location?: string
+  other_quote?: string
+  note?: string
+  // 実AIがスキーマ厳格化前に返した自由形式キー（既存データの救済用）
+  description?: string
+  source_file?: string
+  source_location?: string
+  source_quote?: string
 }
 
 export interface ExtractedItem {

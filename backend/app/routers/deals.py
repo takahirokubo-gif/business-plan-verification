@@ -5,6 +5,7 @@ from datetime import datetime
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -172,6 +173,32 @@ def deal_full(deal_id: int, db: Session = Depends(get_db)):
         findings=findings,
         chat_suggestions=dict(kpi=extractor.chat_suggestions("kpi"),
                               scenario=extractor.chat_suggestions("scenario")),
+    )
+
+
+@router.get("/deals/{deal_id}/documents/{doc_id}/file")
+def document_file(deal_id: int, doc_id: int, db: Session = Depends(get_db)):
+    """アップロード済み資料の実ファイルを返す（根拠パネルの参照元リンク用）。
+
+    PDFはブラウザ内で開く（inline・#page=N アンカー対応）。Excelはダウンロード。
+    """
+    deal = _get_deal(db, deal_id)
+    doc = next((d for d in deal.documents if d.id == doc_id), None)
+    if not doc:
+        raise HTTPException(404, "資料が見つかりません")
+    # シードデータ等では stored_path が無い（実ファイル未添付）ことがある
+    if not doc.stored_path:
+        raise HTTPException(404, "この資料は実ファイルが保存されていません（デモ用メタデータのみ）")
+    path = Path(doc.stored_path)
+    if not path.exists():
+        raise HTTPException(404, "ファイルが移動または削除されています")
+    is_pdf = path.suffix.lower() == ".pdf"
+    return FileResponse(
+        path,
+        media_type="application/pdf" if is_pdf
+        else "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        filename=doc.filename,
+        content_disposition_type="inline" if is_pdf else "attachment",
     )
 
 

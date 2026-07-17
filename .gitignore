@@ -6,3 +6,17 @@ backend/exports/
 # frontend
 frontend/node_modules/
 frontend/dist/
+.vercel
+
+# env（APIキー等の秘密情報。コミット禁止）
+backend/.env
+.env
+
+# python
+backend/.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# ビルド成果物
+*.tsbuildinfo

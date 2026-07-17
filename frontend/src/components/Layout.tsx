@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { NavLink, Link } from 'react-router-dom'
 import { Icon } from './Icon'
+import { ModeToggle } from './ModeToggle'
 import { useUser } from '../context/UserContext'
 
 function SidebarLink({ to, icon, label, end = false }: {
@@ -73,12 +74,48 @@ function UserSwitcher() {
   )
 }
 
+/** 設定モーダル：抽出エンジン（モック / AI）の切替。 */
+function SettingsModal({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="card relative w-[min(640px,95vw)] shadow-xl">
+        <div className="flex items-center justify-between border-b border-surface-container-high px-5 py-3">
+          <span className="flex items-center gap-2 text-[15px] font-bold">
+            <Icon name="settings" className="text-[20px] text-primary-container" />
+            設定
+          </span>
+          <button
+            className="rounded-full p-1.5 text-on-surface-variant hover:bg-surface-container-low"
+            onClick={onClose}
+          >
+            <Icon name="close" className="text-[20px]" />
+          </button>
+        </div>
+        <div className="p-5">
+          <div className="text-[13px] font-bold">解析エンジン</div>
+          <p className="mb-3 mt-0.5 text-[12px] text-on-surface-variant">
+            資料の解析（案件情報読取・抽出・KPI提案・シナリオ生成）に使うエンジンをボタンで切り替えます。
+          </p>
+          <ModeToggle />
+          <p className="mt-4 border-t border-surface-container-high pt-3 text-[11px] text-on-surface-variant">
+            どちらのエンジンでも、AIの役割は「資料のどこに何が書いてあるか」の特定と定性推定のみです。
+            数値の再計算・判定はシステム側では行いません。
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function Layout({ children, breadcrumb }: {
   children: React.ReactNode
   breadcrumb?: React.ReactNode
 }) {
+  const [settingsOpen, setSettingsOpen] = useState(false)
   return (
     <div className="flex min-h-screen">
+      {settingsOpen && <SettingsModal onClose={() => setSettingsOpen(false)} />}
       {/* 固定サイドバー */}
       <aside className="fixed inset-y-0 left-0 z-30 flex w-sidebar-width flex-col border-r border-surface-container-high bg-white">
         <div className="flex items-center gap-2.5 border-b border-surface-container-high px-5 py-4">
@@ -95,9 +132,12 @@ export function Layout({ children, breadcrumb }: {
           <SidebarLink to="/deals/new" icon="post_add" label="新規案件登録" />
         </nav>
         <div className="border-t border-surface-container-high py-3">
-          <div className="flex items-center gap-3 px-5 py-2.5 text-[13px] text-outline">
+          <button
+            className="flex w-full items-center gap-3 px-5 py-2.5 text-[13px] text-on-surface-variant hover:bg-surface-container-low"
+            onClick={() => setSettingsOpen(true)}
+          >
             <Icon name="settings" className="text-[20px]" /> 設定
-          </div>
+          </button>
           <div className="flex items-center gap-3 px-5 py-2.5 text-[13px] text-outline">
             <Icon name="help" className="text-[20px]" /> ヘルプ
           </div>

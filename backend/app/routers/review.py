@@ -32,6 +32,53 @@ class ItemAction(BaseModel):
     resolution_note: str | None = None  # 不整合の解決メモ（どちらを採ったか）
 
 
+class BulkConfirmBody(BaseModel):
+    item_ids: list[int]
+    user: str
+
+
+@router.post("/items/bulk-confirm")
+def items_bulk_confirm(deal_id: int, body: BulkConfirmBody,
+                       db: Session = Depends(get_db)):
+    """選択した抽出項目を「そのまま確定」で一括確定する。
+
+    値の修正・不整合の値選択が必要な項目は対象外（個別確定を使う）。
+    確定済みの項目はスキップする。初回確定のみなので下流への警告は出さない。
+    """
+    deal = _deal(db, deal_id)
+    ids = set(body.item_ids)
+
+    def _needs_choice(it: ExtractedItem) -> bool:
+        """不整合の値選択（モデル値/DD値）が必要な項目か。フロントのUIガードと同条件をサーバー側でも担保"""
+        if not it.mismatch_json:
+            return False
+        try:
+            mm = json.loads(it.mismatch_json)
+        except ValueError:
+            return False
+        if not isinstance(mm, dict):
+            return False
+        return (isinstance(mm.get("other_value"), (int, float))
+                and len(it.effective_values() or {}) == 1)
+
+    # 一括確定できるのは「提案中」のみ。保留（held）と不整合の値選択待ちは個別確定を使う
+    targets = [it for it in deal.items
+               if it.id in ids and it.status == "proposed" and not _needs_choice(it)]
+    if not targets:
+        raise HTTPException(400, "一括確定できる項目がありません"
+                                 "（保留中・不整合の値選択待ちの項目は個別に確定してください）")
+    now = datetime.now()
+    for item in targets:
+        item.status = "confirmed"
+        item.confirmed_by = body.user
+        item.confirmed_at = now
+    labels = [it.label for it in targets]
+    digest = "、".join(labels[:5]) + ("" if len(labels) <= 5 else f" ほか{len(labels) - 5}項目")
+    add_history(db, deal, body.user, "抽出値をまとめて確定", f"{len(labels)}項目（{digest}）")
+    db.commit()
+    return dict(confirmed=len(targets), deal=deal.to_dict())
+
+
 @router.post("/items/{item_id}/action")
 def item_action(deal_id: int, item_id: int, body: ItemAction,
                 db: Session = Depends(get_db)):
@@ -140,7 +187,10 @@ def kpi_apply(deal_id: int, body: DiffBody, db: Session = Depends(get_db)):
     diff = body.diff
     was_confirmed = deal.kpi_status == "confirmed"
     if diff.get("type") == "add_node":
-        n = diff["node"]
+        n = diff.get("node")
+        if not isinstance(n, dict) or not n.get("id") or not n.get("label"):
+            raise HTTPException(400, "差分の形式が不正です（nodeにidとlabelが必要）。"
+                                     "チャットで指示を言い換えて再生成してください")
         if any(k.node_id == n["id"] for k in deal.kpi_nodes):
             raise HTTPException(400, "同じKPIが既に存在します")
         db.add(KpiNode(
@@ -152,10 +202,13 @@ def kpi_apply(deal_id: int, body: DiffBody, db: Session = Depends(get_db)):
             order_index=max([k.order_index for k in deal.kpi_nodes], default=0) + 1))
         detail = f"「{n['label']}」を追加（チャット適用）"
     elif diff.get("type") == "star_change":
+        # スキーマ上 remove/add は null があり得る（in None は TypeError）
+        remove = diff.get("remove") or []
+        add = diff.get("add") or []
         for node in deal.kpi_nodes:
-            if node.node_id in diff.get("remove", []):
+            if node.node_id in remove:
                 node.star = False
-            if node.node_id in diff.get("add", []):
+            if node.node_id in add:
                 node.star = True
         detail = "重要KPI（★）を変更（チャット適用）"
     else:
@@ -238,7 +291,10 @@ def scenarios_apply(deal_id: int, body: DiffBody, db: Session = Depends(get_db))
     deal = _deal(db, deal_id)
     diff = body.diff
     if diff.get("type") == "add_card":
-        c = diff["card"]
+        c = diff.get("card")
+        if not isinstance(c, dict) or not c.get("key") or not c.get("title"):
+            raise HTTPException(400, "差分の形式が不正です（cardにkeyとtitleが必要）。"
+                                     "チャットで指示を言い換えて再生成してください")
         if any(s.key == c["key"] for s in deal.scenarios):
             raise HTTPException(400, "同じシナリオが既に存在します")
         sc = Scenario(
@@ -260,7 +316,7 @@ def scenarios_apply(deal_id: int, body: DiffBody, db: Session = Depends(get_db))
         sc = next((s for s in deal.scenarios if s.key == diff.get("card_key")), None)
         if not sc:
             raise HTTPException(404, "対象シナリオが見つかりません")
-        fields = diff.get("fields", {})
+        fields = diff.get("fields") or {}
         mapping = dict(change="change_text", change_text="change_text", cause="cause",
                        change_basis="change_basis", impact="impact",
                        safeguards="safeguards", questions="questions", title="title")

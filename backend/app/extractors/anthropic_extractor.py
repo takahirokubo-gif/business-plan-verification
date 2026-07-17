@@ -12,8 +12,9 @@
 import json
 from pathlib import Path
 
-from ..config import ANTHROPIC_API_KEY, ANTHROPIC_MODEL
+from ..config import ANTHROPIC_API_KEY
 from .base import Extractor
+from .factory import get_model
 
 EVIDENCE_SCHEMA = {
     "type": "object",
@@ -47,8 +48,23 @@ ITEMS_SCHEMA = {
                     "text_value": {"type": ["string", "null"]},
                     "required": {"type": "boolean"},
                     "evidence": EVIDENCE_SCHEMA,
-                    "mismatch": {"type": ["object", "null"],
-                                 "description": "資料間で値が食い違う場合の相手側情報"},
+                    "mismatch": {
+                        "type": ["object", "null"],
+                        "description": "資料間で値が食い違う場合の相手側情報。無ければnull",
+                        "properties": {
+                            "other_value": {
+                                "type": ["number", "null"],
+                                "description": "相手資料側の数値（表示単位に換算済み）。"
+                                               "単一の数値で表せない差異はnull"},
+                            "other_file": {"type": "string"},
+                            "other_location": {"type": "string"},
+                            "other_quote": {"type": "string"},
+                            "note": {"type": "string",
+                                     "description": "差異の内容と審査上の論点（どちらを採用すべきか等）"},
+                        },
+                        "required": ["other_value", "other_file",
+                                     "other_location", "other_quote", "note"],
+                    },
                 },
                 "required": ["key", "section", "label", "unit", "values",
                              "text_value", "required", "evidence"],
@@ -73,7 +89,9 @@ KPI_TREE_SCHEMA = {
                     "star": {"type": "boolean"},
                     "formula": {"type": ["string", "null"],
                                 "description": "数式の構造（人が読める形）。再計算はしない"},
-                    "value_text": {"type": ["string", "null"]},
+                    "value_text": {"type": ["string", "null"],
+                                   "description": "最新の値（例: '88%（FY26実績）'）。"
+                                                  "数式はここに入れず formula に書く"},
                     "badge": {"type": ["string", "null"]},
                     "evidence": EVIDENCE_SCHEMA,
                 },
@@ -99,7 +117,8 @@ SCENARIOS_SCHEMA = {
                     "title": {"type": "string"},
                     "cause": {"type": "string", "description": "シナリオ名・発生要因"},
                     "affected_kpis": {"type": "array", "items": {"type": "string"},
-                                      "description": "確定KPIツリーのノードID"},
+                                      "description": "確定KPIツリーのノードIDのみを入れる"
+                                                     "（ラベルや括弧書きを付けない。例: 'B31'）"},
                     "change_text": {"type": "string", "description": "KPIの変化幅"},
                     "change_basis": {"type": "string", "description": "変化幅の根拠"},
                     "impact": {"type": "string",
@@ -165,9 +184,32 @@ CHAT_SCHEMA = {
     "type": "object",
     "properties": {
         "reply": {"type": "string"},
-        "diff": {"type": ["object", "null"],
-                 "description": "適用可能な変更差分。add_node / star_change / "
-                                "add_card / update_card のいずれか。変更が無ければnull"},
+        "diff": {
+            "type": ["object", "null"],
+            "description": "適用可能な変更差分。変更が無ければnull",
+            "properties": {
+                "type": {"type": "string",
+                         "enum": ["add_node", "star_change", "add_card", "update_card"]},
+                "node": {"type": ["object", "null"],
+                         "description": "add_node時に必須: "
+                                        "{id, parent, label, origin:'manual', star, "
+                                        "badge, value_text, evidence}"},
+                "remove": {"type": ["array", "null"], "items": {"type": "string"},
+                           "description": "star_change時: ★を外すノードID"},
+                "add": {"type": ["array", "null"], "items": {"type": "string"},
+                        "description": "star_change時: ★を付けるノードID"},
+                "card": {"type": ["object", "null"],
+                         "description": "add_card時に必須: 標準5部構成のカード"
+                                        "（key, origin:'human', type_label, title, cause, "
+                                        "affected_kpis, change_text, change_basis, impact, "
+                                        "safeguards, questions）"},
+                "card_key": {"type": ["string", "null"],
+                             "description": "update_card時に必須: 対象カードのkey"},
+                "fields": {"type": ["object", "null"],
+                           "description": "update_card時に必須: 変更するフィールドのみ"},
+            },
+            "required": ["type"],
+        },
     },
     "required": ["reply", "diff"],
 }
@@ -235,15 +277,22 @@ class AnthropicExtractor(Extractor):
         self.client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
     def _call(self, prompt: str, schema: dict, tool_name: str) -> dict:
-        resp = self.client.messages.create(
-            model=ANTHROPIC_MODEL,
-            max_tokens=8192,
+        # 根拠3点セット付きの抽出項目一覧は長くなる。8192では途中で切れて
+        # tool入力のJSONが不完全になる（実APIで確認済み）ため大きめに取る。
+        # 大きなmax_tokensはSDKがストリーミングを要求するためstreamで受ける
+        with self.client.messages.stream(
+            model=get_model(),  # 設定UIから実行時に切替可能
+            max_tokens=32000,
             system=SYSTEM_PROMPT,
             tools=[dict(name=tool_name, description="構造化された抽出結果を返す",
                         input_schema=schema)],
             tool_choice=dict(type="tool", name=tool_name),
             messages=[dict(role="user", content=prompt)],
-        )
+        ) as stream:
+            resp = stream.get_final_message()
+        if resp.stop_reason == "max_tokens":
+            raise RuntimeError(
+                "AI応答が最大出力長に達して打ち切られました。資料の分量を減らして再実行してください")
         for block in resp.content:
             if block.type == "tool_use":
                 return block.input
@@ -293,7 +342,16 @@ class AnthropicExtractor(Extractor):
             "4. ストラクチャー：のれん・EV・シニアローン。資料間で値が食い違う場合はmismatchに両方を記載\n"
             "表記揺れ（Net Sales / Adj. EBITDA等）は名寄せし、マッピングの論理をlogicに書くこと。"
             "旧版シート（PL_old等）・作業用シートは抽出対象外。"
-            "金額はシートの単位注記に基づき百万円に換算し、換算した旨をlogicに含めること。")
+            "金額はシートの単位注記に基づき百万円に換算し、換算した旨をlogicに含めること。\n"
+            "keyの命名規則：以下に該当する項目は必ずこの標準キーを使うこと（帳票出力が参照する）。"
+            "実績: act_revenue／act_op（営業利益）／act_ebitda／act_ni（当期純利益）／"
+            "act_cash（現預金）／act_net_assets（純資産）／act_debt（有利子負債）／act_fcf。"
+            "Baseケース計画: base_revenue／base_op／base_ebitda／base_fcf。"
+            "Sponsorケース計画: sponsor_revenue／sponsor_op／sponsor_ebitda／sponsor_fcf。"
+            "ストラクチャー: ev／senior_loan／goodwill。その他: normalized_ebitda（正常収益力EBITDA）。"
+            "該当しない項目は内容がわかる英小文字スネークケースで命名。\n"
+            "valuesの年度キーは『FY+西暦下2桁』（例: FY24, FY27）で統一すること"
+            "（『2027/3期』のような決算期表記は使わない。決算期はlogicに記す）。")
         result = self._call("\n".join(parts), ITEMS_SCHEMA, "extract_items")
         return result["items"]
 

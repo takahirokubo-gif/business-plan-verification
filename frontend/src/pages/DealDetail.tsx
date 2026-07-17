@@ -4,7 +4,7 @@ import { api } from '../api'
 import { Layout } from '../components/Layout'
 import { Icon } from '../components/Icon'
 import { ReviewStatusBadge, WorkStatusBadge } from '../components/Badge'
-import { SlidePanel } from '../components/EvidencePanel'
+import { DocumentLinkContext, SlidePanel } from '../components/EvidencePanel'
 import type { DealFull } from '../types'
 import { NumbersTab } from './tabs/NumbersTab'
 import { KpiTab } from './tabs/KpiTab'
@@ -64,34 +64,17 @@ export function DealDetail() {
   const stage1Done = deal.progress.required > 0 && deal.progress.confirmed === deal.progress.required
   const kpiConfirmed = deal.kpi_status === 'confirmed'
 
-  const headerInfo = [
-    deal.deal_type,
-    `借入人：${deal.borrower}`,
-    `対象会社：${deal.target}`,
-    deal.ev_mm != null ? `EV ${(deal.ev_mm / 100).toLocaleString()}億円` : null,
-    deal.senior_mm != null
-      ? `シニア${(deal.senior_mm / 100).toLocaleString()}億円${deal.our_commitment_mm != null ? `（本行${(deal.our_commitment_mm / 100).toLocaleString()}億円）` : ''}`
-      : null,
-    deal.initial_leverage != null ? `レバレッジ ${deal.initial_leverage}x／LTV ${deal.ltv_pct}%` : null,
-  ].filter(Boolean)
-
   return (
     <Layout breadcrumb={<><span className="text-outline-variant">/</span><span className="max-w-64 truncate font-medium">{deal.name}</span></>}>
+      <DocumentLinkContext.Provider value={{ dealId, documents: full.documents }}>
       <div className="mx-auto max-w-[1280px]">
-        {/* 案件ヘッダー */}
+        {/* 案件ヘッダー（スキーム・EV等の明細は案件基本情報カードに表示） */}
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-[22px] font-bold">{deal.name}</h1>
               <ReviewStatusBadge status={deal.review_status} />
               <WorkStatusBadge status={deal.work_status} />
-            </div>
-            <div className="mt-1.5 flex flex-wrap items-center gap-x-2 text-[12px] text-on-surface-variant">
-              {headerInfo.map((t, i) => (
-                <span key={i} className="flex items-center gap-2">
-                  {i > 0 && <span className="text-outline-variant">｜</span>}{t}
-                </span>
-              ))}
             </div>
           </div>
           <button
@@ -161,6 +144,7 @@ export function DealDetail() {
           </div>
         </SlidePanel>
       )}
+      </DocumentLinkContext.Provider>
     </Layout>
   )
 }

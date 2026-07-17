@@ -92,8 +92,11 @@ def build_export(deal: Deal) -> tuple[str, int]:
         ("担当者", owner or "－"),
         ("検討ステータス", deal.review_status),
         ("EV", f"{deal.ev_mm:,}百万円" if deal.ev_mm else "－"),
-        ("シニアローン", f"{deal.senior_mm:,}百万円（本行取組 {deal.our_commitment_mm:,}百万円"
-                        f"・期間{deal.tenor_years}年）" if deal.senior_mm else "－"),
+        ("シニアローン",
+         (f"{deal.senior_mm:,}百万円"
+          f"（本行取組 {f'{deal.our_commitment_mm:,}' if deal.our_commitment_mm is not None else '－'}百万円"
+          f"・期間{deal.tenor_years if deal.tenor_years is not None else '－'}年）")
+         if deal.senior_mm else "－"),
         ("エクイティ", f"{deal.equity_mm:,}百万円" if deal.equity_mm else "－"),
         ("スポンサー提示EBITDA（速報）",
          f"{deal.sponsor_ebitda_mm:,}百万円" if deal.sponsor_ebitda_mm else "－"),
@@ -123,6 +126,23 @@ def build_export(deal: Deal) -> tuple[str, int]:
     _set(ws, f"B{r}", "確定済みの抽出値のみを転記。「修正済」は担当者がレビューで修正した値。", NOTE)
     r += 1
 
+    def years_for(keys, default):
+        """表の年度列を実データの年度キーから導出する。
+
+        実AIは決算期表記（'2027/3期' 等）を返すことがあるため、固定リストで
+        捨てずに実キーを列にする。既知のFY形式を先、未知形式は昇順で後ろ。
+        列数はレイアウト上5列まで（C〜G。Hは出典列）。
+        """
+        found: set[str] = set()
+        for key, _label in keys:
+            item = by_key.get(key)
+            if item:
+                found.update((item.effective_values() or {}).keys())
+        order = YEARS_ACT + YEARS_PLAN
+        known = [y for y in order if y in found]
+        unknown = sorted(y for y in found if y not in order)
+        return (known + unknown)[:5] or default
+
     def fin_table(title, keys, years, start_row):
         rr = start_row
         _set(ws, f"B{rr}", title, HEAD, FILL, border=True)
@@ -144,19 +164,18 @@ def build_export(deal: Deal) -> tuple[str, int]:
             rr += 1
         return rr
 
-    r = fin_table("実績", [("act_revenue", "売上高"), ("act_op", "営業利益"),
-                           ("act_ebitda", "EBITDA"), ("act_ni", "当期純利益"),
-                           ("act_cash", "現預金"), ("act_net_assets", "純資産"),
-                           ("act_debt", "有利子負債"), ("act_fcf", "フリー・キャッシュフロー")],
-                  YEARS_ACT, r) + 1
-    r = fin_table("計画（ベースケース）",
-                  [("base_revenue", "売上高"), ("base_op", "営業利益"),
-                   ("base_ebitda", "EBITDA"), ("base_fcf", "フリー・キャッシュフロー")],
-                  YEARS_PLAN, r) + 1
-    r = fin_table("計画（スポンサーケース）",
-                  [("sponsor_revenue", "売上高"), ("sponsor_op", "営業利益"),
-                   ("sponsor_ebitda", "EBITDA"), ("sponsor_fcf", "フリー・キャッシュフロー")],
-                  YEARS_PLAN, r) + 1
+    act_keys = [("act_revenue", "売上高"), ("act_op", "営業利益"),
+                ("act_ebitda", "EBITDA"), ("act_ni", "当期純利益"),
+                ("act_cash", "現預金"), ("act_net_assets", "純資産"),
+                ("act_debt", "有利子負債"), ("act_fcf", "フリー・キャッシュフロー")]
+    base_keys = [("base_revenue", "売上高"), ("base_op", "営業利益"),
+                 ("base_ebitda", "EBITDA"), ("base_fcf", "フリー・キャッシュフロー")]
+    sponsor_keys = [("sponsor_revenue", "売上高"), ("sponsor_op", "営業利益"),
+                    ("sponsor_ebitda", "EBITDA"), ("sponsor_fcf", "フリー・キャッシュフロー")]
+    r = fin_table("実績", act_keys, years_for(act_keys, YEARS_ACT), r) + 1
+    r = fin_table("計画（ベースケース）", base_keys, years_for(base_keys, YEARS_PLAN), r) + 1
+    r = fin_table("計画（スポンサーケース）", sponsor_keys,
+                  years_for(sponsor_keys, YEARS_PLAN), r) + 1
 
     # ---- 3. ストラクチャー・B/S項目
     _set(ws, f"B{r}", "3. ストラクチャー・B/S項目", H2)
@@ -174,14 +193,21 @@ def build_export(deal: Deal) -> tuple[str, int]:
         note = item.resolution_note or ""
         _set(ws, f"D{r}", note, SMALL, border=True)
         _set(ws, f"H{r}", _evidence_str(item), SMALL, border=True)
-        if key == "goodwill" and item.mismatch_json:
+        if item.mismatch_json:
+            # mismatchはキー欠落・数値なしがあり得る（実AIの旧出力・説明型の差異）
             mm = json.loads(item.mismatch_json)
+            other_value = mm.get("other_value")
+            src_file = mm.get("other_file") or mm.get("source_file") or ""
+            src_loc = mm.get("other_location") or mm.get("source_location") or ""
+            note = mm.get("note") or mm.get("description") or ""
+            head = (f"相手資料の値 {other_value:,}百万円"
+                    if isinstance(other_value, (int, float)) else "相手資料")
             r += 1
             ws.merge_cells(f"C{r}:H{r}")
             _set(ws, f"B{r}", "（不整合情報）", SMALL, border=True)
             _set(ws, f"C{r}",
-                 f"財務DD試算値 {mm['other_value']:,}百万円（{mm['other_file']} {mm['other_location']}）"
-                 f"との差異あり。{mm['note']}", SMALL, AI_FILL, border=True)
+                 f"{head}（{src_file} {src_loc}）との差異あり。{note}",
+                 SMALL, AI_FILL, border=True)
         r += 1
 
     # ---- 4. 前提・定性情報（全文）
@@ -239,13 +265,17 @@ def build_export(deal: Deal) -> tuple[str, int]:
             label = ("　" * depth) + ("★ " if n.star else "") + n.label
             if n.badge:
                 label += f"〔{n.badge}〕"
+            # evidenceは辞書が原則だが、チャット追加ノード等で文字列のことがある
             ev = json.loads(n.evidence_json) if n.evidence_json else None
+            if isinstance(ev, dict):
+                ev_text = f"{ev.get('file', '')}｜{ev.get('location', '')}"
+            else:
+                ev_text = str(ev) if ev else ""
             _set(ws2, f"B{r2[0]}", label, BODY, border=True)
             _set(ws2, f"C{r2[0]}", origin_label.get(n.origin, n.origin), BODY, border=True)
             _set(ws2, f"D{r2[0]}", n.value_text or "－", BODY, border=True)
             _set(ws2, f"E{r2[0]}", n.formula or "", SMALL, border=True)
-            _set(ws2, f"F{r2[0]}",
-                 f"{ev.get('file', '')}｜{ev.get('location', '')}" if ev else "", SMALL, border=True)
+            _set(ws2, f"F{r2[0]}", ev_text, SMALL, border=True)
             r2[0] += 1
             walk(n.node_id, depth + 1)
 

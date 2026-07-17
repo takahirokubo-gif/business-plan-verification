@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../api'
+import { DocumentInbox } from '../components/DocumentInbox'
 import { Layout } from '../components/Layout'
 import { Icon } from '../components/Icon'
 import { LoadingOverlay } from '../components/LoadingOverlay'
@@ -62,6 +63,7 @@ export function DealNew() {
   const [sources, setSources] = useState<Record<string, string>>({})
   const [extractNote, setExtractNote] = useState('')
   const [analyzing, setAnalyzing] = useState(false)
+  const [dragSlot, setDragSlot] = useState<string | null>(null)
   const fileInputs = useRef<Record<string, HTMLInputElement | null>>({})
 
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
@@ -80,16 +82,20 @@ export function DealNew() {
   const uploadedCount = Object.keys(uploads).length
   const canRegister = form.name && form.borrower && form.target && requiredUploaded
 
+  // 複数ファイルの同時アップロードで下書き案件が二重作成されないよう、
+  // 生成中のPromiseを共有する（stateの反映を待たずに同じ下書きに合流させる）
+  const draftPromise = useRef<Promise<{ id: number }> | null>(null)
   const ensureDraft = async (): Promise<number> => {
     if (dealId) return dealId
-    const d = await api.createDraft(userKey)
+    draftPromise.current ??= api.createDraft(userKey)
+    const d = await draftPromise.current
     setDealId(d.id)
     return d.id
   }
 
-  const upload = async (slot: string, file: File) => {
+  // アップロード本体（失敗時はthrow。インボックスは行単位でエラー表示する）
+  const uploadCore = async (slot: string, file: File) => {
     setUploading(slot)
-    setError('')
     try {
       const id = await ensureDraft()
       await api.uploadDocument(id, slot, file, userKey)
@@ -97,10 +103,18 @@ export function DealNew() {
         ...u,
         [slot]: { filename: file.name, identified_label: null },
       }))
-    } catch (e) {
-      setError(`${file.name}: ${(e as Error).message}`)
     } finally {
       setUploading(null)
+    }
+  }
+
+  // スロットカードからの直接アップロード（クリック選択・カードへのドロップ）
+  const upload = async (slot: string, file: File) => {
+    setError('')
+    try {
+      await uploadCore(slot, file)
+    } catch (e) {
+      setError(`${file.name}: ${(e as Error).message}`)
     }
   }
 
@@ -189,14 +203,34 @@ export function DealNew() {
             </span>
             <span className="badge-base badge-neutral">{uploadedCount}/6 アップロード済</span>
           </div>
+          <div className="px-5 pt-5">
+            {/* まとめてインプット → 後からタグ付け（ファイル名から自動判定） */}
+            <DocumentInbox slots={SLOTS} onUpload={uploadCore} />
+          </div>
+          <div className="px-5 pt-4 text-[12px] font-bold text-on-surface-variant">
+            スロット別の割り当て状況（各枠に直接ドラッグ＆ドロップもできます）
+          </div>
           <div className="grid grid-cols-3 gap-3 p-5">
             {SLOTS.map((slot) => {
               const up = uploads[slot.key]
               return (
                 <div
                   key={slot.key}
-                  className={`cursor-pointer rounded border p-3 hover:border-primary-container ${up ? 'border-green-300 bg-green-50/40' : 'border-dashed border-outline-variant'}`}
+                  className={`cursor-pointer rounded border p-3 hover:border-primary-container ${
+                    dragSlot === slot.key
+                      ? 'border-2 border-primary-container bg-primary-fixed/40'
+                      : up ? 'border-green-300 bg-green-50/40' : 'border-dashed border-outline-variant'
+                  }`}
                   onClick={() => fileInputs.current[slot.key]?.click()}
+                  onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); setDragSlot(slot.key) }}
+                  onDragLeave={() => setDragSlot(null)}
+                  onDrop={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    setDragSlot(null)
+                    const f = e.dataTransfer.files?.[0]
+                    if (f) upload(slot.key, f)
+                  }}
                 >
                   <div className="flex items-start justify-between">
                     <div className="text-[12px] font-bold">{slot.label}</div>
@@ -227,7 +261,7 @@ export function DealNew() {
                     ) : (
                       <div className="flex items-center gap-1 text-[11px] text-outline">
                         <Icon name="upload_file" className="text-[16px]" />
-                        クリックしてファイルを選択
+                        クリック選択・ドロップ可
                       </div>
                     )}
                   </div>

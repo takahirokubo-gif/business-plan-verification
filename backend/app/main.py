@@ -12,9 +12,18 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from pydantic import BaseModel
 
 from .config import IS_SERVERLESS, SHARE_PASSWORD, SHARE_USER
 from .database import Base, SessionLocal, engine
+from .extractors.factory import (
+    anthropic_available,
+    get_mode,
+    get_model,
+    list_models,
+    set_mode,
+    set_model,
+)
 from .models import Deal
 from .routers import deals, output, review
 
@@ -84,8 +93,46 @@ app.include_router(output.router)
 
 @app.get("/api/health")
 def health():
-    from .config import EXTRACTOR_MODE
-    return dict(status="ok", extractor_mode=EXTRACTOR_MODE)
+    return dict(status="ok", extractor_mode=get_mode())
+
+
+# --- 抽出エンジンの実行時切替（設定モーダルから使用） ---
+def _engine_state() -> dict:
+    return dict(
+        mode=get_mode(),
+        anthropic_available=anthropic_available(),
+        model=get_model(),
+        models=list_models(),
+    )
+
+
+@app.get("/api/extract/mode")
+def extractor_mode():
+    return _engine_state()
+
+
+class ModeRequest(BaseModel):
+    mode: str | None = None
+    model: str | None = None
+
+
+@app.put("/api/extract/mode")
+def update_extractor_mode(body: ModeRequest):
+    # 片方の検証エラーでもう片方だけ切り替わった中途半端な状態にしない
+    old_mode, old_model = get_mode(), get_model()
+    try:
+        if body.mode is not None:
+            set_mode(body.mode)
+        if body.model is not None:
+            set_model(body.model)
+    except ValueError as e:
+        try:
+            set_mode(old_mode)
+            set_model(old_model)
+        except ValueError:
+            pass  # 元の値の復元に失敗しても、エラー応答自体は返す
+        raise HTTPException(400, str(e))
+    return _engine_state()
 
 
 # フロントエンドのビルド成果物（frontend/dist）があれば同一ポートで配信する。

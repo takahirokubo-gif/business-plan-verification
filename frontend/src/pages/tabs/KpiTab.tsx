@@ -6,29 +6,76 @@ import { ChatPanel } from '../../components/ChatPanel'
 import { EvidenceBlock, SlidePanel } from '../../components/EvidencePanel'
 import { ConfirmDialog } from '../../components/ConfirmDialog'
 import { useUser } from '../../context/UserContext'
+import { resolveKpiNode } from '../../kpiMatch'
 import type { ChatDiff, DealFull, KpiNode } from '../../types'
 
-function NodeCard({ node, depth, onSelect, highlight }: {
+/** シナリオキー（A/B/C…）ごとの表示色 */
+const SCENARIO_CHIP: Record<string, string> = {
+  A: 'bg-sky-100 text-sky-800',
+  B: 'bg-violet-100 text-violet-800',
+  C: 'bg-teal-100 text-teal-800',
+}
+
+/** カード右端に出す「最新の値」。value_text に数式が混ざっている場合は
+ *  数式より前の値部分だけを出す（数式・出典はサイドパネルで確認）。 */
+function latestValue(node: KpiNode): string {
+  const t = node.value_text ?? ''
+  if (!t) return ''
+  if (!t.includes('=')) return t
+  const head = t.split('=')[0].replace(/[：:／/・、]\s*$/, '').trim()
+  // 「FY27以降」のような数値のないラベルだけが残った場合は出さない
+  return /\d/.test(head) ? head : ''
+}
+
+function NodeCard({ node, depth, onSelect, highlight, scenarioKeys, hasChildren, collapsed, onToggle }: {
   node: KpiNode
   depth: number
   onSelect: (n: KpiNode) => void
   highlight?: boolean
+  scenarioKeys: { key: string; title: string }[]
+  hasChildren: boolean
+  collapsed: boolean
+  onToggle: () => void
 }) {
+  const important = node.star
   return (
     <div
       onClick={(e) => { e.stopPropagation(); onSelect(node) }}
-      className={`flex cursor-pointer items-center gap-2 rounded border px-3 py-2 transition-colors hover:border-primary-container ${
-        highlight ? 'border-green-400 bg-green-50' : 'border-surface-container-high bg-white'
+      className={`flex cursor-pointer items-center gap-2 rounded border px-3 py-2 transition-colors ${
+        highlight
+          ? 'border-green-400 bg-green-50'
+          : important
+            ? 'border-amber-300 bg-amber-50 hover:border-amber-500'
+            : 'border-surface-container-high bg-white hover:border-primary-container'
       }`}
       style={{ marginLeft: depth * 24 }}
     >
-      {depth > 0 && <Icon name="subdirectory_arrow_right" className="-ml-1 text-[14px] text-outline-variant" />}
-      {node.star && <Icon name="star" className="text-[16px] text-amber-500" fill />}
-      <span className="text-[13px] font-medium">{node.label}</span>
-      {node.badge && <Badge kind="neutral">{node.badge}</Badge>}
-      <OriginBadge origin={node.origin} />
-      {node.added_via_chat && <Badge kind="neutral">チャット追加</Badge>}
-      <span className="font-data-tabular ml-auto text-[12px] text-on-surface-variant">{node.value_text}</span>
+      {hasChildren ? (
+        <button
+          onClick={(e) => { e.stopPropagation(); onToggle() }}
+          className="-ml-1 rounded p-0.5 hover:bg-black/5"
+          title={collapsed ? '展開する' : '折りたたむ'}
+        >
+          <Icon name={collapsed ? 'chevron_right' : 'expand_more'} className="text-[16px] text-outline" />
+        </button>
+      ) : (
+        depth > 0 && <Icon name="subdirectory_arrow_right" className="-ml-1 text-[14px] text-outline-variant" />
+      )}
+      <span className={`text-[13px] font-medium ${important ? 'text-amber-900' : ''}`}>{node.label}</span>
+      {important && (
+        <span className="rounded bg-amber-200/80 px-1.5 py-0.5 text-[10px] font-bold text-amber-900">重要KPI</span>
+      )}
+      {scenarioKeys.map((s) => (
+        <span
+          key={s.key}
+          title={`シナリオ${s.key}：${s.title} で使用`}
+          className={`rounded px-1.5 py-0.5 text-[10px] font-bold ${SCENARIO_CHIP[s.key] ?? 'bg-surface-container text-on-surface-variant'}`}
+        >
+          {s.key}
+        </span>
+      ))}
+      {collapsed && hasChildren && <span className="text-[10px] text-outline">…</span>}
+      <span className="font-data-tabular ml-auto text-[12px] text-on-surface-variant">{latestValue(node)}</span>
     </div>
   )
 }
@@ -43,6 +90,7 @@ export function KpiTab({ full, refresh, dealId, stage1Done }: {
   const [selected, setSelected] = useState<KpiNode | null>(null)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [lastAdded, setLastAdded] = useState<string | null>(null)
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set())
   const deal = full.deal
   const nodes = full.kpi_nodes
 
@@ -56,16 +104,54 @@ export function KpiTab({ full, refresh, dealId, stage1Done }: {
     return map
   }, [nodes])
 
+  // ノードID → 使用しているシナリオ（affected_kpis から逆引き。表記ゆれはあいまい一致で解決）
+  const scenariosOf = useMemo(() => {
+    const map = new Map<string, { key: string; title: string }[]>()
+    for (const sc of full.scenarios) {
+      for (const aid of sc.affected_kpis ?? []) {
+        const node = resolveKpiNode(nodes, aid)
+        if (!node) continue
+        if (!map.has(node.node_id)) map.set(node.node_id, [])
+        if (!map.get(node.node_id)!.some((s) => s.key === sc.key)) {
+          map.get(node.node_id)!.push({ key: sc.key, title: sc.title })
+        }
+      }
+    }
+    return map
+  }, [full.scenarios, nodes])
+
+  const toggleCollapse = (id: string) =>
+    setCollapsed((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+
   const renderTree = (parent: string | null, depth: number): React.ReactNode =>
-    (childrenOf.get(parent) ?? []).map((n) => (
-      <div key={n.node_id} className="space-y-1.5">
-        <NodeCard node={n} depth={depth} onSelect={setSelected} highlight={lastAdded === n.node_id} />
-        <div className="space-y-1.5">{renderTree(n.node_id, depth + 1)}</div>
-      </div>
-    ))
+    (childrenOf.get(parent) ?? []).map((n) => {
+      const hasChildren = (childrenOf.get(n.node_id) ?? []).length > 0
+      const isCollapsed = collapsed.has(n.node_id)
+      return (
+        <div key={n.node_id} className="space-y-1.5">
+          <NodeCard
+            node={n}
+            depth={depth}
+            onSelect={setSelected}
+            highlight={lastAdded === n.node_id}
+            scenarioKeys={scenariosOf.get(n.node_id) ?? []}
+            hasChildren={hasChildren}
+            collapsed={isCollapsed}
+            onToggle={() => toggleCollapse(n.node_id)}
+          />
+          {!isCollapsed && <div className="space-y-1.5">{renderTree(n.node_id, depth + 1)}</div>}
+        </div>
+      )
+    })
 
   const renderDiff = (diff: ChatDiff) => {
-    if (diff.type === 'add_node') {
+    // AIの応答形式が想定と異なる場合に画面を落とさない（不明な形はJSONで見せる）
+    if (diff.type === 'add_node' && diff.node) {
       const node = diff.node as unknown as KpiNode & { parent?: string }
       const parentLabel = nodes.find((n) => n.node_id === (node as { parent?: string }).parent)?.label
       return (
@@ -107,7 +193,7 @@ export function KpiTab({ full, refresh, dealId, stage1Done }: {
 
   const applyDiff = async (diff: ChatDiff) => {
     await api.kpiApply(dealId, diff, userKey)
-    if (diff.type === 'add_node') setLastAdded((diff.node as { id: string }).id)
+    if (diff.type === 'add_node') setLastAdded((diff.node as { id?: string } | undefined)?.id ?? null)
     await refresh()
   }
 
@@ -142,29 +228,30 @@ export function KpiTab({ full, refresh, dealId, stage1Done }: {
               <span className="text-[14px] font-bold">
                 KPI構造{deal.kpi_status === 'confirmed' ? '' : '（AI提案）'}
               </span>
-              {deal.kpi_status === 'confirmed' ? (
-                <Badge kind="success">
-                  確定済み（{deal.kpi_confirmed_by === 'tanaka' ? '田中' : deal.kpi_confirmed_by}・
-                  {deal.kpi_confirmed_at ? new Date(deal.kpi_confirmed_at).toLocaleDateString('ja-JP') : ''}）
-                </Badge>
-              ) : (
-                <Badge kind="warning">レビュー待ち</Badge>
-              )}
+              {deal.kpi_status !== 'confirmed' && <Badge kind="warning">レビュー待ち</Badge>}
             </div>
-            <button
-              className="btn-primary !py-1.5 !text-[12px]"
-              disabled={!stage1Done}
-              onClick={() => setConfirmOpen(true)}
-            >
-              <Icon name="check" className="text-[16px]" />
-              {deal.kpi_status === 'confirmed' ? 'KPIを再確定' : 'KPIを確定'}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                className="btn-secondary !py-1.5 !text-[12px]"
+                onClick={() => {
+                  const parents = nodes.filter((n) => (childrenOf.get(n.node_id) ?? []).length > 0)
+                  setCollapsed((prev) => (prev.size > 0 ? new Set() : new Set(parents.map((n) => n.node_id))))
+                }}
+              >
+                <Icon name={collapsed.size > 0 ? 'unfold_more' : 'unfold_less'} className="text-[16px]" />
+                {collapsed.size > 0 ? 'すべて展開' : 'すべて折りたたむ'}
+              </button>
+              <button
+                className="btn-primary !py-1.5 !text-[12px]"
+                disabled={!stage1Done}
+                onClick={() => setConfirmOpen(true)}
+              >
+                <Icon name="check" className="text-[16px]" />
+                {deal.kpi_status === 'confirmed' ? 'KPIを再確定' : 'KPIを確定'}
+              </button>
+            </div>
           </div>
           <div className="p-4">
-            <div className="mb-3 text-[11px] text-outline">
-              ★＝重要KPI（リスクドライバー）。財務モデルの数式の構文解析（再計算なし）と
-              DDレポートの定性情報から生成。ノードをクリックすると根拠を表示します。
-            </div>
             <div className="space-y-1.5">{renderTree(null, 0)}</div>
           </div>
         </div>
@@ -200,8 +287,10 @@ export function KpiTab({ full, refresh, dealId, stage1Done }: {
         <SlidePanel
           title={
             <div className="flex items-center gap-2">
-              {selected.star && <Icon name="star" className="text-[18px] text-amber-500" fill />}
               {selected.label}
+              {selected.star && (
+                <span className="rounded bg-amber-200/80 px-1.5 py-0.5 text-[10px] font-bold text-amber-900">重要KPI</span>
+              )}
             </div>
           }
           onClose={() => setSelected(null)}
@@ -210,6 +299,11 @@ export function KpiTab({ full, refresh, dealId, stage1Done }: {
             <OriginBadge origin={selected.origin} />
             {selected.badge && <Badge kind="neutral">{selected.badge}</Badge>}
             {selected.added_via_chat && <Badge kind="neutral">チャットで追加</Badge>}
+            {(scenariosOf.get(selected.node_id) ?? []).map((s) => (
+              <span key={s.key} className={`rounded px-1.5 py-0.5 text-[10px] font-bold ${SCENARIO_CHIP[s.key] ?? 'bg-surface-container text-on-surface-variant'}`}>
+                シナリオ{s.key}：{s.title}
+              </span>
+            ))}
           </div>
           {selected.value_text && (
             <div className="mb-3 rounded bg-surface-container-low/60 p-3">

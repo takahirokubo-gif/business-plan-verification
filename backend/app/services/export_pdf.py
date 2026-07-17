@@ -156,17 +156,35 @@ def build_export_pdf(deal: Deal) -> tuple[str, int]:
     w.kv("借入人（SPC）", deal.borrower)
     w.kv("対象会社", f"{deal.target}（{deal.industry or '－'}）")
     w.kv("スポンサー", deal.sponsor or "－")
-    if deal.ev_mm:
-        w.kv("ストラクチャー", f"EV {deal.ev_mm:,}百万円／シニア {deal.senior_mm:,}百万円"
-                            f"（本行 {deal.our_commitment_mm:,}百万円）／エクイティ {deal.equity_mm:,}百万円")
+    if deal.ev_mm or deal.senior_mm or deal.equity_mm:
+        # 行内情報（本行取組額）等は未入力（None）があり得るため個別に「－」へフォールバック
+        def _mm(v):
+            return f"{v:,}" if isinstance(v, (int, float)) else "－"
+        w.kv("ストラクチャー", f"EV {_mm(deal.ev_mm)}百万円／シニア {_mm(deal.senior_mm)}百万円"
+                            f"（本行 {_mm(deal.our_commitment_mm)}百万円）／エクイティ {_mm(deal.equity_mm)}百万円")
     if deal.initial_leverage:
         w.kv("レバレッジ・LTV", f"{deal.initial_leverage}x／{deal.ltv_pct}%（登録情報からの自動算出）")
     if deal.summary:
         w.text(deal.summary, size=8.5, color=GRAY)
 
     w.heading("02｜確定財務ハイライト（百万円）")
-    years_a = ["FY24", "FY25", "FY26"]
-    years_p = ["FY27", "FY28", "FY29", "FY30", "FY31"]
+
+    def years_for(keys, default):
+        # 実AIは決算期表記（'2027/3期' 等）の年度キーを返すことがあるため、
+        # 固定リストで捨てずに実データのキーから列を導出する（最大5列）
+        order = ["FY24", "FY25", "FY26", "FY27", "FY28", "FY29", "FY30", "FY31"]
+        found: set[str] = set()
+        for k in keys:
+            item = confirmed.get(k)
+            if item:
+                found.update((item.effective_values() or {}).keys())
+        known = [y for y in order if y in found]
+        unknown = sorted(y for y in found if y not in order)
+        return (known + unknown)[:5] or default
+
+    years_a = years_for(["act_revenue", "act_ebitda", "act_net_assets"], ["FY24", "FY25", "FY26"])
+    years_p = years_for(["base_revenue", "base_ebitda", "base_fcf"],
+                        ["FY27", "FY28", "FY29", "FY30", "FY31"])
 
     def row(label, key, years):
         item = confirmed.get(key)

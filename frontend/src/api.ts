@@ -20,8 +20,23 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   return res.json() as Promise<T>
 }
 
+export interface ExtractorMode {
+  mode: 'mock' | 'anthropic'
+  anthropic_available: boolean
+  model: string
+  models: { id: string; display_name: string }[]
+}
+
 export const api = {
   users: () => request<User[]>('/api/users'),
+
+  getMode: () => request<ExtractorMode>('/api/extract/mode'),
+
+  setMode: (mode: 'mock' | 'anthropic') =>
+    request<ExtractorMode>('/api/extract/mode', { method: 'PUT', body: JSON.stringify({ mode }) }),
+
+  setModel: (model: string) =>
+    request<ExtractorMode>('/api/extract/mode', { method: 'PUT', body: JSON.stringify({ model }) }),
 
   deals: () => request<{ deals: DealListItem[]; counts: Record<string, number>; total: number }>('/api/deals'),
 
@@ -45,6 +60,11 @@ export const api = {
   itemAction: (dealId: number, itemId: number, body: Record<string, unknown>) =>
     request<{ item: unknown; deal: unknown }>(`/api/deals/${dealId}/items/${itemId}/action`, {
       method: 'POST', body: JSON.stringify(body),
+    }),
+
+  itemsBulkConfirm: (dealId: number, itemIds: number[], user: string) =>
+    request<{ confirmed: number }>(`/api/deals/${dealId}/items/bulk-confirm`, {
+      method: 'POST', body: JSON.stringify({ item_ids: itemIds, user }),
     }),
 
   kpiConfirm: (dealId: number, user: string) =>
