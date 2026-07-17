@@ -1,0 +1,33 @@
+{
+  "fields": {
+    "name": "ルミエールボーテ LBOファイナンス",
+    "deal_type": "LBO",
+    "borrower": "株式会社ブルームホールディングス",
+    "target": "株式会社ルミエールボーテ",
+    "industry": "化粧品・スキンケアの企画販売（D2C・卸）",
+    "sponsor": "大手町プリンシパルパートナーズ株式会社",
+    "close_date": "2026-11-30",
+    "ev_mm": 9000,
+    "senior_mm": 4800,
+    "equity_mm": 4620,
+    "tenor_years": 7,
+    "sponsor_ebitda_mm": 1120,
+    "summary": "大手町プリンシパルパートナーズがSPC（株式会社ブルームホールディングス）を通じて化粧品・スキンケアD2Cのルミエールボーテ全株式を取得する事業承継型LBO。EC定期会員22.8万人（リピート率76%）とドラッグストア卸の2チャネル・全量OEM委託のファブレス経営。EV9,000百万円（提示EBITDA1,120の約8.0x）、シニア4,800・エクイティ4,620で調達。クローズは2026年11月30日予定。"
+  },
+  "sources": {
+    "name": "対象会社名（全資料）＋案件種別から生成",
+    "deal_type": "事業DD報告書_ルミエールボーテ_最終版.pdf p.4（1.2 本件の背景とスキーム：LBOと明記）／モデルCover",
+    "borrower": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx Cover（借入人（SPC））・inp!D23／事業DD報告書_ルミエールボーテ_最終版.pdf p.4",
+    "target": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx Cover（会社名）／各DD表紙",
+    "industry": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx Cover（事業内容）／事業DD報告書_ルミエールボーテ_最終版.pdf p.4",
+    "sponsor": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx Cover（スポンサー）／事業DD報告書_ルミエールボーテ_最終版.pdf p.4",
+    "close_date": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx Cover（クローズ予定日）・inp!D22／事業DD報告書_ルミエールボーテ_最終版.pdf p.4",
+    "ev_mm": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx inp!D8",
+    "senior_mm": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx inp!D11／debtシート期初残高",
+    "equity_mm": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx inp!D12",
+    "tenor_years": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx inp!D17",
+    "sponsor_ebitda_mm": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx inp!D21／財務DD報告書_ルミエールボーテ_最終版.pdf p.31",
+    "summary": "事業DD報告書_ルミエールボーテ_最終版.pdf p.4〜5（エグゼクティブサマリー）から要約"
+  },
+  "note": "本行取組額・担当者・審査相談予定日は行内情報のため資料に存在せず、対象外（nullも返さない）。"
+}

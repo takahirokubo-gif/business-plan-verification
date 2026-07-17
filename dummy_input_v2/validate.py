@@ -284,6 +284,69 @@ def validate_answers():
           "行内情報（本行取組額2,000）はどの資料にも存在しない")
 
 
+def validate_reference():
+    """模範解答（reference_output/）の検証。
+
+    - 採点スクリプトにかけて合格ラインを満たすこと
+    - PDF根拠の原文抜粋（quote）が、参照ページに一字一句存在すること
+    - 数値が expected_output.json と一致すること
+    """
+    print("[7] 模範解答（reference_output/）")
+    ref_dir = HERE / "reference_output"
+    if not ref_dir.exists():
+        check(False, "reference_output/ が存在する（generate_reference.py を実行）")
+        return
+    import run_ai_test as rat
+    ident = json.loads((ref_dir / "reference_identify.json").read_text(encoding="utf-8"))
+    di = json.loads((ref_dir / "reference_deal_info.json").read_text(encoding="utf-8"))
+    items = json.loads((ref_dir / "reference_items.json").read_text(encoding="utf-8"))
+    tree = json.loads((ref_dir / "reference_kpi_tree.json").read_text(encoding="utf-8"))
+    cards = json.loads((ref_dir / "reference_scenarios.json").read_text(encoding="utf-8"))
+    r_id = rat.score_identify(ident)
+    r_di = rat.score_deal_info(di)
+    r_it = rat.score_items(items)
+    r_kp = rat.score_kpi_tree(tree)
+    r_sc = rat.score_scenarios(cards)
+    check(r_id["ok"] == r_id["total"], f"identify 模範解答 {r_id['score']}")
+    check(r_di["ok"] == r_di["total"], f"deal_info 模範解答 {r_di['score']}")
+    check(r_it["passed"] and r_it["required_evidence_rate"] == 1.0,
+          f"items 模範解答が合格ライン超（値{r_it['required_value_rate']:.0%}"
+          f"・根拠{r_it['required_evidence_rate']:.0%}）")
+    check(r_kp["edges"].split("/")[0] == r_kp["edges"].split("/")[1] and r_kp["stars_ok"],
+          f"kpi_tree 模範解答（エッジ{r_kp['edges']}・★OK）")
+    check(r_sc["three_types_covered"]
+          and all(not row["parts_missing"] and row["impact_has_number"]
+                  and row["impact_mentions_debt_metrics"] and not row["forbidden_labels"]
+                  and row["fact_anchored"] for row in r_sc["rows"]),
+          "scenarios 模範解答（3類型・5部構成・数値推定・判定ラベルなし・DD引用）")
+    # PDF根拠のquoteが参照ページに一字一句存在すること
+    readers = {fname: PdfReader(HERE / fname) for fname in spec.DD_FILES.values()}
+    for it in items:
+        ev = it["evidence"]
+        if not str(ev["file"]).endswith(".pdf"):
+            continue
+        import re as _re
+        m = _re.search(r"p\.(\d+)", ev["location"])
+        page = int(m.group(1))
+        text = (readers[ev["file"]].pages[page - 1].extract_text() or "").replace("\n", "")
+        check(ev["quote"].replace("\n", "") in text,
+              f"{it['key']}: 模範解答のquoteが {ev['file']} p.{page} に一字一句存在")
+    mm = next(it for it in items if it["key"] == "goodwill")["mismatch"]
+    m = __import__("re").search(r"p\.(\d+)", mm["other_location"])
+    text = (readers[mm["other_file"]].pages[int(m.group(1)) - 1].extract_text()
+            or "").replace("\n", "")
+    check(mm["other_quote"].replace("\n", "") in text,
+          "goodwill不整合のother_quoteが財務DDの参照ページに一字一句存在")
+    # 数値がexpected_output.jsonと一致すること
+    exp_items = {it["key"]: it for it in json.loads(
+        (HERE / "expected_output.json").read_text(encoding="utf-8"))["items"]}
+    for it in items:
+        if it["values"] is None:
+            continue
+        check(it["values"] == exp_items[it["key"]]["values"],
+              f"{it['key']}: 模範解答の値がexpected_output.jsonと一致")
+
+
 def validate_ground_truth():
     print("[5] GROUND_TRUTH.md")
     current = (HERE / "GROUND_TRUTH.md").read_text(encoding="utf-8")
@@ -298,6 +361,7 @@ def main():
     validate_expected()
     validate_ground_truth()
     validate_answers()
+    validate_reference()
     print()
     if errors:
         print(f"NG: {len(errors)}件の不整合")

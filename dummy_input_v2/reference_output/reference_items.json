@@ -1,0 +1,504 @@
+[
+  {
+    "key": "business_summary",
+    "section": "前提・定性情報",
+    "label": "事業要約",
+    "unit": "テキスト",
+    "case": null,
+    "values": null,
+    "required": true,
+    "text_value": "スキンケア中心の化粧品D2C・卸の中堅（売上9,240百万円・EBITDA1,120百万円）。自社EC（定期会員22.8万人・リピート率76%）とドラッグストア卸4,150店の2チャネル。製造は全量OEM委託のファブレス。創業者（67歳・株式90%）の事業承継を背景としたスポンサー主導のLBO。",
+    "evidence": {
+      "file": "事業DD報告書_ルミエールボーテ_最終版.pdf",
+      "location": "p.4〜5（1. エグゼクティブサマリー）",
+      "quote": "株式会社ルミエールボーテ（以下「対象会社」）は、スキンケアを中心とする化粧品の企画・販売を行うファブレス企業である。",
+      "logic": "事業DDのエグゼクティブサマリーから事業内容・チャネル構造・案件背景を要約。"
+    },
+    "mismatch": null
+  },
+  {
+    "key": "risk_oem",
+    "section": "前提・定性情報",
+    "label": "主要リスク①：OEM委託先への生産依存",
+    "unit": "テキスト",
+    "case": null,
+    "values": null,
+    "required": true,
+    "text_value": "最大委託先・三双化学工業への生産依存度58%（仕入高ベース）。主力3カテゴリは実質一社供給で、代替委託先の認定には12〜18ヶ月を要する。同契約にはチェンジ・オブ・コントロール条項あり。",
+    "evidence": {
+      "file": "事業DD報告書_ルミエールボーテ_最終版.pdf",
+      "location": "p.17（6.2 最大委託先への生産依存）",
+      "quote": "最大委託先である三双化学工業への生産依存度は58%（2026年3月期・仕入高ベース）。",
+      "logic": "事業DD 6章の依存構造分析から調達面の最重要リスクとして抽出。法務DDのCOC条項（p.8）とも関連。"
+    },
+    "mismatch": null
+  },
+  {
+    "key": "risk_wholesale",
+    "section": "前提・定性情報",
+    "label": "主要リスク②：卸チェーンへの売上集中",
+    "unit": "テキスト",
+    "case": null,
+    "values": null,
+    "required": true,
+    "text_value": "卸売上の上位3チェーン依存度45%（うち最大手マツヤドラッグ21%）。年次商談で棚割りが更新され、中期の数量コミットメントはない。",
+    "evidence": {
+      "file": "事業DD報告書_ルミエールボーテ_最終版.pdf",
+      "location": "p.18（6.3 販売面：卸チェーンへの集中）",
+      "quote": "卸売上の上位3チェーンへの売上依存度は45%（うち最大手マツヤドラッグ21%）であり、棚割り見直しやPBシフトによる取引縮小が生じた場合、卸チャネルの物量に大きな影響が及ぶ。",
+      "logic": "事業DD 6章の販売面集中度の記載を主要リスクとして採用。"
+    },
+    "mismatch": null
+  },
+  {
+    "key": "risk_trademark",
+    "section": "前提・定性情報",
+    "label": "主要リスク③：商標権が代表者個人名義",
+    "unit": "テキスト",
+    "case": null,
+    "values": null,
+    "required": false,
+    "text_value": "主力ブランド「Lumière Beauté」の商標権が代表者個人名義。クロージング前の会社への移転（譲渡登録・2〜3ヶ月）が取引の前提条件。",
+    "evidence": {
+      "file": "法務DD報告書_ルミエールボーテ_最終版.pdf",
+      "location": "p.11（6. 知的財産）",
+      "quote": "主力ブランド「Lumière Beauté」（標準文字・ロゴ、第3類）の商標権は代表者個人名義で登録されており、",
+      "logic": "法務DDの重要指摘事項。クロージング条件（CP）に位置づけられている。"
+    },
+    "mismatch": null
+  },
+  {
+    "key": "normalized_ebitda",
+    "section": "前提・定性情報",
+    "label": "正常収益力EBITDA（2026/3期）",
+    "unit": "百万円",
+    "case": null,
+    "values": {
+      "FY26": 1036
+    },
+    "required": true,
+    "text_value": null,
+    "evidence": {
+      "file": "財務DD報告書_ルミエールボーテ_最終版.pdf",
+      "location": "p.33（VII. 結論：正常収益力EBITDA）",
+      "quote": "2026年3月期の正常収益力ベースのEBITDAは1,036百万円と算定される。",
+      "logic": "財務DDのQoE結論値。報告EBITDA1,120百万円からの調整（▲84）はp.32に内訳あり。これは調整であり資料間の不整合ではない。"
+    },
+    "mismatch": null
+  },
+  {
+    "key": "act_revenue",
+    "section": "実績（2024/3期〜2026/3期）",
+    "label": "売上高",
+    "unit": "百万円",
+    "case": null,
+    "values": {
+      "FY24": 7788,
+      "FY25": 8500,
+      "FY26": 9240
+    },
+    "required": true,
+    "text_value": null,
+    "evidence": {
+      "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+      "location": "PL!C10:E10（PLシート・実績3期）",
+      "quote": "売上収益 合計: 7,788 / 8,500 / 9,240",
+      "logic": "PLシートの行ラベル「売上収益 合計」を売上高にマッピング。実績年は「A（実績）」列（2024/3期〜2026/3期）。単位は百万円（シート注記）でありそのまま転記。モデルの表記は「売上収益 合計」。売上高に名寄せ。"
+    },
+    "mismatch": null
+  },
+  {
+    "key": "act_op",
+    "section": "実績（2024/3期〜2026/3期）",
+    "label": "営業利益",
+    "unit": "百万円",
+    "case": null,
+    "values": {
+      "FY24": 634,
+      "FY25": 794,
+      "FY26": 960
+    },
+    "required": true,
+    "text_value": null,
+    "evidence": {
+      "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+      "location": "PL!C21:E21（PLシート・実績3期）",
+      "quote": "営業利益（EBIT）: 634 / 794 / 960",
+      "logic": "PLシートの行ラベル「営業利益（EBIT）」を営業利益にマッピング。実績年は「A（実績）」列（2024/3期〜2026/3期）。単位は百万円（シート注記）でありそのまま転記。モデルの表記は「営業利益（EBIT）」。"
+    },
+    "mismatch": null
+  },
+  {
+    "key": "act_ebitda",
+    "section": "実績（2024/3期〜2026/3期）",
+    "label": "EBITDA",
+    "unit": "百万円",
+    "case": null,
+    "values": {
+      "FY24": 784,
+      "FY25": 949,
+      "FY26": 1120
+    },
+    "required": true,
+    "text_value": null,
+    "evidence": {
+      "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+      "location": "PL!C25:E25（PLシート・実績3期）",
+      "quote": "EBITDA: 784 / 949 / 1,120",
+      "logic": "PLシートの行ラベル「EBITDA」をEBITDAにマッピング。実績年は「A（実績）」列（2024/3期〜2026/3期）。単位は百万円（シート注記）でありそのまま転記。営業利益＋減価償却費の行。財務DD p.31の報告EBITDAとも一致。"
+    },
+    "mismatch": null
+  },
+  {
+    "key": "act_ni",
+    "section": "実績（2024/3期〜2026/3期）",
+    "label": "当期純利益",
+    "unit": "百万円",
+    "case": null,
+    "values": {
+      "FY24": 425,
+      "FY25": 539,
+      "FY26": 657
+    },
+    "required": false,
+    "text_value": null,
+    "evidence": {
+      "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+      "location": "PL!C32:E32（PLシート・実績3期）",
+      "quote": "当期純利益: 425 / 539 / 657",
+      "logic": "PLシートの行ラベル「当期純利益」を当期純利益にマッピング。実績年は「A（実績）」列（2024/3期〜2026/3期）。単位は百万円（シート注記）でありそのまま転記。"
+    },
+    "mismatch": null
+  },
+  {
+    "key": "act_cash",
+    "section": "実績（2024/3期〜2026/3期）",
+    "label": "現預金",
+    "unit": "百万円",
+    "case": null,
+    "values": {
+      "FY24": 380,
+      "FY25": 500,
+      "FY26": 620
+    },
+    "required": true,
+    "text_value": null,
+    "evidence": {
+      "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+      "location": "BS!C7:E7（BSシート・実績3期）",
+      "quote": "現金及び現金同等物: 380 / 500 / 620",
+      "logic": "BSシートの行ラベル「現金及び現金同等物」を現預金にマッピング。実績年は「A（実績）」列（2024/3期〜2026/3期）。単位は百万円（シート注記）でありそのまま転記。モデルの表記は「現金及び現金同等物」。"
+    },
+    "mismatch": null
+  },
+  {
+    "key": "act_net_assets",
+    "section": "実績（2024/3期〜2026/3期）",
+    "label": "純資産",
+    "unit": "百万円",
+    "case": null,
+    "values": {
+      "FY24": 2050,
+      "FY25": 2430,
+      "FY26": 2850
+    },
+    "required": true,
+    "text_value": null,
+    "evidence": {
+      "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+      "location": "BS!C21:E21（BSシート・実績3期）",
+      "quote": "純資産: 2,050 / 2,430 / 2,850",
+      "logic": "BSシートの行ラベル「純資産」を純資産にマッピング。実績年は「A（実績）」列（2024/3期〜2026/3期）。単位は百万円（シート注記）でありそのまま転記。"
+    },
+    "mismatch": null
+  },
+  {
+    "key": "act_debt",
+    "section": "実績（2024/3期〜2026/3期）",
+    "label": "有利子負債",
+    "unit": "百万円",
+    "case": null,
+    "values": {
+      "FY24": 600,
+      "FY25": 500,
+      "FY26": 400
+    },
+    "required": true,
+    "text_value": null,
+    "evidence": {
+      "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+      "location": "BS!C18:E18（BSシート・実績3期）",
+      "quote": "有利子負債: 600 / 500 / 400",
+      "logic": "BSシートの行ラベル「有利子負債」を有利子負債にマッピング。実績年は「A（実績）」列（2024/3期〜2026/3期）。単位は百万円（シート注記）でありそのまま転記。"
+    },
+    "mismatch": null
+  },
+  {
+    "key": "act_fcf",
+    "section": "実績（2024/3期〜2026/3期）",
+    "label": "フリー・キャッシュフロー",
+    "unit": "百万円",
+    "case": null,
+    "values": {
+      "FY24": 580,
+      "FY25": 660,
+      "FY26": 745
+    },
+    "required": false,
+    "text_value": null,
+    "evidence": {
+      "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+      "location": "CF!C13:E13（CFシート・実績3期）",
+      "quote": "フリー・キャッシュフロー（FCF）: 580 / 660 / 745",
+      "logic": "CFシートの行ラベル「フリー・キャッシュフロー（FCF）」をフリー・キャッシュフローにマッピング。実績年は「A（実績）」列（2024/3期〜2026/3期）。単位は百万円（シート注記）でありそのまま転記。"
+    },
+    "mismatch": null
+  },
+  {
+    "key": "base_revenue",
+    "section": "計画：ベースケース（2027/3期〜2031/3期）",
+    "label": "売上高",
+    "unit": "百万円",
+    "case": "base",
+    "values": {
+      "FY27": 9595,
+      "FY28": 9906,
+      "FY29": 10182,
+      "FY30": 10455,
+      "FY31": 10678
+    },
+    "required": true,
+    "text_value": null,
+    "evidence": {
+      "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+      "location": "PL!F10:J10（PLシート・計画5年）",
+      "quote": "売上収益 合計: 9,595 / 9,906 / 10,182 / 10,455 / 10,678",
+      "logic": "Coverシートの「ケース：Bank Base Case」でケースを判定。計画年は「P（計画）」列（2027/3期〜2031/3期）。数式セルの計算結果（キャッシュ値）を転記（再計算はしていない）。単位は百万円。"
+    },
+    "mismatch": null
+  },
+  {
+    "key": "base_op",
+    "section": "計画：ベースケース（2027/3期〜2031/3期）",
+    "label": "営業利益",
+    "unit": "百万円",
+    "case": "base",
+    "values": {
+      "FY27": 1026,
+      "FY28": 1080,
+      "FY29": 1119,
+      "FY30": 1160,
+      "FY31": 1184
+    },
+    "required": true,
+    "text_value": null,
+    "evidence": {
+      "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+      "location": "PL!F21:J21（PLシート・計画5年）",
+      "quote": "営業利益（EBIT）: 1,026 / 1,080 / 1,119 / 1,160 / 1,184",
+      "logic": "Coverシートの「ケース：Bank Base Case」でケースを判定。計画年は「P（計画）」列（2027/3期〜2031/3期）。数式セルの計算結果（キャッシュ値）を転記（再計算はしていない）。単位は百万円。"
+    },
+    "mismatch": null
+  },
+  {
+    "key": "base_ebitda",
+    "section": "計画：ベースケース（2027/3期〜2031/3期）",
+    "label": "EBITDA",
+    "unit": "百万円",
+    "case": "base",
+    "values": {
+      "FY27": 1191,
+      "FY28": 1248,
+      "FY29": 1290,
+      "FY30": 1334,
+      "FY31": 1361
+    },
+    "required": true,
+    "text_value": null,
+    "evidence": {
+      "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+      "location": "PL!F25:J25（PLシート・計画5年）",
+      "quote": "EBITDA: 1,191 / 1,248 / 1,290 / 1,334 / 1,361",
+      "logic": "Coverシートの「ケース：Bank Base Case」でケースを判定。計画年は「P（計画）」列（2027/3期〜2031/3期）。数式セルの計算結果（キャッシュ値）を転記（再計算はしていない）。単位は百万円。"
+    },
+    "mismatch": null
+  },
+  {
+    "key": "base_fcf",
+    "section": "計画：ベースケース（2027/3期〜2031/3期）",
+    "label": "フリー・キャッシュフロー",
+    "unit": "百万円",
+    "case": "base",
+    "values": {
+      "FY27": 591,
+      "FY28": 625,
+      "FY29": 671,
+      "FY30": 711,
+      "FY31": 752
+    },
+    "required": true,
+    "text_value": null,
+    "evidence": {
+      "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+      "location": "CF!F13:J13（CFシート・計画5年）",
+      "quote": "フリー・キャッシュフロー（FCF）: 591 / 625 / 671 / 711 / 752",
+      "logic": "Coverシートの「ケース：Bank Base Case」でケースを判定。計画年は「P（計画）」列（2027/3期〜2031/3期）。数式セルの計算結果（キャッシュ値）を転記（再計算はしていない）。単位は百万円。"
+    },
+    "mismatch": null
+  },
+  {
+    "key": "sponsor_revenue",
+    "section": "計画：スポンサーケース（2027/3期〜2031/3期）",
+    "label": "売上高",
+    "unit": "百万円",
+    "case": "sponsor",
+    "values": {
+      "FY27": 9966,
+      "FY28": 10601,
+      "FY29": 11253,
+      "FY30": 11947,
+      "FY31": 12648
+    },
+    "required": true,
+    "text_value": null,
+    "evidence": {
+      "file": "LumiereBeaute_LBO_Model_v2.3_Sponsor.xlsx",
+      "location": "PL!F10:J10（PLシート・計画5年）",
+      "quote": "売上収益 合計: 9,966 / 10,601 / 11,253 / 11,947 / 12,648",
+      "logic": "Coverシートの「ケース：Sponsor Case」でケースを判定。計画年は「P（計画）」列（2027/3期〜2031/3期）。数式セルの計算結果（キャッシュ値）を転記（再計算はしていない）。単位は百万円。"
+    },
+    "mismatch": null
+  },
+  {
+    "key": "sponsor_op",
+    "section": "計画：スポンサーケース（2027/3期〜2031/3期）",
+    "label": "営業利益",
+    "unit": "百万円",
+    "case": "sponsor",
+    "values": {
+      "FY27": 1139,
+      "FY28": 1337,
+      "FY29": 1534,
+      "FY30": 1722,
+      "FY31": 1924
+    },
+    "required": true,
+    "text_value": null,
+    "evidence": {
+      "file": "LumiereBeaute_LBO_Model_v2.3_Sponsor.xlsx",
+      "location": "PL!F21:J21（PLシート・計画5年）",
+      "quote": "営業利益（EBIT）: 1,139 / 1,337 / 1,534 / 1,722 / 1,924",
+      "logic": "Coverシートの「ケース：Sponsor Case」でケースを判定。計画年は「P（計画）」列（2027/3期〜2031/3期）。数式セルの計算結果（キャッシュ値）を転記（再計算はしていない）。単位は百万円。"
+    },
+    "mismatch": null
+  },
+  {
+    "key": "sponsor_ebitda",
+    "section": "計画：スポンサーケース（2027/3期〜2031/3期）",
+    "label": "EBITDA",
+    "unit": "百万円",
+    "case": "sponsor",
+    "values": {
+      "FY27": 1309,
+      "FY28": 1515,
+      "FY29": 1720,
+      "FY30": 1916,
+      "FY31": 2126
+    },
+    "required": true,
+    "text_value": null,
+    "evidence": {
+      "file": "LumiereBeaute_LBO_Model_v2.3_Sponsor.xlsx",
+      "location": "PL!F25:J25（PLシート・計画5年）",
+      "quote": "EBITDA: 1,309 / 1,515 / 1,720 / 1,916 / 2,126",
+      "logic": "Coverシートの「ケース：Sponsor Case」でケースを判定。計画年は「P（計画）」列（2027/3期〜2031/3期）。数式セルの計算結果（キャッシュ値）を転記（再計算はしていない）。単位は百万円。"
+    },
+    "mismatch": null
+  },
+  {
+    "key": "sponsor_fcf",
+    "section": "計画：スポンサーケース（2027/3期〜2031/3期）",
+    "label": "フリー・キャッシュフロー",
+    "unit": "百万円",
+    "case": "sponsor",
+    "values": {
+      "FY27": 580,
+      "FY28": 726,
+      "FY29": 876,
+      "FY30": 1009,
+      "FY31": 1164
+    },
+    "required": false,
+    "text_value": null,
+    "evidence": {
+      "file": "LumiereBeaute_LBO_Model_v2.3_Sponsor.xlsx",
+      "location": "CF!F13:J13（CFシート・計画5年）",
+      "quote": "フリー・キャッシュフロー（FCF）: 580 / 726 / 876 / 1,009 / 1,164",
+      "logic": "Coverシートの「ケース：Sponsor Case」でケースを判定。計画年は「P（計画）」列（2027/3期〜2031/3期）。数式セルの計算結果（キャッシュ値）を転記（再計算はしていない）。単位は百万円。"
+    },
+    "mismatch": null
+  },
+  {
+    "key": "goodwill",
+    "section": "ストラクチャー・B/S項目",
+    "label": "のれん（買収想定額）",
+    "unit": "百万円",
+    "case": null,
+    "values": {
+      "FY27": 6100
+    },
+    "required": true,
+    "text_value": null,
+    "evidence": {
+      "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+      "location": "inp!D16（のれん想定額）／BS!F12:J12",
+      "quote": "のれん想定額（暫定PPA前）: 6,100",
+      "logic": "inpシートの「のれん想定額（暫定PPA前）」を採用。BS計画年ののれん行とも一致。財務DDの試算額とは差異があるためmismatchに併記。"
+    },
+    "mismatch": {
+      "other_value": 5950,
+      "other_file": "財務DD報告書_ルミエールボーテ_最終版.pdf",
+      "other_location": "p.30（VI. のれん想定額の試算）",
+      "other_quote": "当社試算によるのれん想定額は5,950百万円である。一方、スポンサーの財務モデル上は6,100百万円が計上されており、150百万円の差異がある。",
+      "note": "モデル（6,100）と財務DD（5,950）で150百万円の差異。識別可能無形資産の試算差（DD615 vs モデル465）。PPAで確定予定。どちらを採用するか選択が必要。"
+    }
+  },
+  {
+    "key": "ev",
+    "section": "ストラクチャー・B/S項目",
+    "label": "エンタープライズ・バリュー（EV）",
+    "unit": "百万円",
+    "case": null,
+    "values": {
+      "FY27": 9000
+    },
+    "required": true,
+    "text_value": null,
+    "evidence": {
+      "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+      "location": "inp!D8",
+      "quote": "エンタープライズ・バリュー（EV）: 9,000",
+      "logic": "inpシートのストラクチャー欄から転記。財務DD p.29のネットデット・株式価値の算定とも整合（EV9,000＋ネットキャッシュ220＝株式対価9,220）。"
+    },
+    "mismatch": null
+  },
+  {
+    "key": "senior_loan",
+    "section": "ストラクチャー・B/S項目",
+    "label": "シニアローン総額",
+    "unit": "百万円",
+    "case": null,
+    "values": {
+      "FY27": 4800
+    },
+    "required": true,
+    "text_value": null,
+    "evidence": {
+      "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+      "location": "inp!D11／debt!F7（期初残高）",
+      "quote": "シニアタームローンA: 4,800",
+      "logic": "inpシートのSources & Uses欄から転記。debtシートの期初残高とも一致。約定弁済は年480百万円・期間7年。"
+    },
+    "mismatch": null
+  }
+]

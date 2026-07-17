@@ -19,6 +19,7 @@ STEPS = [
     ("財務モデル生成", [sys.executable, "generate_model.py"]),
     ("DDレポートPDF生成", [sys.executable, "generate_pdfs.py"]),
     ("期待アウトプット生成", [sys.executable, "generate_expected.py"]),
+    ("模範解答生成", [sys.executable, "generate_reference.py"]),
     ("整合チェック", [sys.executable, "validate.py"]),
 ]
 
