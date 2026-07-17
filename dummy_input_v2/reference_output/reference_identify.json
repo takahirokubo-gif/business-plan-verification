@@ -1,0 +1,38 @@
+{
+  "LumiereBeaute_LBO_Model_v2.3_Sponsor.xlsx": {
+    "company": "株式会社ルミエールボーテ",
+    "doc_type": "model_sponsor",
+    "label": "財務モデル（スポンサーケース）",
+    "detail": "CoverシートにProject Bloom・対象会社名・「ケース：Sponsor Case（スポンサーケース）」の記載。ファイル名のSponsorとも整合。"
+  },
+  "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx": {
+    "company": "株式会社ルミエールボーテ",
+    "doc_type": "model_base",
+    "label": "財務モデル（ベースケース・銀行調整）",
+    "detail": "Coverシートに「ケース：Bank Base Case（ベースケース（銀行調整））」の記載。ファイル名のBankBaseとも整合。"
+  },
+  "事業DD報告書_ルミエールボーテ_最終版.pdf": {
+    "company": "株式会社ルミエールボーテ",
+    "doc_type": "dd_business",
+    "label": "事業DDレポート",
+    "detail": "表紙に「事業デューデリジェンス報告書／株式会社ルミエールボーテ」。作成者は青山ストラテジー＆パートナーズ。"
+  },
+  "財務DD報告書_ルミエールボーテ_最終版.pdf": {
+    "company": "株式会社ルミエールボーテ",
+    "doc_type": "dd_financial",
+    "label": "財務DDレポート",
+    "detail": "表紙に「財務デューデリジェンス報告書／株式会社ルミエールボーテ」。作成者は八重洲FAS。"
+  },
+  "法務DD報告書_ルミエールボーテ_最終版.pdf": {
+    "company": "株式会社ルミエールボーテ",
+    "doc_type": "dd_legal",
+    "label": "法務DDレポート",
+    "detail": "表紙に「法務デューデリジェンス報告書／株式会社ルミエールボーテ」。作成者は丸の内総合法律事務所。"
+  },
+  "税務DD報告書_ルミエールボーテ_最終版.pdf": {
+    "company": "株式会社ルミエールボーテ",
+    "doc_type": "dd_tax",
+    "label": "税務DDレポート",
+    "detail": "表紙に「税務デューデリジェンス報告書／株式会社ルミエールボーテ」。作成者は京橋税理士法人。"
+  }
+}

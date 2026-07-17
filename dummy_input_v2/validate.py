@@ -1,0 +1,375 @@
+# -*- coding: utf-8 -*-
+"""ダミーインプット一式（v2・ルミエールボーテ）の整合チェック。
+
+検証対象:
+ 1. spec.py の主要ピン（正本数値）
+ 2. Excelモデル：ピンセルの値・数式・キャッシュ値（実AIが値を拾えること）・単位注記
+ 3. Excelモデルが現行の解析パイプライン制約（60行×12列のダイジェスト窓）に収まること
+ 4. DDレポートPDF：キーファクトのページ位置とページ数（pypdfで抽出＝実AIと同経路）
+ 5. expected_output.json：期待値が spec の計算値と一致すること
+ 6. GROUND_TRUTH.md が spec から再生成した内容と一致すること
+"""
+import json
+import sys
+from pathlib import Path
+
+from openpyxl import load_workbook
+from pypdf import PdfReader
+
+import generate_expected
+import spec
+import xl_layout as L
+from spec import ACTUAL_YEARS, COL, PLAN_YEARS
+
+HERE = Path(__file__).parent
+
+# 現行 AnthropicExtractor._excel_digest の読み取り窓
+DIGEST_MAX_ROW = 60
+DIGEST_MAX_COL = 12
+
+errors = []
+
+
+def check(cond, msg):
+    if cond:
+        print(f"  OK  {msg}")
+    else:
+        errors.append(msg)
+        print(f"  NG  {msg}")
+
+
+def validate_spec():
+    print("[1] spec.py 主要ピン")
+    spec.summary_check()
+    print("  OK  summary_check（9,240/1,120・9,595/1,191・4.3x/53%・KPI・BSバランス）")
+
+
+def validate_excel():
+    print("[2] Excelモデル")
+    expected_order = [L.SHEET_COVER, L.SHEET_INP, L.SHEET_PL, L.SHEET_BS,
+                      L.SHEET_CF, L.SHEET_DEBT, L.SHEET_MEMO]
+    for case in spec.CASES:
+        path = HERE / spec.MODEL_FILES[case]
+        check(path.exists(), f"{path.name} が存在する")
+        wb = load_workbook(path)          # 数式
+        wbv = load_workbook(path, data_only=True)  # キャッシュ値
+        check(wb.sheetnames == expected_order,
+              f"{case}: シート構成が正しい {wb.sheetnames}")
+        pl = spec.compute_pl(case)
+        bs, cf = spec.compute_bs_cf(case)
+        drv = spec.drivers(case)
+        ws = wb[L.SHEET_PL]
+        wsv = wbv[L.SHEET_PL]
+        check("百万円" in str(ws["A2"].value), f"{case}: PLシートに単位注記（百万円）")
+        c26 = COL["FY26"]
+        c27 = COL["FY27"]
+        check(ws[f"{c26}{L.PL_ROWS['ec_rev'][0]}"].value == pl["FY26"]["ec_rev"],
+              f"{case}: PL FY26 EC売上（値貼付）= {pl['FY26']['ec_rev']:,}百万円")
+        f = ws[f"{c27}{L.PL_ROWS['ec_rev'][0]}"].value
+        check(isinstance(f, str) and "inp" in f and "/10^6" in f,
+              f"{case}: PL FY27 EC売上は inp 参照の数式（{f}）")
+        f = ws[f"{c27}{L.PL_ROWS['cogs'][0]}"].value
+        check(isinstance(f, str) and "inp" in f,
+              f"{case}: PL FY27 売上原価は原価率参照の数式")
+        # キャッシュ値（実AIが拾う値）が spec と一致
+        for y in spec.YEARS:
+            got = wsv[f"{COL[y]}{L.PL_ROWS['ebitda'][0]}"].value
+            check(got == pl[y]["ebitda"],
+                  f"{case}: PL {y} EBITDAキャッシュ値 = {pl[y]['ebitda']:,}（{got}）")
+        got = wbv[L.SHEET_CF][f"{c27}{L.CF_ROWS['fcf'][0]}"].value
+        check(got == cf["FY27"]["fcf"],
+              f"{case}: CF FY27 FCFキャッシュ値 = {cf['FY27']['fcf']:,}（{got}）")
+        # inp（ストラクチャー・ドライバー）
+        ws_i = wb[L.SHEET_INP]
+        ws_iv = wbv[L.SHEET_INP]
+        check(ws_i[f"D{L.INP_STRUCT_ROWS['ev'][0]}"].value == spec.DEAL["ev_mm"],
+              f"{case}: inp EV = {spec.DEAL['ev_mm']:,}百万円")
+        check(ws_i[f"D{L.INP_STRUCT_ROWS['senior'][0]}"].value == spec.SENIOR_TOTAL,
+              f"{case}: inp シニア = {spec.SENIOR_TOTAL:,}百万円")
+        check(ws_i[f"D{L.INP_STRUCT_ROWS['goodwill'][0]}"].value == spec.GOODWILL,
+              f"{case}: inp のれん想定 = {spec.GOODWILL:,}百万円")
+        check(ws_i[f"D{L.INP_STRUCT_ROWS['sponsor_ebitda'][0]}"].value
+              == spec.DEAL["sponsor_ebitda_mm"],
+              f"{case}: inp 提示EBITDA = {spec.DEAL['sponsor_ebitda_mm']:,}百万円")
+        check(str(ws_i[f"D{L.INP_STRUCT_ROWS['borrower'][0]}"].value) == spec.DEAL["borrower"],
+              f"{case}: inp 借入人SPC = {spec.DEAL['borrower']}")
+        f = ws_i[f"{c27}{L.INP_DRIVER_ROWS['member'][0]}"].value
+        check(isinstance(f, str) and f.startswith("=ROUND(") and "*" in f,
+              f"{case}: inp 会員数（計画）は =ROUND(前期×リピート率＋新規) の数式")
+        got = ws_iv[f"{c27}{L.INP_DRIVER_ROWS['member'][0]}"].value
+        check(got == drv["FY27"]["member"],
+              f"{case}: inp FY27会員数キャッシュ値 = {drv['FY27']['member']:,}（{got}）")
+        check(ws_i[f"{c26}{L.INP_DRIVER_ROWS['repeat'][0]}"].value == drv["FY26"]["repeat"],
+              f"{case}: inp FY26リピート率 = {drv['FY26']['repeat']:.0%}")
+        # BSのれん（計画年）
+        ws_b = wbv[L.SHEET_BS]
+        check(ws_b[f"{c27}{L.BS_ROWS['goodwill'][0]}"].value == spec.GOODWILL,
+              f"{case}: BS FY27のれん = {spec.GOODWILL:,}百万円")
+        # Cover
+        cover = wb[L.SHEET_COVER]
+        check(spec.CASE_LABEL[case] in str(cover["B8"].value),
+              f"{case}: Coverにケース名（{spec.CASE_LABEL[case]}）")
+        check(spec.DEAL["borrower"] in str(cover["D12"].value),
+              f"{case}: Coverに借入人SPC")
+        # ダイジェスト窓（60行×12列）にデータが収まる
+        for name in (L.SHEET_INP, L.SHEET_PL, L.SHEET_BS, L.SHEET_CF, L.SHEET_DEBT):
+            s = wb[name]
+            over = []
+            for row in s.iter_rows():
+                for c in row:
+                    if c.value is not None and (c.row > DIGEST_MAX_ROW
+                                                or c.column > DIGEST_MAX_COL):
+                        over.append(c.coordinate)
+            check(not over,
+                  f"{case}/{name}: データが解析窓（{DIGEST_MAX_ROW}行×{DIGEST_MAX_COL}列）内"
+                  + (f"（超過: {over[:5]}）" if over else ""))
+
+
+def validate_pdfs():
+    print("[3] DDレポートPDF")
+    expected_pages = {"business": 20, "financial": 34, "legal": 14, "tax": 10}
+    readers = {}
+    for key, fname in spec.DD_FILES.items():
+        path = HERE / fname
+        check(path.exists(), f"{fname} が存在する")
+        readers[key] = PdfReader(path)
+        check(len(readers[key].pages) == expected_pages[key],
+              f"{fname}: {expected_pages[key]}ページ構成")
+    for fact in spec.DD_KEY_FACTS:
+        r = readers[fact["file"]]
+        text = (r.pages[fact["page"] - 1].extract_text() or "").replace("\n", "")
+        for phrase in fact["check"]:
+            check(phrase in text,
+                  f"{spec.DD_FILES[fact['file']]} p.{fact['page']} に「{phrase[:28]}…」")
+    # 主要キーファクトの結論文言が指定ページ以外に重複して存在しないこと
+    for fact_id in ("normalized_ebitda", "goodwill_dd"):
+        fact = next(f for f in spec.DD_KEY_FACTS if f["id"] == fact_id)
+        r = readers[fact["file"]]
+        hits = [i + 1 for i, p in enumerate(r.pages)
+                if fact["check"][0] in (p.extract_text() or "").replace("\n", "")]
+        check(hits == [fact["page"]],
+              f"{fact_id} の結論文言は p.{fact['page']} のみに存在（{hits}）")
+    # 千円表とモデル百万円の丸め整合（財務DD p.11 の売上高）
+    text = (readers["financial"].pages[10].extract_text() or "").replace(",", "")
+    pl = spec.compute_pl("base")
+    check(str(pl["FY26"]["revenue"] * 1000) in text,
+          "財務DD p.11 の売上高（千円）がモデル（百万円）×1000と一致")
+
+
+def validate_expected():
+    print("[4] expected_output.json")
+    exp = json.loads((HERE / "expected_output.json").read_text(encoding="utf-8"))
+    pl_b = spec.compute_pl("base")
+    pl_s = spec.compute_pl("sponsor")
+    _, cf_b = spec.compute_bs_cf("base")
+    bs_b, _ = spec.compute_bs_cf("base")
+    items = {it["key"]: it for it in exp["items"]}
+    check(len(exp["items"]) == 24, f"抽出項目は24件（{len(exp['items'])}件）")
+    check(items["act_revenue"]["values"]
+          == {y: pl_b[y]["revenue"] for y in ACTUAL_YEARS},
+          "act_revenue = 実績売上（7,788/8,500/9,240）")
+    check(items["act_ebitda"]["values"]["FY26"] == 1120, "act_ebitda FY26 = 1,120")
+    check(items["normalized_ebitda"]["values"]["FY26"] == spec.NORMALIZED_EBITDA,
+          f"normalized_ebitda = {spec.NORMALIZED_EBITDA:,}")
+    check(items["base_revenue"]["values"]["FY27"] == 9595, "base_revenue FY27 = 9,595")
+    check(items["base_ebitda"]["values"]["FY27"] == 1191, "base_ebitda FY27 = 1,191")
+    check(items["sponsor_ebitda"]["values"]
+          == {y: pl_s[y]["ebitda"] for y in PLAN_YEARS},
+          "sponsor_ebitda = スポンサー計画EBITDA")
+    check(items["base_fcf"]["values"] == {y: cf_b[y]["fcf"] for y in PLAN_YEARS},
+          "base_fcf = ベースFCF")
+    check(items["act_cash"]["values"] == {y: bs_b[y]["cash"] for y in ACTUAL_YEARS},
+          "act_cash = 実績現預金")
+    gw = items["goodwill"]
+    check(gw["values"]["FY27"] == spec.GOODWILL
+          and gw["mismatch"]["other_value"] == spec.GOODWILL_DD,
+          f"goodwill: モデル{spec.GOODWILL:,} vs DD{spec.GOODWILL_DD:,} の不整合データ")
+    all_files = set(spec.DD_FILES.values()) | set(spec.MODEL_FILES.values())
+    for it in exp["items"]:
+        check(it["evidence"]["file"] in all_files,
+              f"{it['key']}: 参照ファイル {it['evidence']['file']} が実在する")
+    facts = {f["id"]: f for f in spec.DD_KEY_FACTS}
+    check(items["risk_oem"]["evidence"]["page"] == facts["oem_dependency"]["page"],
+          "risk_oem の参照ページがキーファクト定義と一致")
+    check(items["normalized_ebitda"]["evidence"]["page"]
+          == facts["normalized_ebitda"]["page"],
+          "normalized_ebitda の参照ページがキーファクト定義と一致")
+    check(gw["mismatch"]["other_page"] == facts["goodwill_dd"]["page"],
+          "goodwill不整合の参照ページがキーファクト定義と一致")
+    check(set(exp["identify"].keys()) == all_files, "identify: 6ファイルすべてに対応")
+    di = exp["deal_info"]["fields"]
+    check(di["ev_mm"] == spec.DEAL["ev_mm"]
+          and di["sponsor_ebitda_mm"] == spec.DEAL["sponsor_ebitda_mm"],
+          "deal_info: EV・提示EBITDAが正本と一致")
+    check(exp["auto_calc"]["initial_leverage"] == 4.3
+          and exp["auto_calc"]["ltv_pct"] == 53,
+          "auto_calc: レバレッジ4.3x・LTV53%")
+
+
+def validate_answers():
+    """答え（expected_output.json）の正しさの検証。
+
+    全24項目について、期待値の「根拠」として指定したセル／ページに、
+    本当にその期待値が存在することを突き合わせる（答えの答え合わせ）。
+    """
+    print("[6] 答えの正当性（期待値⇔根拠位置の突き合わせ）")
+    exp = json.loads((HERE / "expected_output.json").read_text(encoding="utf-8"))
+    wbs = {fname: load_workbook(HERE / fname, data_only=True)
+           for fname in spec.MODEL_FILES.values()}
+    readers = {fname: PdfReader(HERE / fname) for fname in spec.DD_FILES.values()}
+
+    range_pat = __import__("re").compile(
+        r"^(?P<sheet>[^!]+)!(?P<c1>[A-Z]+)(?P<r1>\d+)(?::(?P<c2>[A-Z]+)(?P<r2>\d+))?$")
+
+    for it in exp["items"]:
+        ev = it["evidence"]
+        if "page" in ev:
+            # PDF根拠：ページ本文に期待値（または期待キーワード）が存在すること
+            page_text = (readers[ev["file"]].pages[ev["page"] - 1].extract_text()
+                         or "").replace("\n", "")
+            if it.get("values"):
+                v = list(it["values"].values())[0]
+                ok = f"{v:,}" in page_text or str(v) in page_text.replace(",", "")
+                check(ok, f"{it['key']}: {ev['file']} p.{ev['page']} に期待値 {v:,}")
+            else:
+                groups = it.get("text_expects") or []
+                hit = sum(1 for g in groups if any(kw in page_text for kw in g))
+                tol = it.get("page_tolerance", 0)
+                if hit < len(groups) and tol:
+                    extra = (readers[ev["file"]].pages[ev["page"] + tol - 1]
+                             .extract_text() or "").replace("\n", "")
+                    page_text += extra
+                    hit = sum(1 for g in groups if any(kw in page_text for kw in g))
+                check(hit == len(groups),
+                      f"{it['key']}: {ev['file']} p.{ev['page']}±{tol} に期待キーワード"
+                      f"（{hit}/{len(groups)}群）")
+        else:
+            # Excel根拠：指定セル範囲のキャッシュ値が期待値と一致すること
+            m = range_pat.match(ev["location"])
+            check(bool(m), f"{it['key']}: 根拠セル表記が正しい（{ev['location']}）")
+            if not m:
+                continue
+            ws = wbs[ev["file"]][m.group("sheet")]
+            if m.group("c2"):
+                cols = [chr(c) for c in range(ord(m.group("c1")), ord(m.group("c2")) + 1)]
+                got = [ws[f"{c}{m.group('r1')}"].value for c in cols]
+            else:
+                got = [ws[f"{m.group('c1')}{m.group('r1')}"].value]
+            want = list(it["values"].values())
+            check(got == want,
+                  f"{it['key']}: {ev['file']} {ev['location']} = {want}（実際 {got}）")
+
+    # deal_infoの根拠：inpシート・Coverに各値が存在すること
+    ws_i = wbs[spec.MODEL_FILES["base"]]["inp"]
+    di = exp["deal_info"]["fields"]
+    check(ws_i[f"D{L.INP_STRUCT_ROWS['ev'][0]}"].value == di["ev_mm"],
+          "deal_info: EVがinpシートに存在")
+    check(ws_i[f"D{L.INP_STRUCT_ROWS['equity'][0]}"].value == di["equity_mm"],
+          "deal_info: エクイティがinpシートに存在")
+    check(ws_i[f"D{L.INP_STRUCT_ROWS['tenor'][0]}"].value == di["tenor_years"],
+          "deal_info: ローン期間がinpシートに存在")
+    # 行内情報（ハルシネーション検査対象）が資料に存在しないこと
+    blob_parts = []
+    for fname, wb in wbs.items():
+        for ws in wb.worksheets:
+            for row in ws.iter_rows():
+                for c in row:
+                    if c.value is not None:
+                        blob_parts.append(str(c.value))
+    for fname, r in readers.items():
+        for p in r.pages:
+            blob_parts.append(p.extract_text() or "")
+    blob = "".join(blob_parts).replace(",", "").replace("\n", "")
+    check("本行取組" not in blob and "2000百万円" not in blob,
+          "行内情報（本行取組額2,000）はどの資料にも存在しない")
+
+
+def validate_reference():
+    """模範解答（reference_output/）の検証。
+
+    - 採点スクリプトにかけて合格ラインを満たすこと
+    - PDF根拠の原文抜粋（quote）が、参照ページに一字一句存在すること
+    - 数値が expected_output.json と一致すること
+    """
+    print("[7] 模範解答（reference_output/）")
+    ref_dir = HERE / "reference_output"
+    if not ref_dir.exists():
+        check(False, "reference_output/ が存在する（generate_reference.py を実行）")
+        return
+    import run_ai_test as rat
+    ident = json.loads((ref_dir / "reference_identify.json").read_text(encoding="utf-8"))
+    di = json.loads((ref_dir / "reference_deal_info.json").read_text(encoding="utf-8"))
+    items = json.loads((ref_dir / "reference_items.json").read_text(encoding="utf-8"))
+    tree = json.loads((ref_dir / "reference_kpi_tree.json").read_text(encoding="utf-8"))
+    cards = json.loads((ref_dir / "reference_scenarios.json").read_text(encoding="utf-8"))
+    r_id = rat.score_identify(ident)
+    r_di = rat.score_deal_info(di)
+    r_it = rat.score_items(items)
+    r_kp = rat.score_kpi_tree(tree)
+    r_sc = rat.score_scenarios(cards)
+    check(r_id["ok"] == r_id["total"], f"identify 模範解答 {r_id['score']}")
+    check(r_di["ok"] == r_di["total"], f"deal_info 模範解答 {r_di['score']}")
+    check(r_it["passed"] and r_it["required_evidence_rate"] == 1.0,
+          f"items 模範解答が合格ライン超（値{r_it['required_value_rate']:.0%}"
+          f"・根拠{r_it['required_evidence_rate']:.0%}）")
+    check(r_kp["edges"].split("/")[0] == r_kp["edges"].split("/")[1] and r_kp["stars_ok"],
+          f"kpi_tree 模範解答（エッジ{r_kp['edges']}・★OK）")
+    check(r_sc["three_types_covered"]
+          and all(not row["parts_missing"] and row["impact_has_number"]
+                  and row["impact_mentions_debt_metrics"] and not row["forbidden_labels"]
+                  and row["fact_anchored"] for row in r_sc["rows"]),
+          "scenarios 模範解答（3類型・5部構成・数値推定・判定ラベルなし・DD引用）")
+    # PDF根拠のquoteが参照ページに一字一句存在すること
+    readers = {fname: PdfReader(HERE / fname) for fname in spec.DD_FILES.values()}
+    for it in items:
+        ev = it["evidence"]
+        if not str(ev["file"]).endswith(".pdf"):
+            continue
+        import re as _re
+        m = _re.search(r"p\.(\d+)", ev["location"])
+        page = int(m.group(1))
+        text = (readers[ev["file"]].pages[page - 1].extract_text() or "").replace("\n", "")
+        check(ev["quote"].replace("\n", "") in text,
+              f"{it['key']}: 模範解答のquoteが {ev['file']} p.{page} に一字一句存在")
+    mm = next(it for it in items if it["key"] == "goodwill")["mismatch"]
+    m = __import__("re").search(r"p\.(\d+)", mm["other_location"])
+    text = (readers[mm["other_file"]].pages[int(m.group(1)) - 1].extract_text()
+            or "").replace("\n", "")
+    check(mm["other_quote"].replace("\n", "") in text,
+          "goodwill不整合のother_quoteが財務DDの参照ページに一字一句存在")
+    # 数値がexpected_output.jsonと一致すること
+    exp_items = {it["key"]: it for it in json.loads(
+        (HERE / "expected_output.json").read_text(encoding="utf-8"))["items"]}
+    for it in items:
+        if it["values"] is None:
+            continue
+        check(it["values"] == exp_items[it["key"]]["values"],
+              f"{it['key']}: 模範解答の値がexpected_output.jsonと一致")
+
+
+def validate_ground_truth():
+    print("[5] GROUND_TRUTH.md")
+    current = (HERE / "GROUND_TRUTH.md").read_text(encoding="utf-8")
+    regenerated = generate_expected.build_ground_truth(generate_expected.build_expected())
+    check(current == regenerated, "GROUND_TRUTH.md は spec からの再生成と一致（手編集なし）")
+
+
+def main():
+    validate_spec()
+    validate_excel()
+    validate_pdfs()
+    validate_expected()
+    validate_ground_truth()
+    validate_answers()
+    validate_reference()
+    print()
+    if errors:
+        print(f"NG: {len(errors)}件の不整合")
+        for e in errors:
+            print(f"  - {e}")
+        sys.exit(1)
+    print("すべての整合チェックに合格")
+
+
+if __name__ == "__main__":
+    main()

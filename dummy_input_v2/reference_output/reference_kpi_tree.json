@@ -1,0 +1,276 @@
+{
+  "nodes": [
+    {
+      "id": "revenue",
+      "parent": null,
+      "label": "売上収益",
+      "origin": "model",
+      "star": false,
+      "formula": "EC売上＋卸売上＋その他売上",
+      "value_text": "FY26実績 9,240百万円",
+      "badge": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "location": "PL!F10",
+        "quote": "=SUM(F7:F9)",
+        "logic": "PL10行のSUM数式からEC・卸・その他の3チャネル構成を判定。"
+      }
+    },
+    {
+      "id": "ec_rev",
+      "parent": "revenue",
+      "label": "EC売上",
+      "origin": "model",
+      "star": false,
+      "formula": "アクティブ会員数 × 年間平均購入回数 × 平均注文単価（AOV）",
+      "value_text": "FY26実績 3,942百万円",
+      "badge": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "location": "PL!F7",
+        "quote": "=ROUND(inp!F30*inp!F33*inp!F34/10^6,0)",
+        "logic": "PL7行の数式がinpシートの会員数×購入回数×AOVを参照。"
+      }
+    },
+    {
+      "id": "member",
+      "parent": "ec_rev",
+      "label": "アクティブ会員数",
+      "origin": "model",
+      "star": false,
+      "formula": "前期会員数 × リピート率 ＋ 新規獲得会員数",
+      "value_text": "FY26実績 228,000人",
+      "badge": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "location": "inp!F30",
+        "quote": "=ROUND(E30*F31+F32,0)",
+        "logic": "inp30行の漸化式からリピート率・新規獲得への分解を判定。"
+      }
+    },
+    {
+      "id": "repeat",
+      "parent": "member",
+      "label": "リピート率",
+      "origin": "model",
+      "star": true,
+      "formula": null,
+      "value_text": "FY26実績 76%",
+      "badge": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "location": "inp!E31",
+        "quote": "リピート率（既存会員残存率）: 0.76",
+        "logic": "事業DD p.15が「事業計画の最重要ドライバー」と指摘（1pt低下でEC売上▲約50百万円）。スポンサー計画は79%までの改善前提でストレッチ（p.20）のため★。"
+      }
+    },
+    {
+      "id": "new_members",
+      "parent": "member",
+      "label": "新規獲得会員数",
+      "origin": "model",
+      "star": true,
+      "formula": null,
+      "value_text": "FY26実績 69,000人",
+      "badge": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "location": "inp!E32",
+        "quote": "新規獲得会員数（人）: 69,000",
+        "logic": "広告CPAが3年で約15,000→19,000円に上昇（事業DD p.14）しており、獲得効率の悪化が計画未達の主要リスクのため★。"
+      }
+    },
+    {
+      "id": "freq",
+      "parent": "ec_rev",
+      "label": "年間平均購入回数",
+      "origin": "model",
+      "star": false,
+      "formula": null,
+      "value_text": "FY26実績 2.6回",
+      "badge": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "location": "inp!E33",
+        "quote": "年間平均購入回数（回）: 2.60",
+        "logic": "EC売上数式の第2変数。"
+      }
+    },
+    {
+      "id": "aov",
+      "parent": "ec_rev",
+      "label": "平均注文単価（AOV）",
+      "origin": "model",
+      "star": false,
+      "formula": null,
+      "value_text": "FY26実績 6,650円",
+      "badge": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "location": "inp!E34",
+        "quote": "平均注文単価（AOV・円）: 6,650",
+        "logic": "EC売上数式の第3変数。"
+      }
+    },
+    {
+      "id": "ws_rev",
+      "parent": "revenue",
+      "label": "卸売上",
+      "origin": "model",
+      "star": false,
+      "formula": "卸取扱店舗数 × 店舗あたり年間出荷額",
+      "value_text": "FY26実績 4,192百万円",
+      "badge": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "location": "PL!F8",
+        "quote": "=ROUND(inp!F35*inp!F36/1000,0)",
+        "logic": "PL8行の数式がinpシートの店舗数×店販を参照。"
+      }
+    },
+    {
+      "id": "doors",
+      "parent": "ws_rev",
+      "label": "卸取扱店舗数",
+      "origin": "model",
+      "star": true,
+      "formula": null,
+      "value_text": "FY26実績 4,150店",
+      "badge": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "location": "inp!E35",
+        "quote": "卸取扱店舗数（店）: 4,150",
+        "logic": "上位3チェーン依存45%（事業DD p.18）のため、棚割り縮小が店舗数・物量に直結する構造であり★。"
+      }
+    },
+    {
+      "id": "perdoor",
+      "parent": "ws_rev",
+      "label": "店舗あたり年間出荷額",
+      "origin": "model",
+      "star": false,
+      "formula": null,
+      "value_text": "FY26実績 1,010千円",
+      "badge": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "location": "inp!E36",
+        "quote": "店舗あたり年間出荷額（千円）: 1,010",
+        "logic": "卸売上数式の第2変数。"
+      }
+    },
+    {
+      "id": "other_rev",
+      "parent": "revenue",
+      "label": "その他売上（百貨店・海外）",
+      "origin": "model",
+      "star": false,
+      "formula": null,
+      "value_text": "FY26実績 1,106百万円",
+      "badge": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "location": "PL!F9",
+        "quote": "その他売上（百貨店・海外）: 1,130",
+        "logic": "PL9行。計画年も直接入力値（数式なし）。"
+      }
+    },
+    {
+      "id": "cogs",
+      "parent": null,
+      "label": "売上原価",
+      "origin": "model",
+      "star": false,
+      "formula": "売上収益 × 売上原価率",
+      "value_text": "FY26実績 3,788百万円",
+      "badge": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "location": "PL!F12",
+        "quote": "=ROUND(F10*inp!F37,0)",
+        "logic": "PL12行の数式がinpシートの原価率を参照。"
+      }
+    },
+    {
+      "id": "cogs_rate",
+      "parent": "cogs",
+      "label": "売上原価率",
+      "origin": "model",
+      "star": true,
+      "formula": null,
+      "value_text": "FY26実績 41.0%",
+      "badge": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "location": "inp!E37",
+        "quote": "売上原価率（対売上）: 0.41",
+        "logic": "OEM依存58%（事業DD p.17）のもとで値上げ転嫁を受けやすく、原価率+1ptでEBITDA約▲95百万円（財務DD p.13）のため★。"
+      }
+    },
+    {
+      "id": "ad",
+      "parent": null,
+      "label": "広告宣伝費",
+      "origin": "model",
+      "star": false,
+      "formula": "売上収益 × 広告宣伝費率",
+      "value_text": "FY26実績 1,663百万円",
+      "badge": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "location": "PL!F16",
+        "quote": "=ROUND(F10*inp!F38,0)",
+        "logic": "PL16行の数式がinpシートの広宣費率を参照。"
+      }
+    },
+    {
+      "id": "ad_rate",
+      "parent": "ad",
+      "label": "広告宣伝費率",
+      "origin": "model",
+      "star": false,
+      "formula": null,
+      "value_text": "FY26実績 18.0%",
+      "badge": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "location": "inp!E38",
+        "quote": "広告宣伝費率（対売上）: 0.18",
+        "logic": "広告宣伝費数式の変数。新規獲得の約6割が広告経由（財務DD p.14）。"
+      }
+    },
+    {
+      "id": "oem_dependency",
+      "parent": "cogs",
+      "label": "OEM委託先依存度",
+      "origin": "dd",
+      "star": false,
+      "formula": null,
+      "value_text": "最大委託先 58%",
+      "badge": "モデル外・定性",
+      "evidence": {
+        "file": "事業DD報告書_ルミエールボーテ_最終版.pdf",
+        "location": "p.17（6.2 最大委託先への生産依存）",
+        "quote": "最大委託先である三双化学工業への生産依存度は58%（2026年3月期・仕入高ベース）。",
+        "logic": "モデル数式には存在しないが、原価率の背後にあるリスク構造として事業DDから補完（モデル外・定性）。"
+      }
+    },
+    {
+      "id": "chain_concentration",
+      "parent": "ws_rev",
+      "label": "卸チェーン集中度",
+      "origin": "dd",
+      "star": false,
+      "formula": null,
+      "value_text": "上位3チェーン 45%（最大手21%）",
+      "badge": "モデル外・定性",
+      "evidence": {
+        "file": "事業DD報告書_ルミエールボーテ_最終版.pdf",
+        "location": "p.18（6.3 販売面：卸チェーンへの集中）",
+        "quote": "卸売上の上位3チェーンへの売上依存度は45%（うち最大手マツヤドラッグ21%）",
+        "logic": "店舗数・店販の背後にある集中リスクとして事業DDから補完（モデル外・定性）。"
+      }
+    }
+  ]
+}
