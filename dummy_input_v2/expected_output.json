@@ -1,0 +1,979 @@
+{
+  "deal_key": "lumiere",
+  "company": "株式会社ルミエールボーテ",
+  "project": "Project Bloom",
+  "unit_note": "値はすべて百万円（モデルは百万円表記・DD表は千円→百万円換算）",
+  "year_note": "年度キーはFY24〜FY31（FY26=2026年3月期）。採点時は 2026/3期・26/3期・2026 等の表記を正規化する",
+  "auto_calc": {
+    "initial_leverage": 4.3,
+    "ltv_pct": 53,
+    "formula": "レバレッジ=シニア4,800÷提示EBITDA 1,120＝4.3x／LTV=シニア4,800÷EV9,000＝53%"
+  },
+  "identify": {
+    "LumiereBeaute_LBO_Model_v2.3_Sponsor.xlsx": {
+      "company": "株式会社ルミエールボーテ",
+      "doc_type": "model_sponsor"
+    },
+    "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx": {
+      "company": "株式会社ルミエールボーテ",
+      "doc_type": "model_base"
+    },
+    "事業DD報告書_ルミエールボーテ_最終版.pdf": {
+      "company": "株式会社ルミエールボーテ",
+      "doc_type": "dd_business"
+    },
+    "財務DD報告書_ルミエールボーテ_最終版.pdf": {
+      "company": "株式会社ルミエールボーテ",
+      "doc_type": "dd_financial"
+    },
+    "法務DD報告書_ルミエールボーテ_最終版.pdf": {
+      "company": "株式会社ルミエールボーテ",
+      "doc_type": "dd_legal"
+    },
+    "税務DD報告書_ルミエールボーテ_最終版.pdf": {
+      "company": "株式会社ルミエールボーテ",
+      "doc_type": "dd_tax"
+    }
+  },
+  "deal_info": {
+    "fields": {
+      "name_contains": [
+        "ルミエールボーテ"
+      ],
+      "deal_type": "LBO",
+      "borrower": "株式会社ブルームホールディングス",
+      "target": "株式会社ルミエールボーテ",
+      "industry_contains": [
+        "化粧品",
+        "スキンケア"
+      ],
+      "sponsor": "大手町プリンシパルパートナーズ株式会社",
+      "close_date": "2026-11-30",
+      "ev_mm": 9000,
+      "senior_mm": 4800,
+      "equity_mm": 4620,
+      "tenor_years": 7,
+      "sponsor_ebitda_mm": 1120
+    },
+    "note": "本行取組額・担当者・審査相談予定日は行内情報のため資料に存在しない（抽出されたら誤り＝ハルシネーション）。"
+  },
+  "items": [
+    {
+      "key": "business_summary",
+      "section": "前提・定性情報",
+      "label": "事業要約",
+      "label_aliases": [
+        "事業要約",
+        "事業概要",
+        "ビジネスサマリー"
+      ],
+      "unit": "テキスト",
+      "case": null,
+      "required": true,
+      "values": null,
+      "text_expects": [
+        [
+          "スキンケア",
+          "化粧品"
+        ],
+        [
+          "EC",
+          "D2C"
+        ],
+        [
+          "卸",
+          "ドラッグ"
+        ],
+        [
+          "OEM",
+          "ファブレス"
+        ]
+      ],
+      "evidence": {
+        "file": "事業DD報告書_ルミエールボーテ_最終版.pdf",
+        "page": 4
+      },
+      "page_tolerance": 1,
+      "mismatch": null
+    },
+    {
+      "key": "risk_oem",
+      "section": "前提・定性情報",
+      "label": "主要リスク①：OEM委託先への生産依存",
+      "label_aliases": [
+        "OEM",
+        "委託先",
+        "生産依存",
+        "調達"
+      ],
+      "unit": "テキスト",
+      "case": null,
+      "required": true,
+      "values": null,
+      "text_expects": [
+        [
+          "58%",
+          "58％"
+        ],
+        [
+          "三双化学",
+          "OEM",
+          "委託先"
+        ]
+      ],
+      "evidence": {
+        "file": "事業DD報告書_ルミエールボーテ_最終版.pdf",
+        "page": 17
+      },
+      "page_tolerance": 0,
+      "mismatch": null
+    },
+    {
+      "key": "risk_wholesale",
+      "section": "前提・定性情報",
+      "label": "主要リスク②：卸チェーンへの売上集中",
+      "label_aliases": [
+        "卸",
+        "チェーン",
+        "集中",
+        "依存"
+      ],
+      "unit": "テキスト",
+      "case": null,
+      "required": true,
+      "values": null,
+      "text_expects": [
+        [
+          "45%",
+          "45％"
+        ],
+        [
+          "21%",
+          "21％",
+          "マツヤ"
+        ]
+      ],
+      "evidence": {
+        "file": "事業DD報告書_ルミエールボーテ_最終版.pdf",
+        "page": 18
+      },
+      "page_tolerance": 0,
+      "mismatch": null
+    },
+    {
+      "key": "risk_trademark",
+      "section": "前提・定性情報",
+      "label": "主要リスク③：商標権が代表者個人名義",
+      "label_aliases": [
+        "商標",
+        "知的財産",
+        "個人名義"
+      ],
+      "unit": "テキスト",
+      "case": null,
+      "required": false,
+      "values": null,
+      "text_expects": [
+        [
+          "商標"
+        ],
+        [
+          "個人名義",
+          "代表者"
+        ],
+        [
+          "移転"
+        ]
+      ],
+      "evidence": {
+        "file": "法務DD報告書_ルミエールボーテ_最終版.pdf",
+        "page": 11
+      },
+      "page_tolerance": 0,
+      "mismatch": null
+    },
+    {
+      "key": "normalized_ebitda",
+      "section": "前提・定性情報",
+      "label": "正常収益力EBITDA（2026/3期）",
+      "label_aliases": [
+        "正常収益力",
+        "QoE",
+        "Normalized"
+      ],
+      "unit": "百万円",
+      "case": null,
+      "required": true,
+      "values": {
+        "FY26": 1036
+      },
+      "text_expects": null,
+      "evidence": {
+        "file": "財務DD報告書_ルミエールボーテ_最終版.pdf",
+        "page": 33
+      },
+      "page_tolerance": 0,
+      "mismatch": null
+    },
+    {
+      "key": "act_revenue",
+      "section": "実績（2024/3期〜2026/3期）",
+      "label": "売上高",
+      "label_aliases": [
+        "売上高",
+        "売上収益",
+        "売上"
+      ],
+      "unit": "百万円",
+      "case": null,
+      "required": true,
+      "values": {
+        "FY24": 7788,
+        "FY25": 8500,
+        "FY26": 9240
+      },
+      "text_expects": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "sheet": "PL",
+        "location": "PL!C10:E10"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "act_op",
+      "section": "実績（2024/3期〜2026/3期）",
+      "label": "営業利益",
+      "label_aliases": [
+        "営業利益",
+        "EBIT"
+      ],
+      "unit": "百万円",
+      "case": null,
+      "required": true,
+      "values": {
+        "FY24": 634,
+        "FY25": 794,
+        "FY26": 960
+      },
+      "text_expects": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "sheet": "PL",
+        "location": "PL!C21:E21"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "act_ebitda",
+      "section": "実績（2024/3期〜2026/3期）",
+      "label": "EBITDA",
+      "label_aliases": [
+        "EBITDA"
+      ],
+      "unit": "百万円",
+      "case": null,
+      "required": true,
+      "values": {
+        "FY24": 784,
+        "FY25": 949,
+        "FY26": 1120
+      },
+      "text_expects": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "sheet": "PL",
+        "location": "PL!C25:E25"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "act_ni",
+      "section": "実績（2024/3期〜2026/3期）",
+      "label": "当期純利益",
+      "label_aliases": [
+        "当期純利益",
+        "純利益",
+        "当期利益"
+      ],
+      "unit": "百万円",
+      "case": null,
+      "required": false,
+      "values": {
+        "FY24": 425,
+        "FY25": 539,
+        "FY26": 657
+      },
+      "text_expects": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "sheet": "PL",
+        "location": "PL!C32:E32"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "act_cash",
+      "section": "実績（2024/3期〜2026/3期）",
+      "label": "現預金",
+      "label_aliases": [
+        "現預金",
+        "現金及び現金同等物",
+        "現金及び預金",
+        "現金"
+      ],
+      "unit": "百万円",
+      "case": null,
+      "required": true,
+      "values": {
+        "FY24": 380,
+        "FY25": 500,
+        "FY26": 620
+      },
+      "text_expects": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "sheet": "BS",
+        "location": "BS!C7:E7"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "act_net_assets",
+      "section": "実績（2024/3期〜2026/3期）",
+      "label": "純資産",
+      "label_aliases": [
+        "純資産",
+        "自己資本"
+      ],
+      "unit": "百万円",
+      "case": null,
+      "required": true,
+      "values": {
+        "FY24": 2050,
+        "FY25": 2430,
+        "FY26": 2850
+      },
+      "text_expects": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "sheet": "BS",
+        "location": "BS!C21:E21"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "act_debt",
+      "section": "実績（2024/3期〜2026/3期）",
+      "label": "有利子負債",
+      "label_aliases": [
+        "有利子負債",
+        "借入金",
+        "デット"
+      ],
+      "unit": "百万円",
+      "case": null,
+      "required": true,
+      "values": {
+        "FY24": 600,
+        "FY25": 500,
+        "FY26": 400
+      },
+      "text_expects": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "sheet": "BS",
+        "location": "BS!C18:E18"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "act_fcf",
+      "section": "実績（2024/3期〜2026/3期）",
+      "label": "フリー・キャッシュフロー",
+      "label_aliases": [
+        "フリー・キャッシュフロー",
+        "FCF",
+        "フリーキャッシュフロー"
+      ],
+      "unit": "百万円",
+      "case": null,
+      "required": false,
+      "values": {
+        "FY24": 580,
+        "FY25": 660,
+        "FY26": 745
+      },
+      "text_expects": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "sheet": "CF",
+        "location": "CF!C13:E13"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "base_revenue",
+      "section": "計画：ベースケース（2027/3期〜2031/3期）",
+      "label": "売上高",
+      "label_aliases": [
+        "売上高",
+        "売上収益",
+        "売上"
+      ],
+      "unit": "百万円",
+      "case": "base",
+      "required": true,
+      "values": {
+        "FY27": 9595,
+        "FY28": 9906,
+        "FY29": 10182,
+        "FY30": 10455,
+        "FY31": 10678
+      },
+      "text_expects": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "sheet": "PL",
+        "location": "PL!F10:J10"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "base_op",
+      "section": "計画：ベースケース（2027/3期〜2031/3期）",
+      "label": "営業利益",
+      "label_aliases": [
+        "営業利益",
+        "EBIT"
+      ],
+      "unit": "百万円",
+      "case": "base",
+      "required": true,
+      "values": {
+        "FY27": 1026,
+        "FY28": 1080,
+        "FY29": 1119,
+        "FY30": 1160,
+        "FY31": 1184
+      },
+      "text_expects": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "sheet": "PL",
+        "location": "PL!F21:J21"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "base_ebitda",
+      "section": "計画：ベースケース（2027/3期〜2031/3期）",
+      "label": "EBITDA",
+      "label_aliases": [
+        "EBITDA"
+      ],
+      "unit": "百万円",
+      "case": "base",
+      "required": true,
+      "values": {
+        "FY27": 1191,
+        "FY28": 1248,
+        "FY29": 1290,
+        "FY30": 1334,
+        "FY31": 1361
+      },
+      "text_expects": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "sheet": "PL",
+        "location": "PL!F25:J25"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "base_fcf",
+      "section": "計画：ベースケース（2027/3期〜2031/3期）",
+      "label": "フリー・キャッシュフロー",
+      "label_aliases": [
+        "フリー・キャッシュフロー",
+        "FCF",
+        "フリーキャッシュフロー"
+      ],
+      "unit": "百万円",
+      "case": "base",
+      "required": true,
+      "values": {
+        "FY27": 591,
+        "FY28": 625,
+        "FY29": 671,
+        "FY30": 711,
+        "FY31": 752
+      },
+      "text_expects": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "sheet": "CF",
+        "location": "CF!F13:J13"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "sponsor_revenue",
+      "section": "計画：スポンサーケース（2027/3期〜2031/3期）",
+      "label": "売上高",
+      "label_aliases": [
+        "売上高",
+        "売上収益",
+        "売上"
+      ],
+      "unit": "百万円",
+      "case": "sponsor",
+      "required": true,
+      "values": {
+        "FY27": 9966,
+        "FY28": 10601,
+        "FY29": 11253,
+        "FY30": 11947,
+        "FY31": 12648
+      },
+      "text_expects": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_Sponsor.xlsx",
+        "sheet": "PL",
+        "location": "PL!F10:J10"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "sponsor_op",
+      "section": "計画：スポンサーケース（2027/3期〜2031/3期）",
+      "label": "営業利益",
+      "label_aliases": [
+        "営業利益",
+        "EBIT"
+      ],
+      "unit": "百万円",
+      "case": "sponsor",
+      "required": true,
+      "values": {
+        "FY27": 1139,
+        "FY28": 1337,
+        "FY29": 1534,
+        "FY30": 1722,
+        "FY31": 1924
+      },
+      "text_expects": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_Sponsor.xlsx",
+        "sheet": "PL",
+        "location": "PL!F21:J21"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "sponsor_ebitda",
+      "section": "計画：スポンサーケース（2027/3期〜2031/3期）",
+      "label": "EBITDA",
+      "label_aliases": [
+        "EBITDA"
+      ],
+      "unit": "百万円",
+      "case": "sponsor",
+      "required": true,
+      "values": {
+        "FY27": 1309,
+        "FY28": 1515,
+        "FY29": 1720,
+        "FY30": 1916,
+        "FY31": 2126
+      },
+      "text_expects": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_Sponsor.xlsx",
+        "sheet": "PL",
+        "location": "PL!F25:J25"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "sponsor_fcf",
+      "section": "計画：スポンサーケース（2027/3期〜2031/3期）",
+      "label": "フリー・キャッシュフロー",
+      "label_aliases": [
+        "フリー・キャッシュフロー",
+        "FCF",
+        "フリーキャッシュフロー"
+      ],
+      "unit": "百万円",
+      "case": "sponsor",
+      "required": false,
+      "values": {
+        "FY27": 580,
+        "FY28": 726,
+        "FY29": 876,
+        "FY30": 1009,
+        "FY31": 1164
+      },
+      "text_expects": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_Sponsor.xlsx",
+        "sheet": "CF",
+        "location": "CF!F13:J13"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "goodwill",
+      "section": "ストラクチャー・B/S項目",
+      "label": "のれん（買収想定額）",
+      "label_aliases": [
+        "のれん",
+        "Goodwill"
+      ],
+      "unit": "百万円",
+      "case": null,
+      "required": true,
+      "values": {
+        "FY27": 6100
+      },
+      "single_value": 6100,
+      "text_expects": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "sheet": "inp",
+        "location": "inp!D16",
+        "alt_sheet": "BS",
+        "alt_location": "BS!F12:J12"
+      },
+      "mismatch": {
+        "other_value": 5950,
+        "other_file": "財務DD報告書_ルミエールボーテ_最終版.pdf",
+        "other_page": 30,
+        "note": "モデル（6,100）と財務DD（5,950）で150百万円の差異。識別可能無形資産の試算差。PPAで確定予定。"
+      }
+    },
+    {
+      "key": "ev",
+      "section": "ストラクチャー・B/S項目",
+      "label": "エンタープライズ・バリュー（EV）",
+      "label_aliases": [
+        "EV",
+        "エンタープライズ",
+        "企業価値"
+      ],
+      "unit": "百万円",
+      "case": null,
+      "required": true,
+      "values": {
+        "FY27": 9000
+      },
+      "single_value": 9000,
+      "text_expects": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "sheet": "inp",
+        "location": "inp!D8"
+      },
+      "mismatch": null
+    },
+    {
+      "key": "senior_loan",
+      "section": "ストラクチャー・B/S項目",
+      "label": "シニアローン総額",
+      "label_aliases": [
+        "シニア",
+        "タームローン",
+        "ローン総額"
+      ],
+      "unit": "百万円",
+      "case": null,
+      "required": true,
+      "values": {
+        "FY27": 4800
+      },
+      "single_value": 4800,
+      "text_expects": null,
+      "evidence": {
+        "file": "LumiereBeaute_LBO_Model_v2.3_BankBase.xlsx",
+        "sheet": "inp",
+        "location": "inp!D11",
+        "alt_sheet": "debt",
+        "alt_location": "debt!F7:F7"
+      },
+      "mismatch": null
+    }
+  ],
+  "kpi_tree": {
+    "required_edges": [
+      [
+        [
+          "売上収益",
+          "売上高",
+          "売上"
+        ],
+        [
+          "EC売上",
+          "EC"
+        ]
+      ],
+      [
+        [
+          "売上収益",
+          "売上高",
+          "売上"
+        ],
+        [
+          "卸売上",
+          "卸"
+        ]
+      ],
+      [
+        [
+          "EC売上",
+          "EC"
+        ],
+        [
+          "会員数",
+          "アクティブ会員"
+        ]
+      ],
+      [
+        [
+          "EC売上",
+          "EC"
+        ],
+        [
+          "購入回数",
+          "購買頻度"
+        ]
+      ],
+      [
+        [
+          "EC売上",
+          "EC"
+        ],
+        [
+          "注文単価",
+          "AOV",
+          "客単価"
+        ]
+      ],
+      [
+        [
+          "会員数",
+          "アクティブ会員"
+        ],
+        [
+          "リピート率",
+          "残存率"
+        ]
+      ],
+      [
+        [
+          "会員数",
+          "アクティブ会員"
+        ],
+        [
+          "新規獲得",
+          "新規会員"
+        ]
+      ],
+      [
+        [
+          "卸売上",
+          "卸"
+        ],
+        [
+          "店舗数",
+          "取扱店舗"
+        ]
+      ],
+      [
+        [
+          "卸売上",
+          "卸"
+        ],
+        [
+          "店舗あたり",
+          "店販",
+          "出荷額"
+        ]
+      ],
+      [
+        [
+          "売上原価",
+          "原価"
+        ],
+        [
+          "原価率"
+        ]
+      ],
+      [
+        [
+          "広告宣伝費",
+          "広告"
+        ],
+        [
+          "広告宣伝費率",
+          "広宣費率",
+          "広告費率"
+        ]
+      ]
+    ],
+    "star_candidates": [
+      [
+        "リピート率",
+        "残存率"
+      ],
+      [
+        "新規獲得",
+        "新規会員"
+      ],
+      [
+        "原価率"
+      ],
+      [
+        "店舗数",
+        "取扱店舗"
+      ],
+      [
+        "広告",
+        "広宣"
+      ]
+    ],
+    "min_stars": 2,
+    "dd_node_candidates": [
+      [
+        "OEM",
+        "委託先"
+      ],
+      [
+        "チェーン",
+        "集中",
+        "依存"
+      ]
+    ],
+    "origin_rule": "数式由来ノードは origin=model、DD由来ノードは origin=dd"
+  },
+  "scenarios": {
+    "count": 3,
+    "type_labels": [
+      "トップライン",
+      "コスト",
+      "イベント"
+    ],
+    "required_parts": [
+      "title",
+      "cause",
+      "affected_kpis",
+      "change_text",
+      "change_basis",
+      "impact",
+      "safeguards",
+      "questions"
+    ],
+    "impact_must_mention_any": [
+      "DSCR",
+      "レバレッジ",
+      "現預金",
+      "返済"
+    ],
+    "impact_must_contain_number": true,
+    "forbidden_labels": [
+      "問題なし",
+      "問題あり",
+      "懸念なし",
+      "承認",
+      "否決"
+    ],
+    "fact_anchors": {
+      "topline": [
+        "76%",
+        "45%",
+        "21%",
+        "リピート",
+        "マツヤ",
+        "チェーン"
+      ],
+      "cost": [
+        "58%",
+        "三双",
+        "OEM",
+        "原価率",
+        "広告",
+        "CPA"
+      ],
+      "event": [
+        "COC",
+        "チェンジ・オブ・コントロール",
+        "商標",
+        "景品表示",
+        "行政指導",
+        "許可"
+      ]
+    },
+    "note": "シナリオは生成タスクのため一意の正解はない。上記の構造・根拠引用・推定数値の有無をルーブリックとして採点し、内容の妥当性は人がレビューする。"
+  },
+  "key_facts": [
+    {
+      "id": "ec_repeat",
+      "file": "事業DD報告書_ルミエールボーテ_最終版.pdf",
+      "page": 15,
+      "text": "EC定期会員のリピート率は76%（2026年3月期）"
+    },
+    {
+      "id": "oem_dependency",
+      "file": "事業DD報告書_ルミエールボーテ_最終版.pdf",
+      "page": 17,
+      "text": "最大委託先である三双化学工業への生産依存度は58%"
+    },
+    {
+      "id": "wholesale_concentration",
+      "file": "事業DD報告書_ルミエールボーテ_最終版.pdf",
+      "page": 18,
+      "text": "卸売上の上位3チェーンへの売上依存度は45%（うち最大手マツヤドラッグ21%）"
+    },
+    {
+      "id": "normalized_ebitda",
+      "file": "財務DD報告書_ルミエールボーテ_最終版.pdf",
+      "page": 33,
+      "text": "正常収益力ベースのEBITDAは1,036百万円"
+    },
+    {
+      "id": "goodwill_dd",
+      "file": "財務DD報告書_ルミエールボーテ_最終版.pdf",
+      "page": 30,
+      "text": "のれん想定額は5,950百万円（スポンサーモデルは6,100百万円・150百万円の差異）"
+    },
+    {
+      "id": "inventory_writedown",
+      "file": "財務DD報告書_ルミエールボーテ_最終版.pdf",
+      "page": 21,
+      "text": "滞留在庫に係る評価損は120百万円"
+    },
+    {
+      "id": "cosmetics_license",
+      "file": "法務DD報告書_ルミエールボーテ_最終版.pdf",
+      "page": 5,
+      "text": "化粧品製造販売業許可（13CZ200088）は2027年11月に更新期限"
+    },
+    {
+      "id": "coc_clause",
+      "file": "法務DD報告書_ルミエールボーテ_最終版.pdf",
+      "page": 8,
+      "text": "主要OEM委託契約2件にチェンジ・オブ・コントロール条項（事前書面同意）"
+    },
+    {
+      "id": "trademark",
+      "file": "法務DD報告書_ルミエールボーテ_最終版.pdf",
+      "page": 11,
+      "text": "主力ブランド「Lumière Beauté」の商標権は代表者個人名義（クロージング前に会社への移転が必要）"
+    },
+    {
+      "id": "nol",
+      "file": "税務DD報告書_ルミエールボーテ_最終版.pdf",
+      "page": 6,
+      "text": "繰越欠損金は85百万円（2028年3月期まで繰越可能）"
+    }
+  ]
+}
