@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { Icon } from '../../components/Icon'
 import { Badge } from '../../components/Badge'
-import { buildFinTable, finRowItems } from '../../finTable'
+import { buildFinTable, finNotesOf, finRowItems } from '../../finTable'
 import type { DealFull, ExtractedItem, KpiNode } from '../../types'
 
 /** 長文のAIテキストを先頭n文に要約表示する */
@@ -61,7 +61,11 @@ export function OverviewTab({ full, onNavigate }: {
   const finItems = useMemo(() => items.filter((it) => fin.tableIds.has(it.id)), [items, fin])
   const finPending = finItems.filter((it) => it.status !== 'confirmed').length
   const finMismatch = finItems.filter((it) => it.mismatch).length
-  const bizItems = useMemo(() => items.filter((it) => !fin.tableIds.has(it.id)), [items, fin])
+  const finNotes = useMemo(() => finNotesOf(items), [items])
+  const bizItems = useMemo(
+    () => items.filter((it) => !fin.tableIds.has(it.id) && !finNotes.some((n) => n.id === it.id)),
+    [items, fin, finNotes],
+  )
   const bizPending = bizItems.filter((it) => it.status !== 'confirmed').length
 
   const kpiConfirmed = deal.kpi_status === 'confirmed'
@@ -277,6 +281,20 @@ export function OverviewTab({ full, onNavigate }: {
         ) : (
           <div className="px-4 py-6 text-center text-[12px] text-outline">
             資料のAI解析が完了すると、財務情報（確定財務・ベースケース・スポンサーケース）がここに表示されます。
+          </div>
+        )}
+        {/* 財務ハイライト・ケース前提差異（AI論述） */}
+        {finNotes.length > 0 && (
+          <div className="border-t border-surface-container-high">
+            {finNotes.map((item) => (
+              <div key={item.id} className="border-b border-surface-container-low px-4 py-3 last:border-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-[12px] font-bold text-on-surface-variant">{item.label}</span>
+                  <span className="badge-base badge-ai !px-1.5 !py-0 !text-[10px]">AI推定・モデル再計算なし</span>
+                </div>
+                <p className="mt-1.5 whitespace-pre-line text-[12.5px] leading-relaxed text-on-surface-variant">{item.effective_text}</p>
+              </div>
+            ))}
           </div>
         )}
       </SectionCard>

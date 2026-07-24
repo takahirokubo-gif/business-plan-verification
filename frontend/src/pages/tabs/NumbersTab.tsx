@@ -3,7 +3,7 @@ import { api } from '../../api'
 import { Icon } from '../../components/Icon'
 import { EvidenceBlock, SlidePanel } from '../../components/EvidencePanel'
 import { useUser } from '../../context/UserContext'
-import { buildFinTable, finRowItems, sortYears } from '../../finTable'
+import { buildFinTable, finNotesOf, finRowItems, FIN_NOTE_SECTION, sortYears } from '../../finTable'
 import type { DealFull, ExtractedItem, Mismatch } from '../../types'
 
 /** mismatch のキー表記ゆれを吸収する（fixture形式と実AIの自由形式の両対応）。
@@ -91,6 +91,7 @@ export function NumbersTab({ full, refresh, dealId, mode }: {
     const map = new Map<string, ExtractedItem[]>()
     for (const it of items) {
       if (fin.tableIds.has(it.id)) continue
+      if (it.section === FIN_NOTE_SECTION) continue // 財務テーブル直下に専用表示
       if (mode === 'business' ? it.values != null : it.values == null) continue
       if (onlyPending && it.status === 'confirmed') continue
       if (!map.has(it.section)) map.set(it.section, [])
@@ -98,6 +99,9 @@ export function NumbersTab({ full, refresh, dealId, mode }: {
     }
     return [...map.entries()]
   }, [items, onlyPending, fin, mode])
+
+  // 財務ハイライト・ケース前提差異（財務テーブル直下の論述ブロック）
+  const finNotes = useMemo(() => finNotesOf(items), [items])
 
   const openItem = (item: ExtractedItem) => {
     setSelected(item)
@@ -413,6 +417,28 @@ export function NumbersTab({ full, refresh, dealId, mode }: {
           <div className="border-t border-surface-container-low px-4 py-1.5 text-[11px] text-outline">
             薄い黄色のセル＝未確定（クリックで根拠を確認して確定）。●＝未確定あり、⚠＝資料間の不整合あり。
           </div>
+          {/* 財務ハイライト・ケース前提差異（AI論述。クリックで根拠・確定操作） */}
+          {finNotes.length > 0 && (
+            <div className="border-t border-surface-container-high">
+              {finNotes.map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => openItem(item)}
+                  className={`cursor-pointer border-b border-surface-container-low px-4 py-3 last:border-0 hover:bg-primary-fixed/20 ${
+                    selected?.id === item.id ? 'bg-primary-fixed/30' : ''
+                  }`}
+                  title={`${item.label}（クリックで根拠・確定操作）`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-[12px] font-bold text-on-surface-variant">{item.label}</span>
+                    <span className="badge-base badge-ai !px-1.5 !py-0 !text-[10px]">AI推定・モデル再計算なし</span>
+                    <span className="ml-auto"><StatusIcon item={item} /></span>
+                  </div>
+                  <p className="mt-1.5 whitespace-pre-line text-[12.5px] leading-relaxed text-on-surface-variant">{item.effective_text}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
       )}
 
@@ -658,7 +684,7 @@ export function NumbersTab({ full, refresh, dealId, mode }: {
             </div>
           )}
           {selected.text_value && !editMode && (
-            <div className="mb-4 rounded bg-surface-container-low/60 p-3 text-[13px] leading-relaxed">
+            <div className="mb-4 whitespace-pre-line rounded bg-surface-container-low/60 p-3 text-[13px] leading-relaxed">
               {selected.effective_text}
             </div>
           )}

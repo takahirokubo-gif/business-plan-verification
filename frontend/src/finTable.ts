@@ -91,6 +91,13 @@ export function buildFinTable(items: ExtractedItem[]) {
 
 export type FinTable = ReturnType<typeof buildFinTable>
 
+/** 財務テーブル直下に表示する論述項目（財務ハイライト・ケース前提差異）のセクション名 */
+export const FIN_NOTE_SECTION = '財務ハイライト'
+
+export function finNotesOf(items: ExtractedItem[]): ExtractedItem[] {
+  return items.filter((it) => it.section === FIN_NOTE_SECTION && (it.effective_text ?? it.text_value))
+}
+
 /** 1行にぶら下がる項目（act/base/sponsor 最大3、またはKPI単独） */
 export function finRowItems(r: FinRow): ExtractedItem[] {
   return r.kpiItem
