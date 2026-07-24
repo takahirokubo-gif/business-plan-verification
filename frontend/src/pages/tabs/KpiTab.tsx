@@ -61,9 +61,14 @@ function NodeCard({ node, depth, onSelect, highlight, scenarioKeys, hasChildren,
       ) : (
         depth > 0 && <Icon name="subdirectory_arrow_right" className="-ml-1 text-[14px] text-outline-variant" />
       )}
-      <span className={`text-[13px] font-medium ${important ? 'text-amber-900' : ''}`}>{node.label}</span>
+      <span className={`shrink-0 text-[13px] font-medium ${important ? 'text-amber-900' : ''}`}>{node.label}</span>
+      {node.formula && (
+        <span className="font-data-tabular min-w-0 shrink truncate text-[12px] text-outline" title={node.formula}>
+          ＝ {node.formula.replace(/^[=＝]\s*/, '')}
+        </span>
+      )}
       {important && (
-        <span className="rounded bg-amber-200/80 px-1.5 py-0.5 text-[10px] font-bold text-amber-900">重要KPI</span>
+        <span className="shrink-0 rounded bg-amber-200/80 px-1.5 py-0.5 text-[10px] font-bold text-amber-900">重要KPI</span>
       )}
       {scenarioKeys.map((s) => (
         <span
@@ -205,7 +210,7 @@ export function KpiTab({ full, refresh, dealId, stage1Done }: {
         {!stage1Done && (
           <div className="mb-3 flex items-center gap-2 rounded border border-amber-300 bg-amber-50 px-4 py-2.5 text-[13px] text-amber-800">
             <Icon name="lock" className="text-[16px]" />
-            財務ダイジェストタブで必須項目をすべて確定すると、KPI構造を確定できます（表示は可能です）。
+            事業・財務タブで必須項目をすべて確定すると、KPI構造を確定できます（表示は可能です）。
           </div>
         )}
         {deal.kpi_stale_reason && (

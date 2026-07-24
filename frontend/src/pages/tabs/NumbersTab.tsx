@@ -57,16 +57,13 @@ function StatusIcon({ item }: { item: ExtractedItem }) {
 }
 
 /**
- * 抽出項目の確認・確定タブ。mode で表示範囲を切り替える：
- * - business … 事業概要タブ（案件基本情報・事業要約・定性項目）
- * - digest  … 財務ダイジェストタブ（財務情報テーブル・数値項目）
- * 確定フロー（根拠パネル・一括確定）は両モードで共通。
+ * 事業・財務タブ：案件基本情報・事業要約・財務情報テーブル・定性/数値項目を
+ * まとめて確認・確定する（根拠パネル・一括確定つき）。
  */
-export function NumbersTab({ full, refresh, dealId, mode }: {
+export function NumbersTab({ full, refresh, dealId }: {
   full: DealFull
   refresh: () => Promise<void>
   dealId: number
-  mode: 'business' | 'digest'
 }) {
   const { userKey } = useUser()
   const [selected, setSelected] = useState<ExtractedItem | null>(null)
@@ -85,20 +82,18 @@ export function NumbersTab({ full, refresh, dealId, mode }: {
   // 財務情報テーブル（act/base/sponsor＋KPIの数値項目を統合）
   const fin = useMemo(() => buildFinTable(items), [items])
 
-  // 財務テーブルに載らない項目のセクション表示。
-  // business＝定性項目（テキスト）、digest＝数値項目（ストラクチャー等）に振り分ける
+  // 財務テーブルに載らない項目（定性情報・ストラクチャー等）のセクション表示
   const sections = useMemo(() => {
     const map = new Map<string, ExtractedItem[]>()
     for (const it of items) {
       if (fin.tableIds.has(it.id)) continue
       if (it.section === FIN_NOTE_SECTION) continue // 財務テーブル直下に専用表示
-      if (mode === 'business' ? it.values != null : it.values == null) continue
       if (onlyPending && it.status === 'confirmed') continue
       if (!map.has(it.section)) map.set(it.section, [])
       map.get(it.section)!.push(it)
     }
     return [...map.entries()]
-  }, [items, onlyPending, fin, mode])
+  }, [items, onlyPending, fin])
 
   // 財務ハイライト・ケース前提差異（財務テーブル直下の論述ブロック）
   const finNotes = useMemo(() => finNotesOf(items), [items])
@@ -230,8 +225,7 @@ export function NumbersTab({ full, refresh, dealId, mode }: {
 
   return (
     <div>
-      {/* 案件基本情報（事業概要タブのみ） */}
-      {mode === 'business' && (
+      {/* 案件基本情報 */}
       <section className="card mb-4">
         <div className="border-b border-surface-container-high bg-surface-container-low/50 px-4 py-2.5 text-[13px] font-bold">
           案件基本情報
@@ -258,10 +252,9 @@ export function NumbersTab({ full, refresh, dealId, mode }: {
           </div>
         )}
       </section>
-      )}
 
-      {/* 事業要約（事業概要タブのみ） */}
-      {mode === 'business' && deal.summary && (
+      {/* 事業要約 */}
+      {deal.summary && (
         <section className="card mb-4">
           <div className="border-b border-surface-container-high bg-surface-container-low/50 px-4 py-2.5 text-[13px] font-bold">
             事業要約
@@ -270,7 +263,7 @@ export function NumbersTab({ full, refresh, dealId, mode }: {
         </section>
       )}
 
-      {mode === 'digest' && progress.required > 0 && progress.confirmed === progress.required && (
+      {progress.required > 0 && progress.confirmed === progress.required && (
         <div className="mb-3 flex items-center gap-2 rounded border border-green-300 bg-green-50 px-4 py-2.5 text-[13px] text-green-800">
           <Icon name="check_circle" className="text-[18px]" fill />
           必須項目がすべて確定しました。KPIツリータブへ進めます。
@@ -284,7 +277,7 @@ export function NumbersTab({ full, refresh, dealId, mode }: {
       )}
 
       {/* 財務情報：過去実績・Base・Sponsorを横並び、PL/重要KPI/BS/CFを縦並びの統合テーブル */}
-      {mode === 'digest' && fin.hasRows && (
+      {fin.hasRows && (
         <section className="card overflow-hidden">
           <div className="flex items-center justify-between border-b border-surface-container-high bg-surface-container-low/50 px-4 py-2.5 text-[13px] font-bold">
             <span className="flex items-center gap-2">

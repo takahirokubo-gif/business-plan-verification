@@ -126,7 +126,7 @@ export function OverviewTab({ full, onNavigate }: {
         className={`px-2 py-1.5 text-right ${first ? 'border-l border-surface-container-high' : ''} ${
           item ? 'cursor-pointer hover:bg-primary-fixed/30' : ''
         } ${item && item.status !== 'confirmed' ? 'bg-amber-50/70' : ''}`}
-        title={item ? `${item.label}（クリックで財務ダイジェストへ）` : undefined}
+        title={item ? `${item.label}（クリックで事業・財務タブへ）` : undefined}
       >
         {v != null
           ? <span className="font-data-tabular">{v.toLocaleString()}</span>
@@ -143,8 +143,8 @@ export function OverviewTab({ full, onNavigate }: {
         badges={bizPending > 0
           ? <Badge kind="warning">未確定 {bizPending}</Badge>
           : bizItems.length > 0 ? <Badge kind="success">✓ 確定済</Badge> : null}
-        editLabel="事業概要"
-        onEdit={() => onNavigate('business')}
+        editLabel="事業・財務"
+        onEdit={() => onNavigate('numbers')}
       >
         <div className="grid grid-cols-[380px_1fr] gap-6 px-4 py-3">
           <table className="self-start text-[12.5px]">
@@ -201,7 +201,7 @@ export function OverviewTab({ full, onNavigate }: {
             {finItems.length > 0 && finPending === 0 && finMismatch === 0 && <Badge kind="success">✓ 確定済</Badge>}
           </>
         }
-        editLabel="財務ダイジェスト"
+        editLabel="事業・財務"
         onEdit={() => onNavigate('numbers')}
       >
         {fin.hasRows ? (
@@ -275,7 +275,7 @@ export function OverviewTab({ full, onNavigate }: {
               </table>
             </div>
             <div className="border-t border-surface-container-low px-4 py-1.5 text-[11px] text-outline">
-              薄い黄色のセル＝未確定。●＝未確定あり、⚠＝資料間の不整合あり。セルをクリックすると財務ダイジェストタブで根拠を確認できます。
+              薄い黄色のセル＝未確定。●＝未確定あり、⚠＝資料間の不整合あり。セルをクリックすると事業・財務タブで根拠を確認できます。
             </div>
           </>
         ) : (

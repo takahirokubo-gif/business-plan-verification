@@ -13,12 +13,11 @@ import { ScenarioTab } from './tabs/ScenarioTab'
 import { ExportTab } from './tabs/ExportTab'
 import { MemoTab } from './tabs/MemoTab'
 
-// 概要（全体俯瞰）＋確認・修正タブ4つ＋出力系2つ
+// 概要（全体俯瞰）＋確認・修正タブ3つ＋出力系2つ
 const TABS = [
   { key: 'overview', label: '概要' },
-  { key: 'business', label: '事業概要' },
+  { key: 'numbers', label: '事業・財務' },
   { key: 'kpi', label: 'KPIツリー' },
-  { key: 'numbers', label: '財務ダイジェスト' },
   { key: 'scenario', label: 'ストレス仮説' },
   { key: 'export', label: 'エクスポート' },
   { key: 'memo', label: '審査相談メモ' },
@@ -36,7 +35,8 @@ export function DealDetail() {
   const { id } = useParams()
   const dealId = Number(id)
   const [searchParams, setSearchParams] = useSearchParams()
-  const tab = searchParams.get('tab') ?? 'overview'
+  const rawTab = searchParams.get('tab') ?? 'overview'
+  const tab = rawTab === 'business' ? 'numbers' : rawTab // 旧「事業概要」タブのURLは事業・財務へ
   const [full, setFull] = useState<DealFull | null>(null)
   const [error, setError] = useState('')
   const [showHistory, setShowHistory] = useState(false)
@@ -116,9 +116,8 @@ export function DealDetail() {
         {/* タブ本体 */}
         <div className="mt-4">
           {tab === 'overview' && <OverviewTab full={full} onNavigate={(t) => setSearchParams({ tab: t })} />}
-          {tab === 'business' && <NumbersTab full={full} refresh={refresh} dealId={dealId} mode="business" />}
+          {tab === 'numbers' && <NumbersTab full={full} refresh={refresh} dealId={dealId} />}
           {tab === 'kpi' && <KpiTab full={full} refresh={refresh} dealId={dealId} stage1Done={stage1Done} />}
-          {tab === 'numbers' && <NumbersTab full={full} refresh={refresh} dealId={dealId} mode="digest" />}
           {tab === 'scenario' && <ScenarioTab full={full} refresh={refresh} dealId={dealId} />}
           {tab === 'export' && <ExportTab full={full} refresh={refresh} dealId={dealId} />}
           {tab === 'memo' && <MemoTab full={full} refresh={refresh} dealId={dealId} />}
