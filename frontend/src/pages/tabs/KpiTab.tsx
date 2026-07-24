@@ -4,6 +4,7 @@ import { Icon } from '../../components/Icon'
 import { OriginBadge, Badge } from '../../components/Badge'
 import { ChatPanel } from '../../components/ChatPanel'
 import { EvidenceBlock, SlidePanel } from '../../components/EvidencePanel'
+import { EvidenceHover } from '../../components/EvidenceTooltip'
 import { ConfirmDialog } from '../../components/ConfirmDialog'
 import { useUser } from '../../context/UserContext'
 import { resolveKpiNode } from '../../kpiMatch'
@@ -61,12 +62,14 @@ function NodeCard({ node, depth, onSelect, highlight, scenarioKeys, hasChildren,
       ) : (
         depth > 0 && <Icon name="subdirectory_arrow_right" className="-ml-1 text-[14px] text-outline-variant" />
       )}
-      <span className={`shrink-0 text-[13px] font-medium ${important ? 'text-amber-900' : ''}`}>{node.label}</span>
-      {node.formula && (
-        <span className="font-data-tabular min-w-0 shrink truncate text-[12px] text-outline" title={node.formula}>
-          ＝ {node.formula.replace(/^[=＝]\s*/, '')}
-        </span>
-      )}
+      <EvidenceHover evidence={node.evidence} className="flex min-w-0 shrink items-center gap-2">
+        <span className={`shrink-0 text-[13px] font-medium ${important ? 'text-amber-900' : ''}`}>{node.label}</span>
+        {node.formula && (
+          <span className="font-data-tabular min-w-0 shrink truncate text-[12px] text-outline">
+            ＝ {node.formula.replace(/^[=＝]\s*/, '')}
+          </span>
+        )}
+      </EvidenceHover>
       {important && (
         <span className="shrink-0 rounded bg-amber-200/80 px-1.5 py-0.5 text-[10px] font-bold text-amber-900">重要KPI</span>
       )}

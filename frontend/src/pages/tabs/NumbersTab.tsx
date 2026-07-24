@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import { api } from '../../api'
 import { Icon } from '../../components/Icon'
 import { EvidenceBlock, SlidePanel } from '../../components/EvidencePanel'
+import { EvidenceHover } from '../../components/EvidenceTooltip'
 import { useUser } from '../../context/UserContext'
-import { buildFinTable, finNotesOf, finRowItems, FIN_NOTE_SECTION, sortYears } from '../../finTable'
+import { buildFinTable, cellText, finNotesOf, finRowItems, FIN_NOTE_SECTION, hasRatioRow, ratioValue, sortYears } from '../../finTable'
 import type { DealFull, ExtractedItem, Mismatch } from '../../types'
 
 /** mismatch のキー表記ゆれを吸収する（fixture形式と実AIの自由形式の両対応）。
@@ -356,19 +357,32 @@ export function NumbersTab({ full, refresh, dealId }: {
                           className={`px-2 py-2 text-right ${first ? 'border-l border-surface-container-high' : ''} ${
                             item ? 'cursor-pointer hover:bg-primary-fixed/30' : ''
                           } ${item && item.status !== 'confirmed' ? 'bg-amber-50/70' : ''}`}
-                          title={item ? `${item.label}（クリックで根拠・確定操作）` : undefined}
                         >
-                          {v != null
-                            ? <span className={`font-data-tabular ${item?.mismatch ? 'rounded outline outline-1 outline-amber-300 px-1' : ''}`}>{v.toLocaleString()}</span>
-                            : <span className="text-outline-variant">－</span>}
+                          {v != null && item
+                            ? (
+                              <EvidenceHover evidence={item.evidence}>
+                                <span className={`font-data-tabular ${item.mismatch ? 'rounded outline outline-1 outline-amber-300 px-1' : ''}`}>{cellText(item, v)}</span>
+                              </EvidenceHover>
+                            )
+                            : v != null
+                              ? <span className="font-data-tabular">{v.toLocaleString()}</span>
+                              : <span className="text-outline-variant">－</span>}
                         </td>
                       )
                     }
+                    // 同率（対売上比）行：非インタラクティブのグレー表示
+                    const ratioCell = (c: 'act' | 'base' | 'sponsor', y: string, first: boolean) => (
+                      <td key={y} className={`px-2 py-1 text-right ${first ? 'border-l border-surface-container-high' : ''}`}>
+                        <span className="font-data-tabular text-[11px] text-outline">{ratioValue(fin, r, c, y) ?? ''}</span>
+                      </td>
+                    )
+                    const groupSpan = rows.length + rows.filter(hasRatioRow).length
                     return (
-                      <tr key={r.metric} className="border-b border-surface-container-low last:border-0">
+                      <Fragment key={r.metric}>
+                      <tr className="border-b border-surface-container-low last:border-0">
                         {ri === 0 && (
                           <td
-                            rowSpan={rows.length}
+                            rowSpan={groupSpan}
                             className="w-8 border-r border-surface-container-high bg-surface-container-low/40 px-1 py-2 text-center align-middle text-[11px] font-bold text-on-surface-variant"
                             style={{ writingMode: 'vertical-rl' }}
                           >
@@ -401,6 +415,16 @@ export function NumbersTab({ full, refresh, dealId }: {
                         {fin.yearsBase.map((y, i) => cell(r.kpiItem ?? r.items.base, y, i === 0))}
                         {fin.yearsSponsor.map((y, i) => cell(r.kpiItem ? undefined : r.items.sponsor, y, i === 0))}
                       </tr>
+                      {hasRatioRow(r) && (
+                        <tr className="border-b border-surface-container-low">
+                          <td />
+                          <td className="px-2 py-1 pl-6 text-[11px] text-outline">同率</td>
+                          {fin.yearsAct.map((y, i) => ratioCell('act', y, i === 0))}
+                          {fin.yearsBase.map((y, i) => ratioCell('base', y, i === 0))}
+                          {fin.yearsSponsor.map((y, i) => ratioCell('sponsor', y, i === 0))}
+                        </tr>
+                      )}
+                      </Fragment>
                     )
                   }),
                 )}
@@ -420,14 +444,15 @@ export function NumbersTab({ full, refresh, dealId }: {
                   className={`cursor-pointer border-b border-surface-container-low px-4 py-3 last:border-0 hover:bg-primary-fixed/20 ${
                     selected?.id === item.id ? 'bg-primary-fixed/30' : ''
                   }`}
-                  title={`${item.label}（クリックで根拠・確定操作）`}
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-[12px] font-bold text-on-surface-variant">{item.label}</span>
                     <span className="badge-base badge-ai !px-1.5 !py-0 !text-[10px]">AI推定・モデル再計算なし</span>
                     <span className="ml-auto"><StatusIcon item={item} /></span>
                   </div>
-                  <p className="mt-1.5 whitespace-pre-line text-[12.5px] leading-relaxed text-on-surface-variant">{item.effective_text}</p>
+                  <EvidenceHover evidence={item.evidence} className="block">
+                    <p className="mt-1.5 whitespace-pre-line text-[12.5px] leading-relaxed text-on-surface-variant">{item.effective_text}</p>
+                  </EvidenceHover>
                 </div>
               ))}
             </div>
@@ -521,9 +546,11 @@ export function NumbersTab({ full, refresh, dealId }: {
                         return (
                           <td key={y} className="px-3 py-2.5 text-right">
                             {v != null ? (
-                              <span className={`font-data-tabular ${changed ? 'font-bold text-primary-container' : ''} ${item.mismatch ? 'rounded bg-amber-50 px-1 py-0.5 outline outline-1 outline-amber-300' : ''}`}>
-                                {v.toLocaleString()}
-                              </span>
+                              <EvidenceHover evidence={item.evidence}>
+                                <span className={`font-data-tabular ${changed ? 'font-bold text-primary-container' : ''} ${item.mismatch ? 'rounded bg-amber-50 px-1 py-0.5 outline outline-1 outline-amber-300' : ''}`}>
+                                  {v.toLocaleString()}
+                                </span>
+                              </EvidenceHover>
                             ) : <span className="text-outline-variant">－</span>}
                           </td>
                         )
@@ -560,9 +587,11 @@ export function NumbersTab({ full, refresh, dealId }: {
                   {item.label}
                   {!item.required && <span className="ml-1.5 text-[10px] text-outline">任意</span>}
                 </div>
-                <div className="flex-1 text-[13px] leading-relaxed text-on-surface-variant">
-                  {item.effective_text ?? (item.effective_values?.FY26 != null ? `${item.effective_values.FY26.toLocaleString()}百万円` : '')}
-                </div>
+                <EvidenceHover evidence={item.evidence} className="min-w-0 flex-1">
+                  <div className="text-[13px] leading-relaxed text-on-surface-variant">
+                    {item.effective_text ?? (item.effective_values?.FY26 != null ? `${item.effective_values.FY26.toLocaleString()}百万円` : '')}
+                  </div>
+                </EvidenceHover>
                 <div className="w-20 text-center"><StatusIcon item={item} /></div>
               </div>
             ))}

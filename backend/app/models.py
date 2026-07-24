@@ -268,6 +268,9 @@ class Scenario(Base):
     change_text: Mapped[str | None] = mapped_column(Text, nullable=True)
     change_basis: Mapped[str | None] = mapped_column(Text, nullable=True)
     impact: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # インパクト指標の分解（参考試算表示用）：[{metric, formula, before, after, note}]。
+    # {{...}} で囲んだ部分はストレス起因の変化としてUIで強調表示される
+    impact_calc_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     safeguards: Mapped[str | None] = mapped_column(Text, nullable=True)
     questions: Mapped[str | None] = mapped_column(Text, nullable=True)
     adopted: Mapped[bool] = mapped_column(Boolean, default=False)
@@ -283,7 +286,8 @@ class Scenario(Base):
                     title=self.title, cause=self.cause,
                     affected_kpis=_j(self.affected_kpis_json) or [],
                     change_text=self.change_text, change_basis=self.change_basis,
-                    impact=self.impact, safeguards=self.safeguards, questions=self.questions,
+                    impact=self.impact, impact_calc=_j(self.impact_calc_json),
+                    safeguards=self.safeguards, questions=self.questions,
                     adopted=self.adopted, rejection_note=self.rejection_note,
                     stale_reason=self.stale_reason,
                     updated_at=self.updated_at.isoformat() if self.updated_at else None)

@@ -54,71 +54,275 @@ function fmtNum(v: number, suffix: string): string {
   return `${rounded.toLocaleString()}${suffix}`
 }
 
-/** 参考試算：影響KPIの数式・変化幅・変化後の値（基準値×変化率のシステム計算）。
- *  AIの再計算ではなく、確定済みの基準値と変化幅からの決定的な単純試算。 */
+const labelCore = (l: string) => l.replace(/（.*/, '')
+
+/** impact_calc の {{...}} マーカーを強調スパンに変換する */
+function hlText(text: string, cls: string): React.ReactNode {
+  return text.split(/\{\{(.*?)\}\}/g).map((part, i) =>
+    i % 2 === 1 ? <b key={i} className={cls}>{part}</b> : <span key={i}>{part}</span>)
+}
+/** ノードの表示用の値（'88%（FY26実績）' → '88%'） */
+const displayVal = (n: KpiNode) => (n.value_text ?? '').replace(/（.*?）/g, '').trim()
+
+interface Seg { text: string; hl: boolean }
+
+/** 数式のラベルを値に置換したセグメント列を作る。
+ *  stressedMap があれば該当KPIをストレス後の値（強調）に置き換える。決定的な文字列置換のみ。 */
+function substituteFormula(formula: string, nodes: KpiNode[], stressedMap: Map<string, string> | null): Seg[] {
+  let segs: Seg[] = [{ text: formula.replace(/^[=＝]\s*/, ''), hl: false }]
+  // 長いラベルから置換して部分一致の誤置換を防ぐ（例:「在籍登録スタッフ数」を先に）
+  const candidates = nodes
+    .map((n) => ({ core: labelCore(n.label), val: displayVal(n) }))
+    .filter((c) => c.core && (c.val || stressedMap?.has(c.core)))
+    .sort((a, b) => b.core.length - a.core.length)
+  for (const c of candidates) {
+    const replacement = stressedMap?.get(c.core) ?? c.val
+    if (!replacement) continue
+    const hl = stressedMap?.has(c.core) ?? false
+    const next: Seg[] = []
+    for (const s of segs) {
+      if (s.hl || !s.text.includes(c.core)) { next.push(s); continue }
+      const parts = s.text.split(c.core)
+      parts.forEach((p, i) => {
+        if (p) next.push({ text: p, hl: false })
+        if (i < parts.length - 1) next.push({ text: replacement, hl })
+      })
+    }
+    segs = next
+  }
+  return segs
+}
+
+/** 参考試算：ストレス（KPI変化）がKPIツリーの数式を通じてインパクトへ波及する様子を、
+ *  「計算式／元の値／ストレス後」の3列で見せる。AIの再計算ではなく決定的な単純置換・比例計算のみ。 */
 function RefCalc({ sc, nodes }: { sc: Scenario; nodes: KpiNode[] }) {
   // あいまい一致・正規表現パースはコストがあるため、入力が変わったときだけ再計算
-  const rows = useMemo(() => {
+  const calc = useMemo(() => {
     // 変化幅の記述は change_text 以外（発生要因・根拠）に書かれていることもあるため広く探す
     const searchText = [sc.change_text, sc.cause, sc.change_basis].filter(Boolean).join('／')
-    return (sc.affected_kpis ?? [])
+    const kpis = (sc.affected_kpis ?? [])
       .map((id) => {
         const node = resolveKpiNode(nodes, id)
         if (!node) return null
         const base = parseBase(node.value_text)
         const arrow = parseArrowNear(searchText, node.label)
         const pct = parseChangePct(searchText, node.label)
-        // このKPIが登場する数式（＝シナリオに関係するモデル構造）
-        const related = nodes.filter(
-          (n) => n.formula && (n.node_id === node.node_id || n.formula.includes(node.label.replace(/（.*/, ''))),
-        )
-        return { node, base, arrow, pct, related }
+        const stressed = arrow ? arrow.to : base && pct != null ? base.value * (1 + pct / 100) : null
+        const suffix = arrow ? '%' : base?.suffix ?? ''
+        const factor = arrow && arrow.from !== 0 ? arrow.to / arrow.from : pct != null ? 1 + pct / 100 : null
+        const changeLabel = arrow
+          ? `${fmtNum(((arrow.to - arrow.from) / arrow.from) * 100, '%')}`
+          : pct != null ? fmtNum(pct, '%') : null
+        return { node, base, stressed, suffix, factor, changeLabel }
       })
       .filter((r): r is NonNullable<typeof r> => r != null)
+
+    // ストレス後の値マップ（ラベル核 → 表示文字列）と比例係数マップ
+    const stressedMap = new Map<string, string>()
+    const factorMap = new Map<string, number>()
+    for (const k of kpis) {
+      if (k.stressed == null) continue
+      stressedMap.set(labelCore(k.node.label), fmtNum(k.stressed, k.suffix))
+      if (k.factor != null) factorMap.set(labelCore(k.node.label), k.factor)
+    }
+
+    // 分解チェーン：ルート（EBITDA等）からストレス対象KPIまでの経路上の数式を全部展開する。
+    // 「インパクト指標 → どの数式を通って → ストレスKPIに行き着くか」を漏れなく見せるための構造。
+    // 対象KPIのノード自身に加え、対象KPIを数式内で参照しているノード（例: 採用費＝新規採用人数×CPA）
+    // の経路も含める（ツリーの親子関係と数式参照の両方を辿る）
+    const byId = new Map(nodes.map((n) => [n.node_id, n]))
+    const hlAll = new Map(kpis.map((k) => [labelCore(k.node.label), labelCore(k.node.label)]))
+    const affectedNodes = kpis.map((k) => k.node)
+    const referencing = nodes.filter(
+      (n) => n.formula && kpis.some((k) => n.formula!.includes(labelCore(k.node.label))),
+    )
+    const pathIds = new Set<string>()
+    for (const seed of [...affectedNodes, ...referencing]) {
+      let cur: KpiNode | undefined = seed
+      while (cur) {
+        pathIds.add(cur.node_id)
+        cur = cur.parent_id ? byId.get(cur.parent_id) : undefined
+      }
+    }
+    const chain: { node: KpiNode; depth: number; sym: Seg[] }[] = []
+    const visit = (n: KpiNode, depth: number) => {
+      const hasLine = !!n.formula
+      if (hasLine) chain.push({ node: n, depth, sym: substituteFormula(n.formula!, affectedNodes, hlAll) })
+      for (const c of nodes.filter((x) => x.parent_id === n.node_id && pathIds.has(x.node_id))) {
+        visit(c, depth + (hasLine ? 1 : 0))
+      }
+    }
+    for (const r of nodes.filter((x) => pathIds.has(x.node_id) && (!x.parent_id || !pathIds.has(x.parent_id)))) {
+      visit(r, 0)
+    }
+
+    // 影響KPIが登場する数式行（重複排除・シナリオに関係するモデル構造）
+    const formulaNodes = nodes.filter(
+      (n) => n.formula && kpis.some((k) => n.formula!.includes(labelCore(k.node.label))),
+    )
+    const rows = formulaNodes.slice(0, 4).map((n) => {
+      // ×のみの数式は「影響KPIの変化率の積」で結果を比例計算できる（＋−を含む式は結果を出さない）
+      const body = n.formula!.replace(/^[=＝]\s*/, '')
+      const scalable = !/[+＋−]|(?<!\d)-/.test(body)
+      let factorProduct: number | null = 1
+      for (const [core, f] of factorMap) {
+        if (body.includes(core)) factorProduct = factorProduct == null ? null : factorProduct * f
+      }
+      const affected = kpis.filter((k) => k.stressed != null && body.includes(labelCore(k.node.label)))
+      const hasAffected = affected.length > 0
+      const ownBase = parseBase(n.value_text)
+      const stressedResult = scalable && hasAffected && factorProduct != null && ownBase
+        ? fmtNum(ownBase.value * factorProduct, ownBase.suffix)
+        : null
+      // 記号のままの数式（ストレス対象KPIだけハイライト）
+      const hlOnly = new Map(affected.map((k) => [labelCore(k.node.label), labelCore(k.node.label)]))
+      const origResult = displayVal(n) || null
+      // 補足説明：どのKPIがどう変わり、この数式の結果がどうなるか
+      const changes = affected
+        .map((k) => `${k.node.label}が${displayVal(k.node) || (k.base && fmtNum(k.base.value, k.suffix))}→${fmtNum(k.stressed!, k.suffix)}`)
+        .join('、')
+      const caption = stressedResult && origResult && factorProduct != null
+        ? `${changes}となるため、${n.label}は${origResult}から${stressedResult}（${fmtNum((factorProduct - 1) * 100, '%')}）に変化する単純試算です。`
+        : `${changes}の変化が${n.label}に波及します（利益・返済能力への影響は【インパクト】欄のAI推定を参照）。`
+      return {
+        node: n,
+        sym: substituteFormula(n.formula!, affected.map((k) => k.node), hlOnly),
+        orig: substituteFormula(n.formula!, nodes, null),
+        stress: substituteFormula(n.formula!, nodes, stressedMap),
+        origResult,
+        stressedResult,
+        caption,
+      }
+    })
+    return { kpis, rows, chain }
   }, [sc, nodes])
-  if (rows.length === 0) return null
-  const calculable = rows.filter((r) => r.arrow || (r.base && r.pct != null))
+
+  const impactCalc = sc.impact_calc ?? []
+  if (calc.kpis.length === 0 && impactCalc.length === 0) return null
+  const calculable = calc.kpis.filter((k) => k.stressed != null)
+
   return (
     <div className="mt-2 rounded border border-primary-container/30 bg-primary-fixed/10 p-3">
       <div className="flex items-center gap-1.5 text-[11px] font-bold text-primary-container">
         <Icon name="calculate" className="text-[14px]" />
-        参考試算（AI抽出の変化幅 × 確定基準値のシステム単純計算。モデル全体の再計算ではありません）
+        参考試算：インパクト指標の分解（ストレスKPIとの紐づき）
+        （値入り計算式による参考表示。モデル全体の再計算ではありません）
       </div>
-      <div className="mt-2 space-y-2.5">
-        {rows.map(({ node, base, arrow, pct, related }) => (
-          <div key={node.node_id} className="text-[12px]">
-            <div className="flex flex-wrap items-baseline gap-x-2">
-              <span className="font-bold">{node.label}</span>
-              {arrow ? (
-                <span className="font-data-tabular">
-                  {fmtNum(arrow.from, '%')}
-                  <Icon name="arrow_right_alt" className="mx-1 align-middle text-[14px] text-primary-container" />
-                  <b className="text-primary-container">{fmtNum(arrow.to, '%')}</b>
-                  <span className="ml-1.5 text-on-surface-variant">
-                    （Δ {fmtNum(arrow.to - arrow.from, 'pt')}／{fmtNum(((arrow.to - arrow.from) / arrow.from) * 100, '%')}）
-                  </span>
-                </span>
-              ) : base && pct != null ? (
-                <span className="font-data-tabular">
-                  {fmtNum(base.value, base.suffix)} × (1 {pct >= 0 ? '+' : '−'} {Math.abs(pct)}%)
-                  <Icon name="arrow_right_alt" className="mx-1 align-middle text-[14px] text-primary-container" />
-                  <b className="text-primary-container">{fmtNum(base.value * (1 + pct / 100), base.suffix)}</b>
-                </span>
-              ) : (
-                <span className="text-on-surface-variant">数値の変化幅を特定できないため試算なし（本文参照）</span>
-              )}
-            </div>
-            {related.slice(0, 2).map((n) => (
-              <div key={n.node_id} className="font-data-tabular mt-0.5 text-[11px] text-on-surface-variant">
-                <Icon name="function" className="mr-0.5 align-middle text-[12px]" />
-                {n.label}＝{n.formula}
-              </div>
-            ))}
+
+      {/* ① ストレスをかける対象KPI（ハイライト表示） */}
+      <div className="mt-2 space-y-1">
+        {calc.kpis.map((k) => (
+          <div key={k.node.node_id} className="flex flex-wrap items-baseline gap-x-2 text-[12px]">
+            <span className="rounded bg-amber-100 px-1.5 py-0.5 font-bold text-amber-900">{k.node.label}</span>
+            {k.stressed != null ? (
+              <span className="font-data-tabular">
+                {displayVal(k.node) || (k.base && fmtNum(k.base.value, k.suffix))}
+                <Icon name="arrow_right_alt" className="mx-1 align-middle text-[14px] text-error" />
+                <b className="text-error">{fmtNum(k.stressed, k.suffix)}</b>
+                {k.changeLabel && <span className="ml-1.5 text-on-surface-variant">（{k.changeLabel}）</span>}
+              </span>
+            ) : (
+              <span className="text-on-surface-variant">数値の変化幅を特定できないため試算なし（本文参照）</span>
+            )}
           </div>
         ))}
       </div>
+
+      {/* ①' KPIツリーの分解チェーン：インパクト指標の構成要素からストレスKPIまで全部展開 */}
+      {calc.chain.length > 0 && (
+        <div className="mt-2.5 rounded border border-primary-container/20 bg-white px-3 py-2.5">
+          <div className="text-[10.5px] font-bold text-on-surface-variant">
+            KPIツリーの分解（インパクト指標の構成要素 → ストレス対象KPI）
+          </div>
+          <div className="font-data-tabular mt-1.5 space-y-0.5 text-[12px] leading-relaxed">
+            {calc.chain.map(({ node, depth, sym }) => (
+              <div key={node.node_id} style={{ marginLeft: depth * 18 }}>
+                {depth > 0 && <Icon name="subdirectory_arrow_right" className="mr-0.5 align-middle text-[13px] text-outline-variant" />}
+                <b className="font-sans">{node.label}</b>
+                <span className="text-on-surface-variant"> ＝ {sym.map((s, i) => s.hl
+                  ? <span key={i} className="rounded bg-amber-100 px-0.5 font-bold text-amber-900">{s.text}</span>
+                  : <span key={i}>{s.text}</span>)}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ② インパクト指標の分解：左辺＝インパクトの最終指標、右辺＝ストレス対象KPIを含む式 */}
+      {impactCalc.length > 0 && (
+        <div className="mt-2.5 space-y-2">
+          {impactCalc.map((b, bi) => (
+            <div key={bi} className="rounded border border-primary-container/20 bg-white px-3 py-2.5">
+              {/* 指標 ＝ 分解式 */}
+              <div className="font-data-tabular text-[12px] leading-relaxed">
+                <b className="font-sans">{b.metric}</b>
+                <span className="text-on-surface-variant"> ＝ {hlText(b.formula, 'rounded bg-amber-100 px-0.5 font-bold text-amber-900')}</span>
+              </div>
+              {/* ストレス前後の値入り計算式（縦積みで比較） */}
+              <div className="font-data-tabular mt-1.5 grid grid-cols-[72px_minmax(0,1fr)] gap-y-1 border-t border-surface-container-low pt-1.5 text-[12px] leading-relaxed">
+                <span className="text-[11px] text-outline">ストレス前</span>
+                <span className="text-on-surface-variant">＝ {hlText(b.before, 'text-on-surface')}</span>
+                <span className="text-[11px] font-bold text-error">ストレス後</span>
+                <span className="text-on-surface-variant">＝ {hlText(b.after, 'text-error')}</span>
+              </div>
+              {/* 補足説明 */}
+              {b.note && (
+                <div className="mt-1.5 text-[11px] leading-relaxed text-on-surface-variant">
+                  <Icon name="subdirectory_arrow_right" className="mr-0.5 align-middle text-[12px] text-outline" />
+                  {hlText(b.note, 'rounded bg-amber-100 px-0.5 font-medium text-amber-900')}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ②' impact_calc が無いシナリオ（チャット追加等）：KPIツリーの数式から積み上げる従来表示 */}
+      {impactCalc.length === 0 && calc.rows.length > 0 && (
+        <div className="mt-2.5 space-y-2">
+          {calc.rows.map((r) => (
+            <div key={r.node.node_id} className="rounded border border-primary-container/20 bg-white px-3 py-2.5">
+              {/* 数式（ストレス対象KPIをハイライト） */}
+              <div className="font-data-tabular text-[12px] leading-relaxed">
+                <b className="font-sans">{r.node.label}</b>
+                <span className="text-on-surface-variant"> ＝ {r.sym.map((s, i) => s.hl
+                  ? <span key={i} className="rounded bg-amber-100 px-0.5 font-bold text-amber-900">{s.text}</span>
+                  : <span key={i}>{s.text}</span>)}
+                </span>
+              </div>
+              {/* ストレス前後の値入り計算式（縦積みで桁を比較しやすく） */}
+              <div className="font-data-tabular mt-1.5 grid grid-cols-[72px_minmax(0,1fr)] gap-y-1 border-t border-surface-container-low pt-1.5 text-[12px] leading-relaxed">
+                <span className="text-[11px] text-outline">ストレス前</span>
+                <span className="text-on-surface-variant">
+                  ＝ {r.orig.map((s, i) => <span key={i}>{s.text}</span>)}
+                  {r.origResult && <span> ＝ <b className="text-on-surface">{r.origResult}</b></span>}
+                </span>
+                <span className="text-[11px] font-bold text-error">ストレス後</span>
+                <span className="text-on-surface-variant">
+                  ＝ {r.stress.map((s, i) => s.hl
+                    ? <b key={i} className="text-error">{s.text}</b>
+                    : <span key={i}>{s.text}</span>)}
+                  {r.stressedResult && <span> ＝ <b className="text-error">{r.stressedResult}</b></span>}
+                </span>
+              </div>
+              {/* 補足説明 */}
+              <div className="mt-1.5 text-[11px] leading-relaxed text-on-surface-variant">
+                <Icon name="subdirectory_arrow_right" className="mr-0.5 align-middle text-[12px] text-outline" />
+                {r.caption}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ③ インパクトへの接続 */}
+      <div className="mt-2 text-[11px] leading-relaxed text-on-surface-variant">
+        ※ 上記は<b>【ストレスと根拠】</b>のKPI変化が<b>【インパクト】</b>欄の推定値
+        （AI推定・モデル再計算なし）にどう繋がるかを分解して示した参考表示です。
+      </div>
       {calculable.length === 0 && (
-        <div className="mt-2 text-[11px] text-outline">
+        <div className="mt-1.5 text-[11px] text-outline">
           ※ シナリオ本文に数値の変化幅（例: -15%、76%→74%）が明記されると自動で試算されます。
         </div>
       )}

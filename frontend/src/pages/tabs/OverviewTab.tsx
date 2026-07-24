@@ -1,7 +1,8 @@
-import { useMemo } from 'react'
+import { Fragment, useMemo } from 'react'
 import { Icon } from '../../components/Icon'
 import { Badge } from '../../components/Badge'
-import { buildFinTable, finNotesOf, finRowItems } from '../../finTable'
+import { EvidenceHover } from '../../components/EvidenceTooltip'
+import { buildFinTable, cellText, finNotesOf, finRowItems, hasRatioRow, ratioValue } from '../../finTable'
 import type { DealFull, ExtractedItem, KpiNode } from '../../types'
 
 /** 長文のAIテキストを先頭n文に要約表示する */
@@ -105,12 +106,14 @@ export function OverviewTab({ full, onNavigate }: {
           <span className={`shrink-0 ${n.star ? 'text-amber-600' : 'text-outline-variant'}`}>
             {n.star ? '★' : '・'}
           </span>
-          <span className={`shrink-0 font-bold ${n.star ? 'text-amber-900' : ''}`}>{n.label}</span>
-          {n.formula ? (
-            <span className="font-data-tabular text-on-surface-variant">＝ {n.formula.replace(/^[=＝]\s*/, '')}</span>
-          ) : n.value_text ? (
-            <span className="text-on-surface-variant">{n.value_text}</span>
-          ) : null}
+          <EvidenceHover evidence={n.evidence} className="flex min-w-0 items-baseline gap-2">
+            <span className={`shrink-0 font-bold ${n.star ? 'text-amber-900' : ''}`}>{n.label}</span>
+            {n.formula ? (
+              <span className="font-data-tabular text-on-surface-variant">＝ {n.formula.replace(/^[=＝]\s*/, '')}</span>
+            ) : n.value_text ? (
+              <span className="text-on-surface-variant">{n.value_text}</span>
+            ) : null}
+          </EvidenceHover>
         </div>
         {renderKpiLines(n.node_id, depth + 1)}
       </div>
@@ -126,11 +129,16 @@ export function OverviewTab({ full, onNavigate }: {
         className={`px-2 py-1.5 text-right ${first ? 'border-l border-surface-container-high' : ''} ${
           item ? 'cursor-pointer hover:bg-primary-fixed/30' : ''
         } ${item && item.status !== 'confirmed' ? 'bg-amber-50/70' : ''}`}
-        title={item ? `${item.label}（クリックで事業・財務タブへ）` : undefined}
       >
-        {v != null
-          ? <span className="font-data-tabular">{v.toLocaleString()}</span>
-          : <span className="text-outline-variant">－</span>}
+        {v != null && item
+          ? (
+            <EvidenceHover evidence={item.evidence}>
+              <span className="font-data-tabular">{cellText(item, v)}</span>
+            </EvidenceHover>
+          )
+          : v != null
+            ? <span className="font-data-tabular">{v.toLocaleString()}</span>
+            : <span className="text-outline-variant">－</span>}
       </td>
     )
   }
@@ -246,11 +254,18 @@ export function OverviewTab({ full, onNavigate }: {
                     rows.map((r, ri) => {
                       const rowItems = finRowItems(r)
                       const anyUnconfirmed = rowItems.some((it) => it.status !== 'confirmed')
+                      const ratioCell = (c: 'act' | 'base' | 'sponsor', y: string, first: boolean) => (
+                        <td key={y} className={`px-2 py-1 text-right ${first ? 'border-l border-surface-container-high' : ''}`}>
+                          <span className="font-data-tabular text-[11px] text-outline">{ratioValue(fin, r, c, y) ?? ''}</span>
+                        </td>
+                      )
+                      const groupSpan = rows.length + rows.filter(hasRatioRow).length
                       return (
-                        <tr key={r.metric} className="border-b border-surface-container-low last:border-0">
+                        <Fragment key={r.metric}>
+                        <tr className="border-b border-surface-container-low last:border-0">
                           {ri === 0 && (
                             <td
-                              rowSpan={rows.length}
+                              rowSpan={groupSpan}
                               className="w-8 border-r border-surface-container-high bg-surface-container-low/40 px-1 py-2 text-center align-middle text-[11px] font-bold text-on-surface-variant"
                               style={{ writingMode: 'vertical-rl' }}
                             >
@@ -268,6 +283,15 @@ export function OverviewTab({ full, onNavigate }: {
                           {fin.yearsBase.map((y, i) => finCell(r.kpiItem ?? r.items.base, y, i === 0))}
                           {fin.yearsSponsor.map((y, i) => finCell(r.kpiItem ? undefined : r.items.sponsor, y, i === 0))}
                         </tr>
+                        {hasRatioRow(r) && (
+                          <tr className="border-b border-surface-container-low">
+                            <td className="px-2 py-1 pl-6 text-[11px] text-outline">同率</td>
+                            {fin.yearsAct.map((y, i) => ratioCell('act', y, i === 0))}
+                            {fin.yearsBase.map((y, i) => ratioCell('base', y, i === 0))}
+                            {fin.yearsSponsor.map((y, i) => ratioCell('sponsor', y, i === 0))}
+                          </tr>
+                        )}
+                        </Fragment>
                       )
                     }),
                   )}
@@ -292,7 +316,9 @@ export function OverviewTab({ full, onNavigate }: {
                   <span className="text-[12px] font-bold text-on-surface-variant">{item.label}</span>
                   <span className="badge-base badge-ai !px-1.5 !py-0 !text-[10px]">AI推定・モデル再計算なし</span>
                 </div>
-                <p className="mt-1.5 whitespace-pre-line text-[12.5px] leading-relaxed text-on-surface-variant">{item.effective_text}</p>
+                <EvidenceHover evidence={item.evidence} className="block">
+                  <p className="mt-1.5 whitespace-pre-line text-[12.5px] leading-relaxed text-on-surface-variant">{item.effective_text}</p>
+                </EvidenceHover>
               </div>
             ))}
           </div>

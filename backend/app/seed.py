@@ -125,6 +125,7 @@ def run_seed(db):
             affected_kpis_json=json.dumps(c.get("affected_kpis", []), ensure_ascii=False),
             change_text=c.get("change") or c.get("change_text"),
             change_basis=c.get("change_basis"), impact=c.get("impact"),
+            impact_calc_json=json.dumps(c["impact_calc"], ensure_ascii=False) if c.get("impact_calc") else None,
             safeguards=c.get("safeguards"), questions=c.get("questions"),
             adopted=c.get("adopted", False), rejection_note=c.get("rejection_note"),
             order_index=idx, updated_at=_dt("2026-07-04T14:30:00")))

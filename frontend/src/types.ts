@@ -39,11 +39,26 @@ export interface Deal extends DealListItem {
   created_at: string | null
 }
 
+/** 根拠吹き出しに出す「ソースの抜粋イメージ」。
+ *  sheet＝Excel/表形式（該当行ハイライト＋数式）、doc＝PDF/テキスト（該当文をマーカー強調） */
+export interface EvidenceSnippet {
+  kind: 'sheet' | 'doc'
+  /** リード文の上書き（未指定なら kind と formula から自動生成） */
+  lead?: string
+  title?: string
+  head?: string[]
+  rows?: { name: string; cells: string[]; hl?: boolean }[]
+  formula?: string
+  text?: string
+  hl?: string
+}
+
 export interface Evidence {
   file: string
   location: string
   quote: string | null
   logic: string
+  snippet?: EvidenceSnippet | null
 }
 
 export interface Mismatch {
@@ -94,6 +109,16 @@ export interface KpiNode {
   added_via_chat: boolean
 }
 
+/** インパクト指標の分解（参考試算）：左辺＝最終指標、右辺＝ストレス対象KPIを含む式。
+ *  {{...}} で囲まれた部分はストレス起因の変化としてUIで強調表示される */
+export interface ImpactCalcBlock {
+  metric: string
+  formula: string
+  before: string
+  after: string
+  note: string | null
+}
+
 export interface Scenario {
   id: number
   key: string
@@ -105,6 +130,7 @@ export interface Scenario {
   change_text: string | null
   change_basis: string | null
   impact: string | null
+  impact_calc: ImpactCalcBlock[] | null
   safeguards: string | null
   questions: string | null
   adopted: boolean

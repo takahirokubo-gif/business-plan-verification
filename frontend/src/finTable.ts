@@ -28,6 +28,19 @@ export interface FinRow {
 
 const BS_METRICS = new Set(['cash', 'net_assets', 'debt', 'total_assets', 'goodwill', 'net_debt'])
 const CF_METRICS = new Set(['fcf', 'op_cf', 'inv_cf', 'fin_cf', 'capex'])
+const KPI_METRICS = new Set(['utilization', 'new_hires', 'unit_price', 'cpa'])
+
+/** 表示行の標準順序（PL→重要KPI→BS→CFの中での並び）。未知の指標は各グループ末尾に出す */
+const METRIC_ORDER = [
+  'revenue', 'gross', 'op', 'ordinary', 'ni', 'ebitda',
+  'utilization', 'new_hires', 'unit_price', 'cpa',
+  'cash', 'goodwill', 'net_assets',
+  'op_cf', 'inv_cf', 'fin_cf', 'fcf',
+]
+/** 抽出はするがテーブルには出さない指標（エクスポート等では使用） */
+const HIDDEN_METRICS = new Set(['debt', 'total_assets'])
+/** この指標の直後に「同率」（対売上比）行を挟む */
+const RATIO_AFTER = new Set(['gross', 'op', 'ordinary'])
 
 function parseCaseKey(key: string): { case: CaseKey; metric: string } | null {
   const m = key.match(/^(act|base|sponsor)_(.+)$/)
@@ -50,9 +63,14 @@ export function buildFinTable(items: ExtractedItem[]) {
     if (!it.values) continue
     const ck = parseCaseKey(it.key)
     if (ck) {
+      if (HIDDEN_METRICS.has(ck.metric)) {
+        tableIds.add(it.id) // 表には出さないがセクション表示にも出さない（帳票では使用）
+        continue
+      }
       let row = rowByMetric.get(ck.metric)
       if (!row) {
-        const group: FinGroup = BS_METRICS.has(ck.metric) ? 'BS' : CF_METRICS.has(ck.metric) ? 'CF' : 'PL'
+        const group: FinGroup = KPI_METRICS.has(ck.metric) ? '重要KPI'
+          : BS_METRICS.has(ck.metric) ? 'BS' : CF_METRICS.has(ck.metric) ? 'CF' : 'PL'
         row = { metric: ck.metric, label: cleanMetricLabel(it.label), group, items: {} }
         rowByMetric.set(ck.metric, row)
         rows.push(row)
@@ -82,14 +100,38 @@ export function buildFinTable(items: ExtractedItem[]) {
     Object.keys(r.items.base?.effective_values ?? {}).concat(Object.keys(r.kpiItem?.effective_values ?? {}))))])
     .filter((y) => !yearsAct.includes(y) || rows.some((r) => r.items.base?.effective_values?.[y] != null))
   const yearsSponsor = yearsOf((r) => r.items.sponsor)
+  // グループ内を標準順に並べ替え（未知の指標は挿入順のまま末尾）
+  const orderOf = (r: FinRow) => {
+    const i = METRIC_ORDER.indexOf(r.metric)
+    return i < 0 ? METRIC_ORDER.length : i
+  }
   const groups: FinGroup[] = ['PL', '重要KPI', 'BS', 'CF']
   const grouped = groups
-    .map((g) => [g, rows.filter((r) => r.group === g)] as const)
+    .map((g) => [g, rows.filter((r) => r.group === g).sort((a, b) => orderOf(a) - orderOf(b))] as const)
     .filter(([, rs]) => rs.length > 0)
-  return { grouped, yearsAct, yearsBase, yearsSponsor, tableIds, hasRows: rows.length > 0 }
+  const revenueRow = rowByMetric.get('revenue') ?? null
+  return { grouped, yearsAct, yearsBase, yearsSponsor, tableIds, revenueRow, hasRows: rows.length > 0 }
 }
 
 export type FinTable = ReturnType<typeof buildFinTable>
+
+/** この行の直後に「同率」（対売上比）行を表示するか */
+export function hasRatioRow(r: FinRow): boolean {
+  return RATIO_AFTER.has(r.metric)
+}
+
+/** 同率（対売上比）。売上行と同じケース・年度の値から表示用に単純計算（%・小数1桁） */
+export function ratioValue(fin: FinTable, r: FinRow, c: CaseKey, y: string): string | null {
+  const v = r.items[c]?.effective_values?.[y]
+  const rev = fin.revenueRow?.items[c]?.effective_values?.[y]
+  if (v == null || rev == null || rev === 0) return null
+  return `${(Math.round((v / rev) * 1000) / 10).toFixed(1)}%`
+}
+
+/** テーブルセルの表示文字列（%単位のKPIは%を付ける） */
+export function cellText(item: ExtractedItem, v: number): string {
+  return item.unit === '%' ? `${v.toLocaleString()}%` : v.toLocaleString()
+}
 
 /** 財務テーブル直下に表示する論述項目（財務ハイライト・ケース前提差異）のセクション名 */
 export const FIN_NOTE_SECTION = '財務ハイライト'

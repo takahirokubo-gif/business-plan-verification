@@ -127,10 +127,30 @@ SCENARIOS_SCHEMA = {
                                               "判定ラベル（問題なし等）は出さない"},
                     "safeguards": {"type": "string", "description": "保全策・構造"},
                     "questions": {"type": "string", "description": "スポンサー等への確認事項"},
+                    "impact_calc": {
+                        "type": "array",
+                        "description": "impactに書いた最終指標（DSCR・Net Debt/EBITDA・粗利率等）を"
+                                       "左辺とし、ストレス対象KPIを含む式で分解した参考試算。"
+                                       "ストレス起因で変化する部分は {{...}} で囲む（UIで強調表示される）",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "metric": {"type": "string", "description": "左辺の指標名（例: DSCR（FY28））"},
+                                "formula": {"type": "string", "description": "指標の分解式（例: EBITDA ÷（約定弁済 ＋ 支払利息））"},
+                                "before": {"type": "string",
+                                           "description": "ストレス前の値を入れた計算式（例: 1,836百万円 ÷（650百万円 ＋ 122百万円）＝ 約1.9x）"},
+                                "after": {"type": "string",
+                                          "description": "ストレス後の値を入れた計算式。変化した値を {{}} で囲む"},
+                                "note": {"type": "string",
+                                         "description": "どのKPI変化がどう波及して左辺が変わるかの1文の補足。対象KPIを {{}} で囲む"},
+                            },
+                            "required": ["metric", "formula", "before", "after", "note"],
+                        },
+                    },
                 },
                 "required": ["key", "origin", "type_label", "title", "cause",
                              "affected_kpis", "change_text", "change_basis",
-                             "impact", "safeguards", "questions"],
+                             "impact", "safeguards", "questions", "impact_calc"],
             },
         }
     },
@@ -394,7 +414,10 @@ class AnthropicExtractor(Extractor):
             "標準5部構成で生成してください（key: A/B/C、origin: ai）。"
             "インパクトはDSCR・レバレッジ・現預金への影響を具体的数値を含めて定性推定しますが、"
             "モデルの再計算はせず、判定ラベルは出さないこと。"
-            "変化幅には外部データや資料内の根拠を紐付けること。")
+            "変化幅には外部データや資料内の根拠を紐付けること。"
+            "impact_calcには、impactに書いた最終指標（DSCR等）を左辺に置き、"
+            "抽出済みの数値・ストレス対象KPIを使って before/after の値入り計算式で分解すること"
+            "（beforeとafterで式の構造を揃え、変化する値のみ {{}} で囲む）。")
         result = self._call("\n".join(parts), SCENARIOS_SCHEMA, "propose_scenarios")
         return result["cards"]
 

@@ -1,8 +1,66 @@
 {
   "nodes": [
     {
-      "id": "rev",
+      "id": "ebitda",
       "parent": null,
+      "label": "EBITDA",
+      "origin": "model",
+      "star": false,
+      "formula": "= 売上高 − 売上原価 − 販売費及び一般管理費 ＋ 減価償却費等",
+      "value_text": "1,620百万円（FY26実績）",
+      "badge": null,
+      "evidence": {
+        "file": "AutostaffChubu_Model_Base.xlsx",
+        "location": "PLシート 14行（EBITDA行）",
+        "quote": "=B10-B11-B12+B13",
+        "logic": "PLシートのEBITDA行の数式を構文解析。売上高・売上原価・販管費・減価償却費等から構成される。",
+        "snippet": {
+          "kind": "sheet",
+          "title": "数式が参照する値（FY26）",
+          "head": [
+            "参照行",
+            "値"
+          ],
+          "rows": [
+            {
+              "name": "売上高",
+              "cells": [
+                "14,160百万円"
+              ]
+            },
+            {
+              "name": "売上原価",
+              "cells": [
+                "11,526百万円"
+              ]
+            },
+            {
+              "name": "販売費及び一般管理費",
+              "cells": [
+                "1,119百万円"
+              ]
+            },
+            {
+              "name": "減価償却費等",
+              "cells": [
+                "105百万円"
+              ]
+            },
+            {
+              "name": "EBITDA（結果）",
+              "cells": [
+                "1,620百万円"
+              ],
+              "hl": true
+            }
+          ],
+          "formula": "=B10-B11-B12+B13"
+        }
+      }
+    },
+    {
+      "id": "rev",
+      "parent": "ebitda",
       "label": "売上高",
       "origin": "model",
       "star": false,
@@ -12,7 +70,30 @@
         "file": "AutostaffChubu_Model_Base.xlsx",
         "location": "PLシート 9行（=SUM(C7:C8)）",
         "quote": "売上高（Net Sales）",
-        "logic": "PLシートの売上高行の数式（=SUM）から構成要素を特定。"
+        "logic": "PLシートの売上高行の数式（=SUM）から構成要素を特定。",
+        "snippet": {
+          "kind": "sheet",
+          "title": "数式が参照する値（FY26）",
+          "head": [
+            "参照KPI",
+            "値"
+          ],
+          "rows": [
+            {
+              "name": "派遣事業売上",
+              "cells": [
+                "13,989百万円"
+              ]
+            },
+            {
+              "name": "売上高（結果）",
+              "cells": [
+                "14,160百万円"
+              ],
+              "hl": true
+            }
+          ]
+        }
       }
     },
     {
@@ -27,7 +108,43 @@
         "file": "AutostaffChubu_Model_Base.xlsx",
         "location": "PLシート 7行（FY27列の数式）",
         "quote": "=ROUND(KPI_Drivers!F9*KPI_Drivers!F10*KPI_Drivers!F11*12/1000,0)",
-        "logic": "計画年の数式を構文解析し、KPI_Driversシートの3変数（稼働人数・月間平均稼働時間・派遣単価）の積で構成されることを確認。"
+        "logic": "計画年の数式を構文解析し、KPI_Driversシートの3変数（稼働人数・月間平均稼働時間・派遣単価）の積で構成されることを確認。",
+        "snippet": {
+          "kind": "sheet",
+          "title": "数式が参照する値（FY26）",
+          "head": [
+            "参照KPI",
+            "値"
+          ],
+          "rows": [
+            {
+              "name": "稼働人数",
+              "cells": [
+                "3,344名"
+              ]
+            },
+            {
+              "name": "月間平均稼働時間",
+              "cells": [
+                "166h/名"
+              ]
+            },
+            {
+              "name": "派遣単価",
+              "cells": [
+                "2,100円/h"
+              ]
+            },
+            {
+              "name": "派遣事業売上（結果）",
+              "cells": [
+                "13,989百万円"
+              ],
+              "hl": true
+            }
+          ],
+          "formula": "=ROUND(KPI_Drivers!F9*KPI_Drivers!F10*KPI_Drivers!F11*12/1000,0)"
+        }
       }
     },
     {
@@ -42,7 +159,36 @@
         "file": "AutostaffChubu_Model_Base.xlsx",
         "location": "KPI_Driversシート C9:J9",
         "quote": "稼働人数（名）",
-        "logic": "PLシートの計画年数式（FY27列以降）を構文解析し、KPI_Driversシート9行への参照から親子関係を判定。KPI_Drivers 9行の数式 =ROUND(E7*E8,0) から分解。"
+        "logic": "PLシートの計画年数式（FY27列以降）を構文解析し、KPI_Driversシート9行への参照から親子関係を判定。KPI_Drivers 9行の数式 =ROUND(E7*E8,0) から分解。",
+        "snippet": {
+          "kind": "sheet",
+          "title": "数式が参照する値（FY26）",
+          "head": [
+            "参照KPI",
+            "値"
+          ],
+          "rows": [
+            {
+              "name": "在籍登録スタッフ数",
+              "cells": [
+                "3,800名"
+              ]
+            },
+            {
+              "name": "稼働率",
+              "cells": [
+                "88%"
+              ]
+            },
+            {
+              "name": "稼働人数（結果）",
+              "cells": [
+                "3,344名"
+              ],
+              "hl": true
+            }
+          ]
+        }
       }
     },
     {
@@ -57,7 +203,45 @@
         "file": "AutostaffChubu_Model_Base.xlsx",
         "location": "KPI_Driversシート C7:J7",
         "quote": "在籍登録スタッフ数（名）",
-        "logic": "PLシートの計画年数式（FY27列以降）を構文解析し、KPI_Driversシート7行への参照から親子関係を判定。"
+        "logic": "PLシートの計画年数式（FY27列以降）を構文解析し、KPI_Driversシート7行への参照から親子関係を判定。",
+        "snippet": {
+          "kind": "sheet",
+          "title": "同じブロックのKPI一覧（FY26実績）",
+          "head": [
+            "KPI",
+            "値"
+          ],
+          "rows": [
+            {
+              "name": "在籍登録スタッフ数",
+              "cells": [
+                "3,800名"
+              ],
+              "hl": true
+            },
+            {
+              "name": "稼働率",
+              "cells": [
+                "88%"
+              ],
+              "hl": false
+            },
+            {
+              "name": "新規採用人数",
+              "cells": [
+                "1,180名/年"
+              ],
+              "hl": false
+            },
+            {
+              "name": "離職率",
+              "cells": [
+                "22%/年"
+              ],
+              "hl": false
+            }
+          ]
+        }
       }
     },
     {
@@ -72,7 +256,45 @@
         "file": "AutostaffChubu_Model_Base.xlsx",
         "location": "KPI_Driversシート C8:J8",
         "quote": "稼働率（Utilization）",
-        "logic": "PLシートの計画年数式（FY27列以降）を構文解析し、KPI_Driversシート8行への参照から親子関係を判定。事業DD p.15でも業界水準を上回る最重要KPIとして分析されている。"
+        "logic": "PLシートの計画年数式（FY27列以降）を構文解析し、KPI_Driversシート8行への参照から親子関係を判定。事業DD p.15でも業界水準を上回る最重要KPIとして分析されている。",
+        "snippet": {
+          "kind": "sheet",
+          "title": "同じブロックのKPI一覧（FY26実績）",
+          "head": [
+            "KPI",
+            "値"
+          ],
+          "rows": [
+            {
+              "name": "在籍登録スタッフ数",
+              "cells": [
+                "3,800名"
+              ],
+              "hl": false
+            },
+            {
+              "name": "稼働率",
+              "cells": [
+                "88%"
+              ],
+              "hl": true
+            },
+            {
+              "name": "新規採用人数",
+              "cells": [
+                "1,180名/年"
+              ],
+              "hl": false
+            },
+            {
+              "name": "離職率",
+              "cells": [
+                "22%/年"
+              ],
+              "hl": false
+            }
+          ]
+        }
       }
     },
     {
@@ -87,7 +309,45 @@
         "file": "AutostaffChubu_Model_Base.xlsx",
         "location": "KPI_Driversシート C14:J14",
         "quote": "新規採用人数（名）",
-        "logic": "PLシートの計画年数式（FY27列以降）を構文解析し、KPI_Driversシート14行への参照から親子関係を判定。"
+        "logic": "PLシートの計画年数式（FY27列以降）を構文解析し、KPI_Driversシート14行への参照から親子関係を判定。",
+        "snippet": {
+          "kind": "sheet",
+          "title": "同じブロックのKPI一覧（FY26実績）",
+          "head": [
+            "KPI",
+            "値"
+          ],
+          "rows": [
+            {
+              "name": "在籍登録スタッフ数",
+              "cells": [
+                "3,800名"
+              ],
+              "hl": false
+            },
+            {
+              "name": "稼働率",
+              "cells": [
+                "88%"
+              ],
+              "hl": false
+            },
+            {
+              "name": "新規採用人数",
+              "cells": [
+                "1,180名/年"
+              ],
+              "hl": true
+            },
+            {
+              "name": "離職率",
+              "cells": [
+                "22%/年"
+              ],
+              "hl": false
+            }
+          ]
+        }
       }
     },
     {
@@ -102,7 +362,45 @@
         "file": "AutostaffChubu_Model_Base.xlsx",
         "location": "KPI_Driversシート C16:J16",
         "quote": "離職率（年間）",
-        "logic": "PLシートの計画年数式（FY27列以降）を構文解析し、KPI_Driversシート16行への参照から親子関係を判定。"
+        "logic": "PLシートの計画年数式（FY27列以降）を構文解析し、KPI_Driversシート16行への参照から親子関係を判定。",
+        "snippet": {
+          "kind": "sheet",
+          "title": "同じブロックのKPI一覧（FY26実績）",
+          "head": [
+            "KPI",
+            "値"
+          ],
+          "rows": [
+            {
+              "name": "在籍登録スタッフ数",
+              "cells": [
+                "3,800名"
+              ],
+              "hl": false
+            },
+            {
+              "name": "稼働率",
+              "cells": [
+                "88%"
+              ],
+              "hl": false
+            },
+            {
+              "name": "新規採用人数",
+              "cells": [
+                "1,180名/年"
+              ],
+              "hl": false
+            },
+            {
+              "name": "離職率",
+              "cells": [
+                "22%/年"
+              ],
+              "hl": true
+            }
+          ]
+        }
       }
     },
     {
@@ -117,7 +415,38 @@
         "file": "AutostaffChubu_Model_Base.xlsx",
         "location": "KPI_Driversシート C10:J10",
         "quote": "月間平均稼働時間（h/名）",
-        "logic": "PLシートの計画年数式（FY27列以降）を構文解析し、KPI_Driversシート10行への参照から親子関係を判定。"
+        "logic": "PLシートの計画年数式（FY27列以降）を構文解析し、KPI_Driversシート10行への参照から親子関係を判定。",
+        "snippet": {
+          "kind": "sheet",
+          "title": "同じブロックのKPI一覧（FY26実績）",
+          "head": [
+            "KPI",
+            "値"
+          ],
+          "rows": [
+            {
+              "name": "稼働人数",
+              "cells": [
+                "3,344名"
+              ],
+              "hl": false
+            },
+            {
+              "name": "月間平均稼働時間",
+              "cells": [
+                "166h/名"
+              ],
+              "hl": true
+            },
+            {
+              "name": "派遣単価",
+              "cells": [
+                "2,100円/h"
+              ],
+              "hl": false
+            }
+          ]
+        }
       }
     },
     {
@@ -132,12 +461,43 @@
         "file": "AutostaffChubu_Model_Base.xlsx",
         "location": "KPI_Driversシート C11:J11",
         "quote": "派遣単価（円/h）",
-        "logic": "PLシートの計画年数式（FY27列以降）を構文解析し、KPI_Driversシート11行への参照から親子関係を判定。毎年4月改定・過去3年平均+2.0%（事業DD p.19）。"
+        "logic": "PLシートの計画年数式（FY27列以降）を構文解析し、KPI_Driversシート11行への参照から親子関係を判定。毎年4月改定・過去3年平均+2.0%（事業DD p.19）。",
+        "snippet": {
+          "kind": "sheet",
+          "title": "同じブロックのKPI一覧（FY26実績）",
+          "head": [
+            "KPI",
+            "値"
+          ],
+          "rows": [
+            {
+              "name": "稼働人数",
+              "cells": [
+                "3,344名"
+              ],
+              "hl": false
+            },
+            {
+              "name": "月間平均稼働時間",
+              "cells": [
+                "166h/名"
+              ],
+              "hl": false
+            },
+            {
+              "name": "派遣単価",
+              "cells": [
+                "2,100円/h"
+              ],
+              "hl": true
+            }
+          ]
+        }
       }
     },
     {
       "id": "cogs",
-      "parent": null,
+      "parent": "ebitda",
       "label": "売上原価",
       "origin": "model",
       "star": false,
@@ -147,7 +507,30 @@
         "file": "AutostaffChubu_Model_Base.xlsx",
         "location": "PLシート 13行",
         "quote": "売上原価 合計",
-        "logic": "PLシートの数式（=C11+C12）から構成を特定。"
+        "logic": "PLシートの数式（=C11+C12）から構成を特定。",
+        "snippet": {
+          "kind": "sheet",
+          "title": "数式が参照する値（FY26）",
+          "head": [
+            "参照KPI",
+            "値"
+          ],
+          "rows": [
+            {
+              "name": "スタッフ労務費",
+              "cells": [
+                "11,011百万円"
+              ]
+            },
+            {
+              "name": "売上原価（結果）",
+              "cells": [
+                "11,311百万円"
+              ],
+              "hl": true
+            }
+          ]
+        }
       }
     },
     {
@@ -162,7 +545,49 @@
         "file": "AutostaffChubu_Model_Base.xlsx",
         "location": "PLシート 11行（FY27列の数式）",
         "quote": "=ROUND(KPI_Drivers!F9*KPI_Drivers!F10*KPI_Drivers!F12*(1+KPI_Drivers!F13)*12/1000,0)",
-        "logic": "計画年の数式を構文解析。時給と法定福利費率の2変数に依存。"
+        "logic": "計画年の数式を構文解析。時給と法定福利費率の2変数に依存。",
+        "snippet": {
+          "kind": "sheet",
+          "title": "数式が参照する値（FY26）",
+          "head": [
+            "参照KPI",
+            "値"
+          ],
+          "rows": [
+            {
+              "name": "稼働人数",
+              "cells": [
+                "3,344名"
+              ]
+            },
+            {
+              "name": "月間平均稼働時間",
+              "cells": [
+                "166h/名"
+              ]
+            },
+            {
+              "name": "スタッフ平均時給",
+              "cells": [
+                "1,450円/h"
+              ]
+            },
+            {
+              "name": "法定福利費率",
+              "cells": [
+                "14%"
+              ]
+            },
+            {
+              "name": "スタッフ労務費（結果）",
+              "cells": [
+                "11,011百万円"
+              ],
+              "hl": true
+            }
+          ],
+          "formula": "=ROUND(KPI_Drivers!F9*KPI_Drivers!F10*KPI_Drivers!F12*(1+KPI_Drivers!F13)*12/1000,0)"
+        }
       }
     },
     {
@@ -177,7 +602,31 @@
         "file": "AutostaffChubu_Model_Base.xlsx",
         "location": "KPI_Driversシート C12:J12",
         "quote": "スタッフ平均時給（円/h）",
-        "logic": "PLシートの計画年数式（FY27列以降）を構文解析し、KPI_Driversシート12行への参照から親子関係を判定。"
+        "logic": "PLシートの計画年数式（FY27列以降）を構文解析し、KPI_Driversシート12行への参照から親子関係を判定。",
+        "snippet": {
+          "kind": "sheet",
+          "title": "同じブロックのKPI一覧（FY26実績）",
+          "head": [
+            "KPI",
+            "値"
+          ],
+          "rows": [
+            {
+              "name": "スタッフ平均時給",
+              "cells": [
+                "1,450円/h"
+              ],
+              "hl": true
+            },
+            {
+              "name": "法定福利費率",
+              "cells": [
+                "14%"
+              ],
+              "hl": false
+            }
+          ]
+        }
       }
     },
     {
@@ -192,12 +641,36 @@
         "file": "AutostaffChubu_Model_Base.xlsx",
         "location": "KPI_Driversシート C13:J13",
         "quote": "法定福利費率",
-        "logic": "PLシートの計画年数式（FY27列以降）を構文解析し、KPI_Driversシート13行への参照から親子関係を判定。"
+        "logic": "PLシートの計画年数式（FY27列以降）を構文解析し、KPI_Driversシート13行への参照から親子関係を判定。",
+        "snippet": {
+          "kind": "sheet",
+          "title": "同じブロックのKPI一覧（FY26実績）",
+          "head": [
+            "KPI",
+            "値"
+          ],
+          "rows": [
+            {
+              "name": "スタッフ平均時給",
+              "cells": [
+                "1,450円/h"
+              ],
+              "hl": false
+            },
+            {
+              "name": "法定福利費率",
+              "cells": [
+                "14%"
+              ],
+              "hl": true
+            }
+          ]
+        }
       }
     },
     {
       "id": "sga",
-      "parent": null,
+      "parent": "ebitda",
       "label": "販売費及び一般管理費",
       "origin": "model",
       "star": false,
@@ -207,7 +680,36 @@
         "file": "AutostaffChubu_Model_Base.xlsx",
         "location": "PLシート 20行",
         "quote": "販売費及び一般管理費 合計",
-        "logic": "PLシートの数式（=SUM）から構成を特定。"
+        "logic": "PLシートの数式（=SUM）から構成を特定。",
+        "snippet": {
+          "kind": "sheet",
+          "title": "数式が参照する値（FY26）",
+          "head": [
+            "参照KPI",
+            "値"
+          ],
+          "rows": [
+            {
+              "name": "採用費",
+              "cells": [
+                "295百万円"
+              ]
+            },
+            {
+              "name": "本社人件費",
+              "cells": [
+                "620百万円"
+              ]
+            },
+            {
+              "name": "販売費及び一般管理費（結果）",
+              "cells": [
+                "1,334百万円"
+              ],
+              "hl": true
+            }
+          ]
+        }
       }
     },
     {
@@ -222,7 +724,37 @@
         "file": "AutostaffChubu_Model_Base.xlsx",
         "location": "PLシート 17行（FY27列の数式）",
         "quote": "=KPI_Drivers!F14*KPI_Drivers!F15",
-        "logic": "計画年の数式を構文解析。採用人数×CPAの積。"
+        "logic": "計画年の数式を構文解析。採用人数×CPAの積。",
+        "snippet": {
+          "kind": "sheet",
+          "title": "数式が参照する値（FY26）",
+          "head": [
+            "参照KPI",
+            "値"
+          ],
+          "rows": [
+            {
+              "name": "新規採用人数",
+              "cells": [
+                "1,180名/年"
+              ]
+            },
+            {
+              "name": "採用単価CPA",
+              "cells": [
+                "250千円/名"
+              ]
+            },
+            {
+              "name": "採用費（結果）",
+              "cells": [
+                "295百万円"
+              ],
+              "hl": true
+            }
+          ],
+          "formula": "=KPI_Drivers!F14*KPI_Drivers!F15"
+        }
       }
     },
     {
@@ -237,7 +769,24 @@
         "file": "AutostaffChubu_Model_Base.xlsx",
         "location": "KPI_Driversシート C15:J15",
         "quote": "採用単価（CPA・千円/名）",
-        "logic": "PLシートの計画年数式（FY27列以降）を構文解析し、KPI_Driversシート15行への参照から親子関係を判定。事業DD p.16で年率5%超の上昇傾向が指摘されている。"
+        "logic": "PLシートの計画年数式（FY27列以降）を構文解析し、KPI_Driversシート15行への参照から親子関係を判定。事業DD p.16で年率5%超の上昇傾向が指摘されている。",
+        "snippet": {
+          "kind": "sheet",
+          "title": "同じブロックのKPI一覧（FY26実績）",
+          "head": [
+            "KPI",
+            "値"
+          ],
+          "rows": [
+            {
+              "name": "採用単価CPA",
+              "cells": [
+                "250千円/名"
+              ],
+              "hl": true
+            }
+          ]
+        }
       }
     },
     {
@@ -252,7 +801,31 @@
         "file": "AutostaffChubu_Model_Base.xlsx",
         "location": "PLシート 18行",
         "quote": "本社人件費",
-        "logic": "PLシートのハードコード行（固定費）。"
+        "logic": "PLシートのハードコード行（固定費）。",
+        "snippet": {
+          "kind": "sheet",
+          "title": "同じブロックのKPI一覧（FY26実績）",
+          "head": [
+            "KPI",
+            "値"
+          ],
+          "rows": [
+            {
+              "name": "採用費",
+              "cells": [
+                "295百万円"
+              ],
+              "hl": false
+            },
+            {
+              "name": "本社人件費（固定費）",
+              "cells": [
+                "620百万円"
+              ],
+              "hl": true
+            }
+          ]
+        }
       }
     }
   ],
