@@ -6,16 +6,20 @@ import { Icon } from '../components/Icon'
 import { ReviewStatusBadge, WorkStatusBadge } from '../components/Badge'
 import { DocumentLinkContext, SlidePanel } from '../components/EvidencePanel'
 import type { DealFull } from '../types'
+import { OverviewTab } from './tabs/OverviewTab'
 import { NumbersTab } from './tabs/NumbersTab'
 import { KpiTab } from './tabs/KpiTab'
 import { ScenarioTab } from './tabs/ScenarioTab'
 import { ExportTab } from './tabs/ExportTab'
 import { MemoTab } from './tabs/MemoTab'
 
+// 概要（全体俯瞰）＋確認・修正タブ4つ＋出力系2つ
 const TABS = [
-  { key: 'numbers', label: '案件詳細' },
-  { key: 'kpi', label: 'KPI構造' },
-  { key: 'scenario', label: 'シナリオ' },
+  { key: 'overview', label: '概要' },
+  { key: 'business', label: '事業概要' },
+  { key: 'kpi', label: 'KPIツリー' },
+  { key: 'numbers', label: '財務ダイジェスト' },
+  { key: 'scenario', label: 'ストレス仮説' },
   { key: 'export', label: 'エクスポート' },
   { key: 'memo', label: '審査相談メモ' },
 ]
@@ -32,7 +36,7 @@ export function DealDetail() {
   const { id } = useParams()
   const dealId = Number(id)
   const [searchParams, setSearchParams] = useSearchParams()
-  const tab = searchParams.get('tab') ?? 'numbers'
+  const tab = searchParams.get('tab') ?? 'overview'
   const [full, setFull] = useState<DealFull | null>(null)
   const [error, setError] = useState('')
   const [showHistory, setShowHistory] = useState(false)
@@ -86,13 +90,6 @@ export function DealDetail() {
           </button>
         </div>
 
-        {/* 案件概要（案件名とタブの間） */}
-        {deal.summary && (
-          <p className="mt-3 rounded border border-surface-container-high bg-white px-4 py-2.5 text-[12.5px] leading-relaxed text-on-surface-variant">
-            {deal.summary}
-          </p>
-        )}
-
         {/* タブ */}
         <div className="mt-4 flex gap-1 border-b border-surface-container-high">
           {TABS.map((t) => {
@@ -118,8 +115,10 @@ export function DealDetail() {
 
         {/* タブ本体 */}
         <div className="mt-4">
-          {tab === 'numbers' && <NumbersTab full={full} refresh={refresh} dealId={dealId} />}
+          {tab === 'overview' && <OverviewTab full={full} onNavigate={(t) => setSearchParams({ tab: t })} />}
+          {tab === 'business' && <NumbersTab full={full} refresh={refresh} dealId={dealId} mode="business" />}
           {tab === 'kpi' && <KpiTab full={full} refresh={refresh} dealId={dealId} stage1Done={stage1Done} />}
+          {tab === 'numbers' && <NumbersTab full={full} refresh={refresh} dealId={dealId} mode="digest" />}
           {tab === 'scenario' && <ScenarioTab full={full} refresh={refresh} dealId={dealId} />}
           {tab === 'export' && <ExportTab full={full} refresh={refresh} dealId={dealId} />}
           {tab === 'memo' && <MemoTab full={full} refresh={refresh} dealId={dealId} />}

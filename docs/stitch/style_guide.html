@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<title>スタイルガイド（Stitch参照用）｜事業計画検証</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --surface: #f9f9ff;
+    --card-border: #e2e2e8;
+    --on-surface: #1a1c20;
+    --on-surface-variant: #424750;
+    --outline: #737781;
+    --outline-variant: #c2c6d1;
+    --primary: #00386c;
+    --primary-container: #1a4f8b;
+    --primary-fixed: #d5e3ff;
+    --error: #ba1a1a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--surface);
+    color: var(--on-surface);
+    -webkit-font-smoothing: antialiased;
+    padding: 32px;
+  }
+  .num { font-family: 'Inter', 'Noto Sans JP', sans-serif; font-variant-numeric: tabular-nums lining-nums; }
+  h1 { font-size: 22px; font-weight: 700; }
+  .sub { font-size: 12px; color: var(--outline); margin-top: 4px; }
+  h2 { font-size: 14px; font-weight: 700; margin: 28px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--card-border); }
+  .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start; }
+
+  /* swatches */
+  .swatch { width: 128px; }
+  .swatch .chip { height: 56px; border-radius: 4px; border: 1px solid var(--card-border); }
+  .swatch .name { font-size: 11px; font-weight: 700; margin-top: 5px; }
+  .swatch .hex { font-size: 11px; color: var(--outline); font-family: 'Inter', sans-serif; }
+
+  /* type */
+  .type-sample { display: flex; align-items: baseline; gap: 16px; padding: 6px 0; }
+  .type-label { width: 220px; font-size: 11px; color: var(--outline); font-family: 'Inter', sans-serif; }
+
+  /* badges */
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 8px; font-size: 12px; font-weight: 500; letter-spacing: .03em; white-space: nowrap; }
+  .badge-success { background: #ecfdf3; color: #027a48; border: 1px solid #a6f4c5; }
+  .badge-warning { background: #fffaeb; color: #b54708; border: 1px solid #fedf89; }
+  .badge-error   { background: #ffdad6; color: #93000a; border: 1px solid rgba(186,26,26,.3); }
+  .badge-neutral { background: #f8fafc; color: #475467; border: 1px solid #e2e8f0; }
+  .badge-info    { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+  .badge-ai      { background: #f4f0ff; color: #6941c6; border: 1px solid #d9d0f3; }
+
+  /* buttons / inputs */
+  .btn-primary { display: inline-flex; align-items: center; gap: 6px; background: var(--primary-container); color: #fff; font-size: 13px; font-weight: 700; padding: 8px 16px; border-radius: 4px; border: none; font-family: inherit; }
+  .btn-secondary { display: inline-flex; align-items: center; gap: 6px; background: #fff; color: var(--primary-container); font-size: 13px; font-weight: 500; padding: 8px 16px; border-radius: 4px; border: 1px solid var(--outline-variant); font-family: inherit; }
+  .btn-disabled { background: var(--outline-variant); color: #fff; }
+  .input { border: 1px solid var(--outline-variant); border-radius: 4px; padding: 7px 10px; font-size: 13px; background: #fff; font-family: inherit; width: 220px; }
+  .input-focus { outline: 2px solid rgba(26,79,139,.2); border-color: var(--primary-container); }
+
+  /* card */
+  .card { background: #fff; border: 1px solid var(--card-border); border-radius: 4px; }
+  .demo-card { width: 320px; padding: 16px; }
+  .demo-card .card-head { display: flex; justify-content: space-between; align-items: center; }
+  .demo-card .card-title { font-size: 14px; font-weight: 700; }
+  .edit-link { font-size: 12px; color: var(--primary-container); text-decoration: none; font-weight: 500; }
+
+  /* tabs */
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid #e8e8ed; width: fit-content; }
+  .tab { padding: 4px 16px 8px; font-size: 13px; color: var(--on-surface-variant); border-bottom: 2px solid transparent; }
+  .tab.active { color: var(--primary-container); font-weight: 700; border-bottom-color: var(--primary-container); }
+
+  /* sidebar sample */
+  .side { width: 260px; background: #f3f3f9; border: 1px solid var(--card-border); border-radius: 4px; padding: 8px 0; }
+  .side-item { display: flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 13px; color: var(--on-surface-variant); border-left: 4px solid transparent; }
+  .side-item.active { border-left-color: var(--primary-container); background: var(--primary-fixed); color: var(--primary); font-weight: 700; }
+
+  /* table */
+  table { border-collapse: collapse; font-size: 12px; background: #fff; }
+  th, td { border: 1px solid #e8e8ed; padding: 5px 10px; }
+  thead th { background: #f3f3f9; font-weight: 700; }
+  td.val { text-align: right; font-family: 'Inter', sans-serif; font-variant-numeric: tabular-nums; }
+  td.pending { background: #fffaeb; }
+  td.conflict { background: #ffdad6; color: #93000a; font-weight: 600; }
+
+  /* evidence */
+  .evi { width: 360px; padding: 16px; }
+  .evi .k { font-size: 11px; font-weight: 700; color: var(--outline); letter-spacing: .05em; }
+  .evi .v { font-size: 13px; margin: 2px 0 10px; }
+  .note { font-size: 11.5px; color: var(--outline); margin-top: 8px; max-width: 720px; line-height: 1.7; }
+</style>
+</head>
+<body>
+  <h1>事業計画検証ソリューション｜スタイルガイド</h1>
+  <div class="sub">Trust &amp; Integrity デザインシステム — 銀行審査部門向け・フラット（影なし）・高密度・Noto Sans JP ＋ Inter（tabular-nums）</div>
+
+  <h2>1. カラー</h2>
+  <div class="row">
+    <div class="swatch"><div class="chip" style="background:#00386c"></div><div class="name">Primary</div><div class="hex">#00386C</div></div>
+    <div class="swatch"><div class="chip" style="background:#1a4f8b"></div><div class="name">Primary Container（ボタン・アクティブ）</div><div class="hex">#1A4F8B</div></div>
+    <div class="swatch"><div class="chip" style="background:#d5e3ff"></div><div class="name">Primary Fixed（選択行の背景）</div><div class="hex">#D5E3FF</div></div>
+    <div class="swatch"><div class="chip" style="background:#f9f9ff"></div><div class="name">Background</div><div class="hex">#F9F9FF</div></div>
+    <div class="swatch"><div class="chip" style="background:#ffffff"></div><div class="name">Card Surface</div><div class="hex">#FFFFFF</div></div>
+    <div class="swatch"><div class="chip" style="background:#e2e2e8"></div><div class="name">Card Border（1px）</div><div class="hex">#E2E2E8</div></div>
+    <div class="swatch"><div class="chip" style="background:#1a1c20"></div><div class="name">On Surface（本文）</div><div class="hex">#1A1C20</div></div>
+    <div class="swatch"><div class="chip" style="background:#424750"></div><div class="name">On Surface Variant</div><div class="hex">#424750</div></div>
+    <div class="swatch"><div class="chip" style="background:#ba1a1a"></div><div class="name">Error</div><div class="hex">#BA1A1A</div></div>
+    <div class="swatch"><div class="chip" style="background:#fffaeb; border:1px solid #fedf89"></div><div class="name">未確定セル背景</div><div class="hex">#FFFAEB</div></div>
+    <div class="swatch"><div class="chip" style="background:#6941c6"></div><div class="name">AI推定（紫）</div><div class="hex">#6941C6</div></div>
+  </div>
+
+  <h2>2. タイポグラフィ</h2>
+  <div class="type-sample"><span class="type-label">headline / 22px Bold（案件名）</span><span style="font-size:22px;font-weight:700">ルミエールボーテHD LBO案件</span></div>
+  <div class="type-sample"><span class="type-label">section / 14px Bold（カード見出し）</span><span style="font-size:14px;font-weight:700">▼ ストレス仮説とその根拠データ</span></div>
+  <div class="type-sample"><span class="type-label">body / 13px（本文・ラベル）</span><span style="font-size:13px">派遣スタッフの稼働率および稼働人数が主要リスクです。</span></div>
+  <div class="type-sample"><span class="type-label">caption / 11.5px（補足・根拠）</span><span style="font-size:11.5px;color:#737781">根拠：過去の経済ショック時の自動車製造派遣業界の平均下落幅</span></div>
+  <div class="type-sample"><span class="type-label">data / Inter tabular-nums 右揃え</span><span class="num" style="font-size:14px;font-weight:500">4,800　1,240　▲300　0.9x　-15%</span></div>
+
+  <h2>3. ステータスバッジ（薄い背景＋同系色テキスト＋1pxボーダー・角丸8px）</h2>
+  <div class="row" style="align-items:center">
+    <span class="badge badge-success">✓ 確定</span>
+    <span class="badge badge-warning">未確定</span>
+    <span class="badge badge-error">⚠ 資料間不整合</span>
+    <span class="badge badge-ai">AI推定・モデル再計算なし</span>
+    <span class="badge badge-info">レビュー中</span>
+    <span class="badge badge-neutral">下書き</span>
+  </div>
+
+  <h2>4. ボタン・入力欄（角丸4px）</h2>
+  <div class="row" style="align-items:center">
+    <button class="btn-primary">この値で確定</button>
+    <button class="btn-secondary">AIの下書きを再生成</button>
+    <button class="btn-primary btn-disabled">確定（無効）</button>
+    <input class="input" value="4,800" />
+    <input class="input input-focus" value="フォーカス中" />
+  </div>
+
+  <h2>5. タブバー（下線型）とサイドバー（左アクセント型）</h2>
+  <div class="row">
+    <div>
+      <div class="tabs">
+        <div class="tab active">概要</div>
+        <div class="tab">事業概要</div>
+        <div class="tab">KPIツリー</div>
+        <div class="tab">財務ダイジェスト</div>
+        <div class="tab">ストレス仮説</div>
+      </div>
+    </div>
+    <div class="side">
+      <div class="side-item active">案件一覧</div>
+      <div class="side-item">新規案件</div>
+      <div class="side-item">設定</div>
+    </div>
+  </div>
+
+  <h2>6. データテーブル（高密度・ヘッダー薄グレー・セル状態）</h2>
+  <table>
+    <thead>
+      <tr><th style="text-align:left">（百万円）</th><th>FY24</th><th>FY25</th><th>FY26</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>売上</td><td class="val">3,120</td><td class="val">3,350</td><td class="val">3,540</td></tr>
+      <tr><td>EBITDA</td><td class="val">402</td><td class="val pending">455</td><td class="val conflict">⚠ 470</td></tr>
+    </tbody>
+  </table>
+  <div class="note">白＝確定済 ／ 薄黄色＝未確定（クリックで根拠を確認して確定） ／ 赤＝資料間の不整合あり</div>
+
+  <h2>7. 根拠3点セット（スライドパネル内の定型フォーマット）</h2>
+  <div class="row">
+    <div class="card evi">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <span style="font-size:14px;font-weight:700">EBITDA（FY25）: <span class="num">455</span></span>
+        <span class="badge badge-warning">未確定</span>
+      </div>
+      <div class="k">① 参照ファイル</div><div class="v" style="color:#1a4f8b;text-decoration:underline">決算書_FY25.pdf</div>
+      <div class="k">② 箇所</div><div class="v">P.3 損益計算書</div>
+      <div class="k">③ 抽出の論理</div><div class="v">営業利益402に減価償却費53を加算してEBITDAを算出。</div>
+      <button class="btn-primary" style="width:100%;justify-content:center">この値で確定</button>
+    </div>
+    <div class="card demo-card">
+      <div class="card-head">
+        <span class="card-title">▼ 財務情報</span>
+        <span style="display:flex;gap:8px;align-items:center"><span class="badge badge-warning">未確定 3</span><a class="edit-link" href="#">編集 →</a></span>
+      </div>
+      <div class="note" style="margin-top:12px">カードの標準形：ヘッダーは「▼ 見出し」＋右端に未確定件数バッジと「編集」リンク。影は使わず1pxボーダーのみ。</div>
+    </div>
+  </div>
+
+  <div class="note" style="margin-top:28px">
+    原則：①AI出力はすべて「提案 → 人がレビュー → 確定」 ②AI推定と抽出事実は常に視覚的に区別（紫バッジ）
+    ③すべての抽出値に根拠3点セット ④影なし・ヘアラインボーダーで階層を表現
+  </div>
+</body>
+</html>

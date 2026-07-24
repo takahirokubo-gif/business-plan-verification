@@ -3,17 +3,8 @@ import { api } from '../../api'
 import { Icon } from '../../components/Icon'
 import { EvidenceBlock, SlidePanel } from '../../components/EvidencePanel'
 import { useUser } from '../../context/UserContext'
+import { buildFinTable, finRowItems, sortYears } from '../../finTable'
 import type { DealFull, ExtractedItem, Mismatch } from '../../types'
-
-const YEAR_ORDER = ['FY24', 'FY25', 'FY26', 'FY27', 'FY28', 'FY29', 'FY30', 'FY31']
-
-/** 年度キーの表示順。既知のFY形式を先に、それ以外（'2027/3期' など実AIの表記）も
- *  捨てずに末尾へ昇順で並べる（キー形式が想定と違っても数値を必ず表示する）。 */
-function sortYears(years: string[]): string[] {
-  const known = YEAR_ORDER.filter((y) => years.includes(y))
-  const unknown = years.filter((y) => !YEAR_ORDER.includes(y)).sort()
-  return [...known, ...unknown]
-}
 
 /** mismatch のキー表記ゆれを吸収する（fixture形式と実AIの自由形式の両対応）。
  *  other_value が数値でない場合は「値の採用選択」は出せない（説明表示のみ）。 */
@@ -38,82 +29,6 @@ function needsChoice(item: ExtractedItem): boolean {
  *  保留（held）は意図して止めた項目なので対象外（保留解除→個別確定を通す） */
 function bulkSelectable(item: ExtractedItem): boolean {
   return item.status === 'proposed' && !needsChoice(item)
-}
-
-// ---- 財務情報の統合テーブル（過去実績・Base・Sponsorを横並び、PL/KPI/BS/CFを縦並び） ----
-
-type CaseKey = 'act' | 'base' | 'sponsor'
-type FinGroup = 'PL' | '重要KPI' | 'BS' | 'CF'
-
-interface FinRow {
-  metric: string
-  label: string
-  group: FinGroup
-  items: Partial<Record<CaseKey, ExtractedItem>>
-  kpiItem?: ExtractedItem // ケース区分のないKPI項目
-}
-
-const BS_METRICS = new Set(['cash', 'net_assets', 'debt', 'total_assets', 'goodwill', 'net_debt'])
-const CF_METRICS = new Set(['fcf', 'op_cf', 'inv_cf', 'fin_cf', 'capex'])
-
-function parseCaseKey(key: string): { case: CaseKey; metric: string } | null {
-  const m = key.match(/^(act|base|sponsor)_(.+)$/)
-  return m ? { case: m[1] as CaseKey, metric: m[2] } : null
-}
-
-/** 「売上高（実績）」「Adj. EBITDA―BaseCase」等からケース注記を除いた行ラベル */
-function cleanMetricLabel(label: string): string {
-  return label
-    .replace(/（実績）|（実績値）|（Base.?ケース.*?）|（Sponsor.?ケース.*?）|（ベースケース.*?）|（スポンサーケース.*?）/g, '')
-    .replace(/[―ー-]\s*(Base|Sponsor)\s*Case.*$/i, '')
-    .trim()
-}
-
-function buildFinTable(items: ExtractedItem[]) {
-  const rows: FinRow[] = []
-  const rowByMetric = new Map<string, FinRow>()
-  const tableIds = new Set<number>()
-  for (const it of items) {
-    if (!it.values) continue
-    const ck = parseCaseKey(it.key)
-    if (ck) {
-      let row = rowByMetric.get(ck.metric)
-      if (!row) {
-        const group: FinGroup = BS_METRICS.has(ck.metric) ? 'BS' : CF_METRICS.has(ck.metric) ? 'CF' : 'PL'
-        row = { metric: ck.metric, label: cleanMetricLabel(it.label), group, items: {} }
-        rowByMetric.set(ck.metric, row)
-        rows.push(row)
-      }
-      row.items[ck.case] = it
-      tableIds.add(it.id)
-    } else if (it.key.startsWith('kpi_') || it.section.includes('KPI')) {
-      rows.push({ metric: it.key, label: it.label, group: '重要KPI', items: {}, kpiItem: it })
-      tableIds.add(it.id)
-    }
-  }
-  // sponsor_equity（ストラクチャー項目）等の誤分類を防ぐ：
-  // act/base のどちらにも存在しない sponsor 単独指標はケース行にしない（元のセクションに残す）
-  for (let i = rows.length - 1; i >= 0; i--) {
-    const r = rows[i]
-    if (!r.kpiItem && !r.items.act && !r.items.base && r.items.sponsor) {
-      tableIds.delete(r.items.sponsor.id)
-      rowByMetric.delete(r.metric)
-      rows.splice(i, 1)
-    }
-  }
-
-  const yearsOf = (pick: (r: FinRow) => ExtractedItem | undefined) =>
-    sortYears([...new Set(rows.flatMap((r) => Object.keys(pick(r)?.effective_values ?? {})))])
-  const yearsAct = yearsOf((r) => r.items.act)
-  const yearsBase = sortYears([...new Set(rows.flatMap((r) =>
-    Object.keys(r.items.base?.effective_values ?? {}).concat(Object.keys(r.kpiItem?.effective_values ?? {}))))])
-    .filter((y) => !yearsAct.includes(y) || rows.some((r) => r.items.base?.effective_values?.[y] != null))
-  const yearsSponsor = yearsOf((r) => r.items.sponsor)
-  const groups: FinGroup[] = ['PL', '重要KPI', 'BS', 'CF']
-  const grouped = groups
-    .map((g) => [g, rows.filter((r) => r.group === g)] as const)
-    .filter(([, rs]) => rs.length > 0)
-  return { grouped, yearsAct, yearsBase, yearsSponsor, tableIds, hasRows: rows.length > 0 }
 }
 
 function StatusIcon({ item }: { item: ExtractedItem }) {
@@ -141,10 +56,17 @@ function StatusIcon({ item }: { item: ExtractedItem }) {
   )
 }
 
-export function NumbersTab({ full, refresh, dealId }: {
+/**
+ * 抽出項目の確認・確定タブ。mode で表示範囲を切り替える：
+ * - business … 事業概要タブ（案件基本情報・事業要約・定性項目）
+ * - digest  … 財務ダイジェストタブ（財務情報テーブル・数値項目）
+ * 確定フロー（根拠パネル・一括確定）は両モードで共通。
+ */
+export function NumbersTab({ full, refresh, dealId, mode }: {
   full: DealFull
   refresh: () => Promise<void>
   dealId: number
+  mode: 'business' | 'digest'
 }) {
   const { userKey } = useUser()
   const [selected, setSelected] = useState<ExtractedItem | null>(null)
@@ -163,17 +85,19 @@ export function NumbersTab({ full, refresh, dealId }: {
   // 財務情報テーブル（act/base/sponsor＋KPIの数値項目を統合）
   const fin = useMemo(() => buildFinTable(items), [items])
 
-  // 残りの項目（定性情報・ストラクチャー等）は従来のセクション表示
+  // 財務テーブルに載らない項目のセクション表示。
+  // business＝定性項目（テキスト）、digest＝数値項目（ストラクチャー等）に振り分ける
   const sections = useMemo(() => {
     const map = new Map<string, ExtractedItem[]>()
     for (const it of items) {
       if (fin.tableIds.has(it.id)) continue
+      if (mode === 'business' ? it.values != null : it.values == null) continue
       if (onlyPending && it.status === 'confirmed') continue
       if (!map.has(it.section)) map.set(it.section, [])
       map.get(it.section)!.push(it)
     }
     return [...map.entries()]
-  }, [items, onlyPending, fin])
+  }, [items, onlyPending, fin, mode])
 
   const openItem = (item: ExtractedItem) => {
     setSelected(item)
@@ -300,13 +224,10 @@ export function NumbersTab({ full, refresh, dealId }: {
     ['登録日', deal.created_at ? new Date(deal.created_at).toLocaleDateString('ja-JP') : '－'],
   ]
 
-  // 財務情報テーブルのセル描画（1行に act/base/sponsor 最大3項目がぶら下がる）
-  const finRowItems = (r: FinRow): ExtractedItem[] =>
-    r.kpiItem ? [r.kpiItem] : (['act', 'base', 'sponsor'] as CaseKey[]).map((c) => r.items[c]).filter(Boolean) as ExtractedItem[]
-
   return (
     <div>
-      {/* 案件基本情報（概要に載せきれない情報） */}
+      {/* 案件基本情報（事業概要タブのみ） */}
+      {mode === 'business' && (
       <section className="card mb-4">
         <div className="border-b border-surface-container-high bg-surface-container-low/50 px-4 py-2.5 text-[13px] font-bold">
           案件基本情報
@@ -333,11 +254,22 @@ export function NumbersTab({ full, refresh, dealId }: {
           </div>
         )}
       </section>
+      )}
 
-      {progress.required > 0 && progress.confirmed === progress.required && (
+      {/* 事業要約（事業概要タブのみ） */}
+      {mode === 'business' && deal.summary && (
+        <section className="card mb-4">
+          <div className="border-b border-surface-container-high bg-surface-container-low/50 px-4 py-2.5 text-[13px] font-bold">
+            事業要約
+          </div>
+          <p className="px-4 py-3 text-[13px] leading-relaxed text-on-surface-variant">{deal.summary}</p>
+        </section>
+      )}
+
+      {mode === 'digest' && progress.required > 0 && progress.confirmed === progress.required && (
         <div className="mb-3 flex items-center gap-2 rounded border border-green-300 bg-green-50 px-4 py-2.5 text-[13px] text-green-800">
           <Icon name="check_circle" className="text-[18px]" fill />
-          必須項目がすべて確定しました。KPI構造タブへ進めます。
+          必須項目がすべて確定しました。KPIツリータブへ進めます。
         </div>
       )}
 
@@ -348,7 +280,7 @@ export function NumbersTab({ full, refresh, dealId }: {
       )}
 
       {/* 財務情報：過去実績・Base・Sponsorを横並び、PL/重要KPI/BS/CFを縦並びの統合テーブル */}
-      {fin.hasRows && (
+      {mode === 'digest' && fin.hasRows && (
         <section className="card overflow-hidden">
           <div className="flex items-center justify-between border-b border-surface-container-high bg-surface-container-low/50 px-4 py-2.5 text-[13px] font-bold">
             <span className="flex items-center gap-2">

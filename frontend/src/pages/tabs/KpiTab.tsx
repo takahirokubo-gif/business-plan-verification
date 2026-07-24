@@ -205,7 +205,7 @@ export function KpiTab({ full, refresh, dealId, stage1Done }: {
         {!stage1Done && (
           <div className="mb-3 flex items-center gap-2 rounded border border-amber-300 bg-amber-50 px-4 py-2.5 text-[13px] text-amber-800">
             <Icon name="lock" className="text-[16px]" />
-            数値確定タブで必須項目をすべて確定すると、KPI構造を確定できます（表示は可能です）。
+            財務ダイジェストタブで必須項目をすべて確定すると、KPI構造を確定できます（表示は可能です）。
           </div>
         )}
         {deal.kpi_stale_reason && (

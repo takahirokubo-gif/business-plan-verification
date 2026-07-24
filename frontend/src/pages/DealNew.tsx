@@ -169,7 +169,7 @@ export function DealNew() {
         summary: form.summary || null, owner: form.owner || userKey, user: userKey,
       })
       await api.analyze(dealId, userKey)
-      navigate(`/deals/${dealId}?tab=numbers`)
+      navigate(`/deals/${dealId}?tab=overview`)
     } catch (e) {
       setError((e as Error).message)
       setAnalyzing(false)

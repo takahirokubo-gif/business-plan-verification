@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<title>Overviewモック（Stitch参照用）｜事業計画検証</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: #f9f9ff;
+    color: #1a1c20;
+    -webkit-font-smoothing: antialiased;
+    font-size: 13px;
+    min-width: 1280px;
+  }
+  .num { font-family: 'Inter', 'Noto Sans JP', sans-serif; font-variant-numeric: tabular-nums lining-nums; }
+  a { color: #1a4f8b; text-decoration: none; }
+
+  /* ===== app shell ===== */
+  .shell { display: flex; min-height: 100vh; }
+  .sidebar { width: 260px; flex-shrink: 0; background: #f3f3f9; border-right: 1px solid #e2e2e8; padding: 16px 0; }
+  .brand { padding: 0 16px 14px; font-size: 13px; font-weight: 700; color: #00386c; border-bottom: 1px solid #e2e2e8; margin-bottom: 8px; }
+  .brand small { display: block; font-size: 10px; font-weight: 400; color: #737781; margin-top: 2px; }
+  .side-item { display: flex; align-items: center; gap: 8px; padding: 9px 16px; font-size: 13px; color: #424750; border-left: 4px solid transparent; }
+  .side-item.active { border-left-color: #1a4f8b; background: #d5e3ff; color: #00386c; font-weight: 700; }
+  .main { flex: 1; padding: 16px 24px 48px; max-width: 1320px; }
+  .crumb { font-size: 12px; color: #737781; margin-bottom: 10px; }
+  .crumb b { color: #1a1c20; font-weight: 500; }
+
+  .deal-head { display: flex; align-items: center; justify-content: space-between; }
+  .deal-title { display: flex; align-items: center; gap: 12px; }
+  h1 { font-size: 22px; font-weight: 700; }
+
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 8px; font-size: 12px; font-weight: 500; letter-spacing: .03em; white-space: nowrap; }
+  .b-success { background: #ecfdf3; color: #027a48; border: 1px solid #a6f4c5; }
+  .b-warning { background: #fffaeb; color: #b54708; border: 1px solid #fedf89; }
+  .b-error   { background: #ffdad6; color: #93000a; border: 1px solid rgba(186,26,26,.3); }
+  .b-info    { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+  .b-ai      { background: #f4f0ff; color: #6941c6; border: 1px solid #d9d0f3; }
+  .btn-secondary { display: inline-flex; align-items: center; gap: 6px; background: #fff; color: #1a4f8b; font-size: 12px; font-weight: 500; padding: 6px 12px; border-radius: 4px; border: 1px solid #c2c6d1; font-family: inherit; }
+
+  /* tabs */
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid #e8e8ed; margin-top: 16px; }
+  .tab { padding: 4px 16px 8px; font-size: 13px; color: #424750; border-bottom: 2px solid transparent; cursor: default; }
+  .tab.active { color: #1a4f8b; font-weight: 700; border-bottom-color: #1a4f8b; }
+
+  /* cards */
+  .card { background: #fff; border: 1px solid #e2e2e8; border-radius: 4px; margin-top: 16px; }
+  .card-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #ededf3; }
+  .card-title { font-size: 14px; font-weight: 700; }
+  .card-title .tri { color: #1a4f8b; margin-right: 4px; font-size: 11px; }
+  .head-right { display: flex; align-items: center; gap: 10px; }
+  .edit-link { font-size: 12px; font-weight: 500; }
+  .card-body { padding: 16px; }
+
+  /* basic info */
+  .basic-grid { display: grid; grid-template-columns: 380px 1fr; gap: 24px; }
+  .kv { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .kv td { padding: 6px 8px; border-bottom: 1px solid #f3f3f9; vertical-align: top; }
+  .kv td:first-child { color: #737781; width: 110px; white-space: nowrap; }
+  .kv td:last-child { font-weight: 500; }
+  .summary-label { font-size: 11px; font-weight: 700; color: #737781; letter-spacing: .05em; margin-bottom: 6px; }
+  .summary-text { font-size: 13px; line-height: 1.9; color: #424750; }
+
+  /* kpi tree */
+  .tree { font-size: 13px; line-height: 2.1; }
+  .tree .row { display: flex; align-items: center; gap: 8px; }
+  .tree .lv1 { padding-left: 20px; }
+  .tree .bullet { color: #c2c6d1; }
+  .tree .star { color: #1a4f8b; font-size: 14px; }
+  .tree .kpi-name { font-weight: 700; }
+  .tree .star-name { color: #00386c; }
+  .tree .formula { color: #424750; }
+  .tree .op { color: #737781; padding: 0 2px; }
+
+  /* fin table */
+  .fin-wrap { overflow-x: auto; }
+  .fin { border-collapse: collapse; font-size: 11.5px; white-space: nowrap; }
+  .fin th, .fin td { border: 1px solid #e8e8ed; padding: 4px 8px; }
+  .fin thead th { background: #f3f3f9; font-weight: 700; }
+  .fin .grp-act { background: #ededf3; }
+  .fin .grp-base { background: #eff6ff; color: #1d4ed8; }
+  .fin .grp-spo { background: #f4f0ff; color: #6941c6; }
+  .fin .rowgrp { background: #f3f3f9; font-weight: 700; text-align: center; width: 26px; padding: 2px; }
+  .fin .item { min-width: 90px; font-weight: 500; }
+  .fin .item.sub { padding-left: 20px; color: #737781; font-weight: 400; }
+  .fin td.v { text-align: right; font-family: 'Inter', sans-serif; font-variant-numeric: tabular-nums; min-width: 56px; }
+  .fin td.pending { background: #fffaeb; }
+  .fin td.conflict { background: #ffdad6; color: #93000a; font-weight: 600; }
+  .fin .sep-l { border-left: 2px solid #c2c6d1; }
+  .legend { font-size: 11px; color: #737781; margin-top: 8px; }
+  .legend .sw { display: inline-block; width: 10px; height: 10px; border: 1px solid #e2e2e8; vertical-align: -1px; margin-right: 3px; }
+  .unit { font-size: 11px; color: #737781; margin-bottom: 8px; }
+
+  /* scenarios */
+  .scenario { border: 1px solid #e2e2e8; border-radius: 4px; margin-bottom: 12px; }
+  .scenario:last-child { margin-bottom: 0; }
+  .sc-head { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #fbfbfe; border-bottom: 1px solid #ededf3; }
+  .sc-key { width: 22px; height: 22px; border-radius: 50%; color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: 'Inter', sans-serif; }
+  .sc-key.a { background: #1a4f8b; } .sc-key.b { background: #b54708; } .sc-key.c { background: #93000a; }
+  .sc-title { font-size: 13px; font-weight: 700; flex: 1; }
+  .toggle { width: 34px; height: 18px; border-radius: 9px; background: #1a4f8b; position: relative; flex-shrink: 0; }
+  .toggle::after { content: ''; position: absolute; right: 2px; top: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; }
+  .toggle.off { background: #c2c6d1; } .toggle.off::after { right: auto; left: 2px; }
+  .sc-body { padding: 10px 14px 12px; }
+  .sc-body ul { list-style: none; }
+  .sc-body li { font-size: 12.5px; line-height: 1.9; color: #424750; padding-left: 12px; text-indent: -12px; }
+  .sc-body li::before { content: '・'; color: #c2c6d1; }
+  .sc-body b { color: #1a1c20; }
+  .sc-body .basis { color: #1a4f8b; text-decoration: underline; text-underline-offset: 2px; }
+  .sc-collapsed { color: #737781; font-size: 12px; padding: 0 14px 10px; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <aside class="sidebar">
+    <div class="brand">事業計画検証ソリューション<small>ストラクチャードファイナンス審査支援</small></div>
+    <div class="side-item active">案件一覧</div>
+    <div class="side-item">新規案件</div>
+    <div class="side-item">設定</div>
+  </aside>
+
+  <main class="main">
+    <div class="crumb">案件一覧 <span style="color:#c2c6d1">/</span> <b>オートスタッフィングHD LBO案件</b></div>
+
+    <div class="deal-head">
+      <div class="deal-title">
+        <h1>オートスタッフィングHD LBO案件</h1>
+        <span class="badge b-info">審査相談 準備中</span>
+        <span class="badge b-warning">未確定 5</span>
+      </div>
+      <button class="btn-secondary">🕘 操作履歴</button>
+    </div>
+
+    <!-- タブ：新構成 -->
+    <div class="tabs">
+      <div class="tab active">概要</div>
+      <div class="tab">事業概要</div>
+      <div class="tab">KPIツリー</div>
+      <div class="tab">財務ダイジェスト</div>
+      <div class="tab">ストレス仮説</div>
+    </div>
+
+    <!-- ① 案件基本情報・事業要約 -->
+    <section class="card">
+      <div class="card-head">
+        <span class="card-title"><span class="tri">▼</span>案件基本情報・事業要約</span>
+        <span class="head-right"><span class="badge b-success">✓ 確定済</span><a class="edit-link" href="#">編集 →</a></span>
+      </div>
+      <div class="card-body basic-grid">
+        <table class="kv">
+          <tr><td>スキーム</td><td>LBO（スポンサー：国内PEファンド）</td></tr>
+          <tr><td>対象会社</td><td>オートスタッフィングHD（人材派遣）</td></tr>
+          <tr><td>EV</td><td class="num">4,800 百万円（EV/EBITDA 5.6x）</td></tr>
+          <tr><td>資金構成</td><td class="num">シニアローン 3,200 ／ エクイティ 1,600</td></tr>
+          <tr><td>主要取引先</td><td>自動車完成車メーカー・Tier1/Tier2 部品メーカー</td></tr>
+        </table>
+        <div>
+          <div class="summary-label">事業要約</div>
+          <p class="summary-text">
+            自動車完成車メーカーおよびTier1/Tier2部品メーカーの工場に対し、製造ラインオペレーター（派遣社員・期間工）を供給する人材派遣ビジネス。
+            景気動向に左右されやすい自動車産業の「雇用の調整弁」としての役割を担う一方、安定したマージン収益が特徴。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ② 重要KPIとその構造 -->
+    <section class="card">
+      <div class="card-head">
+        <span class="card-title"><span class="tri">▼</span>重要KPIとその構造（ツリー）</span>
+        <span class="head-right"><span class="badge b-success">✓ 確定済</span><a class="edit-link" href="#">編集 →</a></span>
+      </div>
+      <div class="card-body tree">
+        <div class="row"><span class="bullet">・</span><span class="kpi-name">売上高</span><span class="op">=</span><span class="formula">稼働人数 <span class="op">×</span> 月間平均稼働時間 <span class="op">×</span> 派遣単価（時間あたり）</span></div>
+        <div class="row lv1"><span class="star">★</span><span class="kpi-name star-name">稼働人数</span><span class="op">=</span><span class="formula">（前期末登録者数 <span class="op">＋</span> 新規採用数 <span class="op">−</span> 退職数）<span class="op">×</span> 稼働率</span></div>
+        <div class="row"><span class="bullet">・</span><span class="kpi-name">売上原価</span><span class="op">=</span><span class="formula">稼働人数 <span class="op">×</span> 月間平均稼働時間 <span class="op">×</span> 派遣スタッフ時給</span></div>
+        <div class="row"><span class="bullet">・</span><span class="kpi-name">販管費</span><span class="op">=</span><span class="formula">採用費（新規採用数 <span class="op">×</span> 顧客獲得単価/CPA）<span class="op">＋</span> 本社固定費（人件費等）</span></div>
+        <div class="row"><span class="bullet">・</span><span class="kpi-name">EBITDA</span><span class="op">=</span><span class="formula">売上高 <span class="op">−</span> 売上原価 <span class="op">−</span> 販管費 <span class="op">＋</span> 減価償却費</span></div>
+      </div>
+    </section>
+
+    <!-- ③ 財務情報 -->
+    <section class="card">
+      <div class="card-head">
+        <span class="card-title"><span class="tri">▼</span>財務情報</span>
+        <span class="head-right"><span class="badge b-warning">未確定 4</span><span class="badge b-error">⚠ 不整合 1</span><a class="edit-link" href="#">編集 →</a></span>
+      </div>
+      <div class="card-body">
+        <div class="unit">（百万円）</div>
+        <div class="fin-wrap">
+        <table class="fin">
+          <thead>
+            <tr>
+              <th colspan="2" rowspan="2"></th>
+              <th colspan="3" class="grp-act">確定財務</th>
+              <th colspan="5" class="grp-base sep-l">ベースケース</th>
+              <th colspan="5" class="grp-spo sep-l">スポンサーケース</th>
+            </tr>
+            <tr>
+              <th class="grp-act">FY24</th><th class="grp-act">FY25</th><th class="grp-act">FY26</th>
+              <th class="grp-base sep-l">FY27</th><th class="grp-base">FY28</th><th class="grp-base">FY29</th><th class="grp-base">FY30</th><th class="grp-base">FY31</th>
+              <th class="grp-spo sep-l">FY27</th><th class="grp-spo">FY28</th><th class="grp-spo">FY29</th><th class="grp-spo">FY30</th><th class="grp-spo">FY31</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="rowgrp" rowspan="5">P<br/>L</td><td class="item">売上</td><td class="v">9,800</td><td class="v">10,400</td><td class="v">11,200</td><td class="v sep-l">11,600</td><td class="v">12,100</td><td class="v">12,600</td><td class="v">13,100</td><td class="v">13,600</td><td class="v sep-l">11,800</td><td class="v">12,600</td><td class="v">13,500</td><td class="v">14,400</td><td class="v">15,300</td></tr>
+            <tr><td class="item">売上総利益 <span style="color:#737781;font-weight:400">（同率）</span></td><td class="v">1,760 <span style="color:#737781">18.0%</span></td><td class="v">1,890 <span style="color:#737781">18.2%</span></td><td class="v pending">2,050 <span style="color:#737781">18.3%</span></td><td class="v sep-l">2,130</td><td class="v">2,240</td><td class="v">2,350</td><td class="v">2,460</td><td class="v">2,570</td><td class="v sep-l">2,200</td><td class="v">2,390</td><td class="v">2,600</td><td class="v">2,820</td><td class="v">3,050</td></tr>
+            <tr><td class="item">営業利益 <span style="color:#737781;font-weight:400">（同率）</span></td><td class="v">590 <span style="color:#737781">6.0%</span></td><td class="v">640 <span style="color:#737781">6.2%</span></td><td class="v">700 <span style="color:#737781">6.3%</span></td><td class="v sep-l">730</td><td class="v">780</td><td class="v">830</td><td class="v">880</td><td class="v">930</td><td class="v sep-l">760</td><td class="v">840</td><td class="v">930</td><td class="v">1,030</td><td class="v">1,140</td></tr>
+            <tr><td class="item">当期利益</td><td class="v">370</td><td class="v">400</td><td class="v">440</td><td class="v sep-l">450</td><td class="v">480</td><td class="v">510</td><td class="v">550</td><td class="v">580</td><td class="v sep-l">460</td><td class="v">510</td><td class="v">560</td><td class="v">620</td><td class="v">680</td></tr>
+            <tr><td class="item">EBITDA</td><td class="v">720</td><td class="v conflict">⚠ 780</td><td class="v">850</td><td class="v sep-l">880</td><td class="v">930</td><td class="v">980</td><td class="v">1,030</td><td class="v">1,080</td><td class="v sep-l">910</td><td class="v">1,000</td><td class="v">1,100</td><td class="v">1,210</td><td class="v">1,330</td></tr>
+            <tr><td class="rowgrp" rowspan="4">重<br/>要<br/>K<br/>P<br/>I</td><td class="item">稼働率</td><td class="v">82.5%</td><td class="v">83.1%</td><td class="v">83.8%</td><td class="v sep-l">84.0%</td><td class="v">84.0%</td><td class="v">84.5%</td><td class="v">84.5%</td><td class="v">85.0%</td><td class="v sep-l">85.0%</td><td class="v">85.5%</td><td class="v">86.0%</td><td class="v">86.5%</td><td class="v">87.0%</td></tr>
+            <tr><td class="item">新規採用数（人）</td><td class="v">1,850</td><td class="v">1,920</td><td class="v pending">2,010</td><td class="v sep-l">2,050</td><td class="v">2,120</td><td class="v">2,190</td><td class="v">2,260</td><td class="v">2,330</td><td class="v sep-l">2,150</td><td class="v">2,290</td><td class="v">2,440</td><td class="v">2,600</td><td class="v">2,770</td></tr>
+            <tr><td class="item">派遣単価（円/時）</td><td class="v">1,980</td><td class="v">2,040</td><td class="v">2,100</td><td class="v sep-l">2,140</td><td class="v">2,180</td><td class="v">2,220</td><td class="v">2,260</td><td class="v">2,300</td><td class="v sep-l">2,160</td><td class="v">2,230</td><td class="v">2,300</td><td class="v">2,370</td><td class="v">2,440</td></tr>
+            <tr><td class="item">採用CPA（千円）</td><td class="v">185</td><td class="v">192</td><td class="v">198</td><td class="v sep-l pending">200</td><td class="v">202</td><td class="v">204</td><td class="v">206</td><td class="v">208</td><td class="v sep-l">198</td><td class="v">199</td><td class="v">200</td><td class="v">201</td><td class="v">202</td></tr>
+            <tr><td class="rowgrp" rowspan="4">B<br/>S</td><td class="item">現預金</td><td class="v">850</td><td class="v">920</td><td class="v">1,010</td><td class="v sep-l">620</td><td class="v">710</td><td class="v">830</td><td class="v">980</td><td class="v">1,150</td><td class="v sep-l">640</td><td class="v">760</td><td class="v">920</td><td class="v">1,120</td><td class="v">1,360</td></tr>
+            <tr><td class="item">のれん</td><td class="v">—</td><td class="v">—</td><td class="v">—</td><td class="v sep-l">3,200</td><td class="v">3,040</td><td class="v">2,880</td><td class="v">2,720</td><td class="v">2,560</td><td class="v sep-l">3,200</td><td class="v">3,040</td><td class="v">2,880</td><td class="v">2,720</td><td class="v">2,560</td></tr>
+            <tr><td class="item">純資産</td><td class="v">1,450</td><td class="v">1,720</td><td class="v">1,980</td><td class="v sep-l">1,200</td><td class="v">1,560</td><td class="v">1,950</td><td class="v">2,370</td><td class="v">2,820</td><td class="v sep-l">1,230</td><td class="v">1,640</td><td class="v">2,090</td><td class="v">2,590</td><td class="v">3,140</td></tr>
+            <tr><td class="item">総資産</td><td class="v">4,100</td><td class="v">4,350</td><td class="v">4,600</td><td class="v sep-l">8,900</td><td class="v">8,700</td><td class="v">8,600</td><td class="v">8,500</td><td class="v">8,400</td><td class="v sep-l">8,950</td><td class="v">8,800</td><td class="v">8,750</td><td class="v">8,700</td><td class="v">8,650</td></tr>
+            <tr><td class="rowgrp" rowspan="4">C<br/>F</td><td class="item">営業CF</td><td class="v">520</td><td class="v">560</td><td class="v">610</td><td class="v sep-l">640</td><td class="v">680</td><td class="v">720</td><td class="v">760</td><td class="v">800</td><td class="v sep-l">660</td><td class="v">720</td><td class="v">790</td><td class="v">870</td><td class="v">950</td></tr>
+            <tr><td class="item">投資CF</td><td class="v">▲120</td><td class="v">▲140</td><td class="v">▲130</td><td class="v sep-l">▲150</td><td class="v">▲150</td><td class="v">▲150</td><td class="v">▲150</td><td class="v">▲150</td><td class="v sep-l">▲180</td><td class="v">▲180</td><td class="v">▲180</td><td class="v">▲180</td><td class="v">▲180</td></tr>
+            <tr><td class="item">財務CF</td><td class="v">▲200</td><td class="v">▲180</td><td class="v">▲190</td><td class="v sep-l">▲420</td><td class="v">▲420</td><td class="v">▲420</td><td class="v">▲420</td><td class="v">▲420</td><td class="v sep-l">▲420</td><td class="v">▲420</td><td class="v">▲420</td><td class="v">▲420</td><td class="v">▲420</td></tr>
+            <tr><td class="item">FCF</td><td class="v">400</td><td class="v">420</td><td class="v pending">480</td><td class="v sep-l">490</td><td class="v">530</td><td class="v">570</td><td class="v">610</td><td class="v">650</td><td class="v sep-l">480</td><td class="v">540</td><td class="v">610</td><td class="v">690</td><td class="v">770</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="legend">
+          <span class="sw" style="background:#fffaeb;border-color:#fedf89"></span>未確定（クリックで根拠を確認して確定）
+          <span class="sw" style="background:#ffdad6;border-color:#ffb4ab"></span>⚠ 資料間の不整合あり
+          白＝確定済
+        </div>
+      </div>
+    </section>
+
+    <!-- ④ ストレス仮説とその根拠データ -->
+    <section class="card">
+      <div class="card-head">
+        <span class="card-title"><span class="tri">▼</span>ストレス仮説とその根拠データ</span>
+        <span class="head-right"><span class="badge b-ai">AI推定・モデル再計算なし</span><span class="badge b-success">採用 2/3</span><a class="edit-link" href="#">編集 →</a></span>
+      </div>
+      <div class="card-body">
+
+        <div class="scenario">
+          <div class="sc-head">
+            <span class="sc-key a">A</span>
+            <span class="sc-title">自動車減産に伴う「急激な稼働率低下」（トップライン・ショック）</span>
+            <span class="badge b-ai">AI推定</span>
+            <span class="toggle"></span>
+          </div>
+          <div class="sc-body"><ul>
+            <li><b>【KPIとリスク】</b>「稼働率」および「稼働人数」が主要リスクです。（要因：半導体不足等に伴う工場稼働調整）</li>
+            <li><b>【ストレスと根拠】</b>稼働率「-15%」、新規採用数「-20%」のストレスを推奨します。（<span class="basis">根拠：過去の経済ショック時の自動車製造派遣業界の平均下落幅</span>）</li>
+            <li><b>【インパクト】</b>売上の急減により固定費を吸収できず、Year 2でDSCRが0.9倍に下落し、キャッシュフローがショートするリスクがあります。</li>
+            <li><b>【保全策・構造】</b>コミットメントラインの設定、または初期LTVをBaseケースより10%引き下げることを推奨します。</li>
+            <li><b>【Q&amp;A】</b>「主要派遣先への売上依存度」と「減産時の他業種への配置転換力」についてヒアリングしてください。</li>
+          </ul></div>
+        </div>
+
+        <div class="scenario">
+          <div class="sc-head">
+            <span class="sc-key b">B</span>
+            <span class="sc-title">深刻な人手不足による「採用単価（CPA）高騰とマージン圧迫」（コスト・ショック）</span>
+            <span class="badge b-ai">AI推定</span>
+            <span class="toggle"></span>
+          </div>
+          <div class="sc-collapsed">採用CPA「+30%」・スタッフ時給「+5%（派遣単価は据え置き）」のストレスを推奨 … クリックで展開</div>
+        </div>
+
+        <div class="scenario">
+          <div class="sc-head">
+            <span class="sc-key c">C</span>
+            <span class="sc-title">労務コンプライアンス起因の「偶発債務顕在化」（法務・イベントリスク）</span>
+            <span class="badge b-ai">AI推定</span>
+            <span class="toggle off"></span>
+          </div>
+          <div class="sc-collapsed">Year 1に一時的なキャッシュアウト「-3億円（EBITDA外の特損）」のストレスを推奨 … クリックで展開</div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+</div>
+</body>
+</html>
