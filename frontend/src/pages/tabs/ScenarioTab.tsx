@@ -2,7 +2,10 @@ import { useMemo, useState } from 'react'
 import { api } from '../../api'
 import { Icon } from '../../components/Icon'
 import { ChatPanel } from '../../components/ChatPanel'
+import { SlidePanel } from '../../components/EvidencePanel'
+import { FinTableView } from '../../components/FinTableView'
 import { useUser } from '../../context/UserContext'
+import { buildFinTable } from '../../finTable'
 import { kpiLabelOf, resolveKpiNode } from '../../kpiMatch'
 import type { ChatDiff, DealFull, KpiNode, Scenario } from '../../types'
 
@@ -55,6 +58,41 @@ function fmtNum(v: number, suffix: string): string {
 }
 
 const labelCore = (l: string) => l.replace(/（.*/, '')
+
+/** 「約1.9x」「976名」「75%」等の表示値から数値と単位を取り出す（決定的パースのみ） */
+function parseDispVal(s: string): { approx: boolean; num: number; suffix: string } | null {
+  const m = s.replace(/,/g, '').match(/(約)?\s*(-?\d+(?:\.\d+)?)\s*(x|倍|%|％|百万円|千円|億円|名|人|円)?/)
+  if (!m) return null
+  return { approx: !!m[1], num: parseFloat(m[2]), suffix: m[3] === '％' ? '%' : (m[3] ?? '') }
+}
+
+/** impact_calc の before/after 文字列から末尾の「＝ 結果」を取り出す（{{}}マーカーは除去） */
+function resultOf(s: string | null | undefined): string | null {
+  if (!s) return null
+  const i = s.lastIndexOf('＝')
+  if (i < 0) return null
+  return s.slice(i + 1).replace(/\{\{|\}\}/g, '').trim() || null
+}
+
+/** ストレス前後の表示値から変化幅ラベルを作る。DSCRはコベナンツ閾値との抵触も判定 */
+function deltaLabelOf(before: string | null, after: string | null, metric: string, safeguards: string | null | undefined): string {
+  if (!before || !after) return '－'
+  const b = parseDispVal(before)
+  const a = parseDispVal(after)
+  if (!b || !a || b.suffix !== a.suffix) return '－'
+  if (/DSCR/i.test(metric) && safeguards) {
+    const cov = safeguards.match(/コベナンツ[（(]([\d.]+)x[）)]/)
+    if (cov && a.num < parseFloat(cov[1])) return `コベナンツ${cov[1]}x抵触`
+  }
+  const approx = b.approx || a.approx ? '約' : ''
+  if (b.suffix === 'x' || b.suffix === '倍') {
+    const d = Math.round((a.num - b.num) * 10) / 10
+    return `${d >= 0 ? '＋' : '▲'}${approx}${Math.abs(d)}${b.suffix}`
+  }
+  if (b.num === 0) return '－'
+  const pct = Math.round(((a.num - b.num) / Math.abs(b.num)) * 100)
+  return `${pct >= 0 ? '＋' : '▲'}${approx}${Math.abs(pct)}%`
+}
 
 /** impact_calc の {{...}} マーカーを強調スパンに変換する */
 function hlText(text: string, cls: string): React.ReactNode {
@@ -197,17 +235,95 @@ function RefCalc({ sc, nodes }: { sc: Scenario; nodes: KpiNode[] }) {
     return { kpis, rows, chain }
   }, [sc, nodes])
 
+  const [showCalc, setShowCalc] = useState(false)
   const impactCalc = sc.impact_calc ?? []
   if (calc.kpis.length === 0 && impactCalc.length === 0) return null
   const calculable = calc.kpis.filter((k) => k.stressed != null)
 
+  // インパクトサマリー：ストレス対象KPI＋波及指標の「ストレス前→ストレス後」を一覧化。
+  // すべて既存の決定的パース値（calc.kpis / impact_calc / calc.rows）の再構成で、新規の推定はしない。
+  const summaryRows: { key: string; kpi: boolean; label: string; before: string; after: string | null; delta: string }[] = [
+    ...calc.kpis.map((k) => ({
+      key: `kpi-${k.node.node_id}`,
+      kpi: true,
+      label: labelCore(k.node.label),
+      before: displayVal(k.node) || (k.base ? fmtNum(k.base.value, k.suffix) : '－'),
+      after: k.stressed != null ? fmtNum(k.stressed, k.suffix) : null,
+      delta: k.changeLabel ?? '－',
+    })),
+    ...impactCalc.map((b, i) => ({
+      key: `ic-${i}`,
+      kpi: false,
+      label: b.metric,
+      before: resultOf(b.before) ?? '－',
+      after: resultOf(b.after),
+      delta: deltaLabelOf(resultOf(b.before), resultOf(b.after), b.metric, sc.safeguards),
+    })),
+    ...(impactCalc.length === 0
+      ? calc.rows
+        .filter((r) => r.origResult && r.stressedResult)
+        .map((r) => ({
+          key: `row-${r.node.node_id}`,
+          kpi: false,
+          label: r.node.label,
+          before: r.origResult!,
+          after: r.stressedResult,
+          delta: deltaLabelOf(r.origResult, r.stressedResult, r.node.label, sc.safeguards),
+        }))
+      : []),
+  ]
+
   return (
-    <div className="mt-2 rounded border border-primary-container/30 bg-primary-fixed/10 p-3">
-      <div className="flex items-center gap-1.5 text-[11px] font-bold text-primary-container">
-        <Icon name="calculate" className="text-[14px]" />
-        参考試算：インパクト指標の分解（ストレスKPIとの紐づき）
-        （値入り計算式による参考表示。モデル全体の再計算ではありません）
+    <div className="mt-2 overflow-hidden rounded border border-primary-container/25 bg-white">
+      <div className="flex items-baseline gap-2 bg-primary-fixed/40 px-3 py-1.5">
+        <span className="text-[11px] font-bold text-primary-container">インパクトサマリー</span>
+        <span className="text-[10px] text-outline">AI推定・モデル再計算なし</span>
       </div>
+      <table className="w-full text-[12px]">
+        <thead>
+          <tr className="border-b border-surface-container-low text-[10.5px] text-outline">
+            <th className="px-3 py-1 text-left font-medium">指標</th>
+            <th className="py-1 text-right font-medium">ストレス前（ベース）</th>
+            <th className="w-7" />
+            <th className="py-1 text-right font-medium">ストレス後</th>
+            <th className="px-3 py-1 text-right font-medium">変化幅</th>
+          </tr>
+        </thead>
+        <tbody>
+          {summaryRows.map((r) => (
+            <tr key={r.key} className="border-b border-surface-container-low last:border-0">
+              <td className="px-3 py-1.5">
+                {r.kpi
+                  ? <span className="rounded bg-amber-100 px-1.5 py-0.5 font-medium text-amber-900">{r.label}</span>
+                  : r.label}
+              </td>
+              {r.after != null ? (
+                <>
+                  <td className="font-data-tabular py-1.5 text-right">{r.before}</td>
+                  <td className="text-center text-outline">
+                    <Icon name="arrow_right_alt" className="align-middle text-[15px]" />
+                  </td>
+                  <td className="font-data-tabular py-1.5 text-right font-bold text-error">{r.after}</td>
+                  <td className="font-data-tabular px-3 py-1.5 text-right text-on-surface-variant">{r.delta}</td>
+                </>
+              ) : (
+                <td colSpan={4} className="px-3 py-1.5 text-right text-[11px] text-on-surface-variant">
+                  数値の変化幅を特定できないため試算なし（本文参照）
+                </td>
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <button
+        className="flex w-full items-center gap-1 border-t border-surface-container-low px-3 py-1.5 text-left text-[11px] text-primary-container hover:bg-surface-container-low/40"
+        onClick={(e) => { e.stopPropagation(); setShowCalc(!showCalc) }}
+      >
+        <Icon name={showCalc ? 'expand_more' : 'chevron_right'} className="text-[14px]" />
+        計算過程を表示（KPIツリーの分解・値入り計算式）
+      </button>
+      {showCalc && (
+      <div className="border-t border-surface-container-low bg-primary-fixed/10 px-3 pb-3">
 
       {/* ① ストレスをかける対象KPI（ハイライト表示） */}
       <div className="mt-2 space-y-1">
@@ -321,8 +437,11 @@ function RefCalc({ sc, nodes }: { sc: Scenario; nodes: KpiNode[] }) {
         ※ 上記は<b>【ストレスと根拠】</b>のKPI変化が<b>【インパクト】</b>欄の推定値
         （AI推定・モデル再計算なし）にどう繋がるかを分解して示した参考表示です。
       </div>
+
+      </div>
+      )}
       {calculable.length === 0 && (
-        <div className="mt-1.5 text-[11px] text-outline">
+        <div className="border-t border-surface-container-low px-3 py-1.5 text-[11px] text-outline">
           ※ シナリオ本文に数値の変化幅（例: -15%、76%→74%）が明記されると自動で試算されます。
         </div>
       )}
@@ -342,6 +461,12 @@ function AdoptToggle({ adopted, onChange }: { adopted: boolean; onChange: (v: bo
   )
 }
 
+const SCENARIO_KEY_COLOR: Record<string, string> = {
+  A: 'bg-primary-container',
+  B: 'bg-amber-700',
+  C: 'bg-error',
+}
+
 export function ScenarioTab({ full, refresh, dealId }: {
   full: DealFull
   refresh: () => Promise<void>
@@ -351,6 +476,8 @@ export function ScenarioTab({ full, refresh, dealId }: {
   const scenarios = full.scenarios
   const [openKeys, setOpenKeys] = useState<Set<string>>(new Set())
   const [fullText, setFullText] = useState<Set<string>>(new Set())
+  const [finPanelSc, setFinPanelSc] = useState<Scenario | null>(null)
+  const fin = useMemo(() => buildFinTable(full.items), [full.items])
   const nodeLabel = (id: string) => kpiLabelOf(full.kpi_nodes, id)
 
   const toggleOpen = (key: string) => {
@@ -452,21 +579,10 @@ export function ScenarioTab({ full, refresh, dealId }: {
                   onClick={() => toggleOpen(sc.key)}
                 >
                   <Icon name={open ? 'expand_more' : 'chevron_right'} className="shrink-0 text-[20px] text-outline" />
-                  <span className="w-8 shrink-0 text-[12px] font-bold text-outline">S{sc.key}</span>
-                  <div className="min-w-0 flex-1">
-                    <div className="truncate text-[13.5px] font-bold">{sc.title}</div>
-                    <div className="mt-0.5 flex items-center gap-2 text-[11px] text-outline">
-                      <span>
-                        {sc.origin === 'ai' ? 'AI推奨' : '自分の仮説'}
-                        {sc.type_label && sc.type_label !== (sc.origin === 'ai' ? 'AI推奨' : '自分の仮説') && `｜${sc.type_label}`}
-                      </span>
-                      {sc.affected_kpis.length > 0 && (
-                        <span className="truncate">
-                          影響KPI：{sc.affected_kpis.map(nodeLabel).join('・')}
-                        </span>
-                      )}
-                    </div>
-                  </div>
+                  <span className={`flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full text-[12px] font-bold text-white ${SCENARIO_KEY_COLOR[sc.key] ?? 'bg-outline'}`}>
+                    {sc.key}
+                  </span>
+                  <div className="min-w-0 flex-1 truncate text-[13.5px] font-bold">{sc.title}</div>
                   <div className="flex shrink-0 items-center gap-2">
                     {findings.length > 0 && (
                       <span className="badge-base badge-neutral" title="前回審査相談での指摘あり">
@@ -488,6 +604,15 @@ export function ScenarioTab({ full, refresh, dealId }: {
                 {/* 詳細（アコーディオン展開） */}
                 {open && (
                   <div className="border-t border-surface-container-low bg-surface-container-low/20 px-4 pb-4 pt-3">
+                    {/* 財務数値を参照しながらシナリオをチェックできるサイドパネルを開く */}
+                    <div className="mb-2 flex justify-end">
+                      <button
+                        className="btn-secondary !py-1 !text-[11px]"
+                        onClick={(e) => { e.stopPropagation(); setFinPanelSc(sc) }}
+                      >
+                        <Icon name="table_chart" className="text-[14px]" /> 財務データを見る
+                      </button>
+                    </div>
                     {sc.stale_reason && (
                       <div className="mb-3 flex items-center justify-between rounded border border-amber-300 bg-amber-50 px-3 py-2">
                         <div className="flex items-center gap-1.5 text-[12px] text-amber-800">
@@ -524,7 +649,7 @@ export function ScenarioTab({ full, refresh, dealId }: {
                       </div>
                       <div>
                         <span className="font-bold">・【ストレスと根拠】</span>
-                        <span className="font-medium">{sc.change_text || '－'}</span>
+                        <span className="rounded bg-amber-100 px-1 font-medium text-amber-900">{sc.change_text || '－'}</span>
                         （根拠：{fullText.has(sc.key) ? sc.change_basis : brief(sc.change_basis, 1)}）
                       </div>
                       <div>
@@ -587,6 +712,23 @@ export function ScenarioTab({ full, refresh, dealId }: {
           }))}
         />
       </div>
+
+      {/* 財務データのサイドパネル（概要タブと同じ統合テーブル・ストレス対象KPI行を強調） */}
+      {finPanelSc && (
+        <SlidePanel
+          title="財務情報（百万円）"
+          widthClass="w-[640px] max-w-[92vw]"
+          onClose={() => setFinPanelSc(null)}
+        >
+          <div className="mb-2 text-[11px] text-outline">
+            黄色の行＝シナリオ{finPanelSc.key}のストレス対象KPI。セルにカーソルを合わせると根拠（出典）が表示されます。
+          </div>
+          <FinTableView
+            fin={fin}
+            highlightLabels={finPanelSc.affected_kpis.map((id) => labelCore(nodeLabel(id)))}
+          />
+        </SlidePanel>
+      )}
     </div>
   )
 }

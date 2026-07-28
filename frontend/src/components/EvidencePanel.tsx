@@ -78,16 +78,17 @@ export function EvidenceBlock({ evidence }: { evidence: Evidence }) {
 }
 
 /** 右側スライドパネルの枠。 */
-export function SlidePanel({ title, onClose, children, footer }: {
+export function SlidePanel({ title, onClose, children, footer, widthClass = 'w-[420px]' }: {
   title: ReactNode
   onClose: () => void
   children: ReactNode
   footer?: ReactNode
+  widthClass?: string
 }) {
   return (
     <div className="fixed inset-0 z-40">
       <div className="absolute inset-0 bg-black/20" onClick={onClose} />
-      <div className="animate-slide-in absolute right-0 top-0 flex h-full w-[420px] flex-col border-l border-surface-container-high bg-white">
+      <div className={`animate-slide-in absolute right-0 top-0 flex h-full ${widthClass} flex-col border-l border-surface-container-high bg-white`}>
         <div className="flex items-center justify-between border-b border-surface-container-high px-4 py-3">
           <div className="text-[14px] font-bold">{title}</div>
           <button onClick={onClose} className="rounded p-1 hover:bg-surface-container-low">

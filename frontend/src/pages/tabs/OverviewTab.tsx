@@ -1,9 +1,10 @@
-import { Fragment, useMemo } from 'react'
+import { useMemo } from 'react'
 import { Icon } from '../../components/Icon'
 import { Badge } from '../../components/Badge'
 import { EvidenceHover } from '../../components/EvidenceTooltip'
-import { buildFinTable, cellText, finNotesOf, finRowItems, hasRatioRow, ratioValue } from '../../finTable'
-import type { DealFull, ExtractedItem, KpiNode } from '../../types'
+import { FinTableView } from '../../components/FinTableView'
+import { buildFinTable, finNotesOf } from '../../finTable'
+import type { DealFull, KpiNode } from '../../types'
 
 /** 長文のAIテキストを先頭n文に要約表示する */
 function brief(text: string | null | undefined, n = 2): string {
@@ -119,30 +120,6 @@ export function OverviewTab({ full, onNavigate }: {
       </div>
     ))
 
-  // 財務テーブルの読み取り専用セル（クリックで財務ダイジェストタブへ）
-  const finCell = (item: ExtractedItem | undefined, y: string, first: boolean) => {
-    const v = item?.effective_values?.[y]
-    return (
-      <td
-        key={y}
-        onClick={item ? () => onNavigate('numbers') : undefined}
-        className={`px-2 py-1.5 text-right ${first ? 'border-l border-surface-container-high' : ''} ${
-          item ? 'cursor-pointer hover:bg-primary-fixed/30' : ''
-        } ${item && item.status !== 'confirmed' ? 'bg-amber-50/70' : ''}`}
-      >
-        {v != null && item
-          ? (
-            <EvidenceHover evidence={item.evidence}>
-              <span className="font-data-tabular">{cellText(item, v)}</span>
-            </EvidenceHover>
-          )
-          : v != null
-            ? <span className="font-data-tabular">{v.toLocaleString()}</span>
-            : <span className="text-outline-variant">－</span>}
-      </td>
-    )
-  }
-
   return (
     <div>
       {/* ① 案件基本情報・事業要約 */}
@@ -214,90 +191,7 @@ export function OverviewTab({ full, onNavigate }: {
       >
         {fin.hasRows ? (
           <>
-            <div className="overflow-x-auto">
-              <table className="w-full text-[12px]">
-                <thead>
-                  <tr className="border-b border-surface-container-high bg-surface-container-low/30 text-[11px] text-on-surface-variant">
-                    <th className="w-8 px-1 py-1.5" />
-                    <th className="min-w-[110px] px-2 py-1.5 text-left font-medium">項目（百万円）</th>
-                    {fin.yearsAct.length > 0 && (
-                      <th colSpan={fin.yearsAct.length} className="border-l border-surface-container-high px-2 py-1.5 text-center font-bold">
-                        確定財務
-                      </th>
-                    )}
-                    {fin.yearsBase.length > 0 && (
-                      <th colSpan={fin.yearsBase.length} className="border-l border-surface-container-high px-2 py-1.5 text-center font-bold">
-                        ベースケース
-                      </th>
-                    )}
-                    {fin.yearsSponsor.length > 0 && (
-                      <th colSpan={fin.yearsSponsor.length} className="border-l border-surface-container-high px-2 py-1.5 text-center font-bold">
-                        スポンサーケース
-                      </th>
-                    )}
-                  </tr>
-                  <tr className="border-b border-surface-container-high text-[11px] text-on-surface-variant">
-                    <th /><th />
-                    {fin.yearsAct.map((y, i) => (
-                      <th key={`a-${y}`} className={`px-2 py-1 text-right font-medium ${i === 0 ? 'border-l border-surface-container-high' : ''}`}>{y}</th>
-                    ))}
-                    {fin.yearsBase.map((y, i) => (
-                      <th key={`b-${y}`} className={`px-2 py-1 text-right font-medium ${i === 0 ? 'border-l border-surface-container-high' : ''}`}>{y}</th>
-                    ))}
-                    {fin.yearsSponsor.map((y, i) => (
-                      <th key={`s-${y}`} className={`px-2 py-1 text-right font-medium ${i === 0 ? 'border-l border-surface-container-high' : ''}`}>{y}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {fin.grouped.map(([group, rows]) =>
-                    rows.map((r, ri) => {
-                      const rowItems = finRowItems(r)
-                      const anyUnconfirmed = rowItems.some((it) => it.status !== 'confirmed')
-                      const ratioCell = (c: 'act' | 'base' | 'sponsor', y: string, first: boolean) => (
-                        <td key={y} className={`px-2 py-1 text-right ${first ? 'border-l border-surface-container-high' : ''}`}>
-                          <span className="font-data-tabular text-[11px] text-outline">{ratioValue(fin, r, c, y) ?? ''}</span>
-                        </td>
-                      )
-                      const groupSpan = rows.length + rows.filter(hasRatioRow).length
-                      return (
-                        <Fragment key={r.metric}>
-                        <tr className="border-b border-surface-container-low last:border-0">
-                          {ri === 0 && (
-                            <td
-                              rowSpan={groupSpan}
-                              className="w-8 border-r border-surface-container-high bg-surface-container-low/40 px-1 py-2 text-center align-middle text-[11px] font-bold text-on-surface-variant"
-                              style={{ writingMode: 'vertical-rl' }}
-                            >
-                              {group}
-                            </td>
-                          )}
-                          <td className="whitespace-nowrap px-2 py-1.5 font-medium">
-                            {r.label}
-                            {anyUnconfirmed && <span className="ml-1 align-middle text-amber-600" title="未確定の値があります">●</span>}
-                            {rowItems.some((it) => it.mismatch) && (
-                              <Icon name="warning" className="ml-1 align-middle text-[13px] text-amber-600" />
-                            )}
-                          </td>
-                          {fin.yearsAct.map((y, i) => finCell(r.kpiItem ?? r.items.act, y, i === 0))}
-                          {fin.yearsBase.map((y, i) => finCell(r.kpiItem ?? r.items.base, y, i === 0))}
-                          {fin.yearsSponsor.map((y, i) => finCell(r.kpiItem ? undefined : r.items.sponsor, y, i === 0))}
-                        </tr>
-                        {hasRatioRow(r) && (
-                          <tr className="border-b border-surface-container-low">
-                            <td className="px-2 py-1 pl-6 text-[11px] text-outline">同率</td>
-                            {fin.yearsAct.map((y, i) => ratioCell('act', y, i === 0))}
-                            {fin.yearsBase.map((y, i) => ratioCell('base', y, i === 0))}
-                            {fin.yearsSponsor.map((y, i) => ratioCell('sponsor', y, i === 0))}
-                          </tr>
-                        )}
-                        </Fragment>
-                      )
-                    }),
-                  )}
-                </tbody>
-              </table>
-            </div>
+            <FinTableView fin={fin} onCellClick={() => onNavigate('numbers')} />
             <div className="border-t border-surface-container-low px-4 py-1.5 text-[11px] text-outline">
               薄い黄色のセル＝未確定。●＝未確定あり、⚠＝資料間の不整合あり。セルをクリックすると事業・財務タブで根拠を確認できます。
             </div>
