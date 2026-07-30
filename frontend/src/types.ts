@@ -251,6 +251,8 @@ export interface ExportPreview {
   kpi_confirmed: boolean
   adopted_scenarios: number
   held_items: { key: string; label: string }[]
+  /** 未確認の確認事項（照会）。出力はブロックしないが警告として提示する */
+  open_inquiries?: { id: number; title: string; category: string; severity: string }[]
   stale_warnings: boolean
 }
 

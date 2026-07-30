@@ -53,6 +53,13 @@ function SheetPeek({ dealId, docId, location }: {
     return <div className="p-2 text-[11px] text-outline">該当箇所の抜粋を取得できませんでした（{error}）</div>
   }
   if (!peek) return <div className="p-2 text-[11px] text-outline">抜粋を読み込んでいます…</div>
+  if (!peek.rows?.length) {
+    return (
+      <div className="p-2 text-[11px] text-outline">
+        該当セル（{peek.sheet}!{peek.target}）の周辺に値が見つかりませんでした。
+      </div>
+    )
+  }
   return (
     <div className="overflow-x-auto p-1.5">
       <table className="w-full border-collapse text-[11px]">
@@ -61,7 +68,7 @@ function SheetPeek({ dealId, docId, location }: {
             <th className="border border-surface-container-high bg-surface-container-low px-1 py-0.5 text-left">
               {peek.sheet}
             </th>
-            {peek.columns.map((c) => (
+            {(peek.columns ?? []).map((c) => (
               <th key={c} className="border border-surface-container-high bg-surface-container-low px-1 py-0.5 text-right font-medium">
                 {c}
               </th>
@@ -75,7 +82,7 @@ function SheetPeek({ dealId, docId, location }: {
                 <span className="text-outline">{r.row}</span>
                 {r.label && <span className="ml-1">{r.label}</span>}
               </td>
-              {r.cells.map((c) => (
+              {(r.cells ?? []).map((c) => (
                 <td
                   key={c.ref}
                   title={c.formula ? `${c.ref}: ${c.formula}` : c.ref}
@@ -110,6 +117,9 @@ export function EvidenceBlock({ evidence }: { evidence: Evidence }) {
   const hasSheetRef = !isPdf
     && /(!\s*\$?[A-Z]{1,2}\$?\d+|シート\s*\$?[A-Z]{1,2}\$?\d+)/.test(evidence.location ?? '')
   const [preview, setPreview] = useState(hasSheetRef)
+  // パネルは開いたまま選択対象だけが変わる（再マウントされない）ため、
+  // 対象が変わったら開閉状態を作り直す（前の対象の状態が残ると閉じられなくなる）
+  useEffect(() => { setPreview(hasSheetRef) }, [evidence.file, evidence.location, hasSheetRef])
   return (
     <div className="space-y-3">
       <div>
@@ -190,37 +200,57 @@ export function SlidePanel({ title, onClose, children, footer }: {
   children: ReactNode
   footer?: ReactNode
 }) {
+  /** 画面幅に収まる範囲へ丸める（保存値が現在の画面より広い場合の救済も兼ねる） */
+  const clamp = (w: number) =>
+    Math.min(Math.max(MIN_WIDTH, w), Math.max(MIN_WIDTH, Math.min(MAX_WIDTH, window.innerWidth - 80)))
+
   const [width, setWidth] = useState(() => {
     const saved = Number(localStorage.getItem(PANEL_WIDTH_KEY))
-    return saved >= MIN_WIDTH && saved <= MAX_WIDTH ? saved : 460
+    return clamp(saved > 0 ? saved : 460)
   })
+  const widthRef = useRef(width)
   const dragging = useRef(false)
 
-  const onMouseDown = useCallback((e: React.MouseEvent) => {
+  const endDrag = useCallback(() => {
+    if (!dragging.current) return
+    dragging.current = false
+    document.body.style.cursor = ''
+    document.body.style.userSelect = ''
+    localStorage.setItem(PANEL_WIDTH_KEY, String(widthRef.current))
+  }, [])
+
+  // ポインタイベント＋setPointerCapture で、iframe上や画面外で離しても
+  // ドラッグ状態が残らないようにする（残るとテキスト選択不能になる）
+  const onPointerDown = useCallback((e: React.PointerEvent) => {
     e.preventDefault()
+    e.currentTarget.setPointerCapture(e.pointerId)
     dragging.current = true
     document.body.style.cursor = 'col-resize'
     document.body.style.userSelect = 'none'
   }, [])
 
+  const onPointerMove = useCallback((e: React.PointerEvent) => {
+    if (!dragging.current) return
+    if (e.buttons === 0) { endDrag(); return }   // ボタンが離れていたら終了（取りこぼし対策）
+    const next = clamp(window.innerWidth - e.clientX)
+    widthRef.current = next
+    setWidth(next)
+  }, [endDrag])
+
+  // 画面が狭くなった時にハンドルが画面外へ出ないよう追随させる
   useEffect(() => {
-    const onMove = (e: MouseEvent) => {
-      if (!dragging.current) return
-      const next = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, window.innerWidth - e.clientX))
+    const onResize = () => {
+      const next = clamp(widthRef.current)
+      widthRef.current = next
       setWidth(next)
     }
-    const onUp = () => {
-      if (!dragging.current) return
+    window.addEventListener('resize', onResize)
+    // ドラッグ中にアンマウントされてもカーソル・選択不可が残らないようにする
+    return () => {
+      window.removeEventListener('resize', onResize)
       dragging.current = false
       document.body.style.cursor = ''
       document.body.style.userSelect = ''
-      setWidth((w) => { localStorage.setItem(PANEL_WIDTH_KEY, String(w)); return w })
-    }
-    window.addEventListener('mousemove', onMove)
-    window.addEventListener('mouseup', onUp)
-    return () => {
-      window.removeEventListener('mousemove', onMove)
-      window.removeEventListener('mouseup', onUp)
     }
   }, [])
 
@@ -231,14 +261,36 @@ export function SlidePanel({ title, onClose, children, footer }: {
         className="animate-slide-in absolute right-0 top-0 flex h-full flex-col border-l border-surface-container-high bg-white"
         style={{ width }}
       >
-        {/* 幅変更ハンドル（左端をドラッグ） */}
+        {/* 幅変更ハンドル（左端をドラッグ／キーボードは矢印キー） */}
         <div
-          onMouseDown={onMouseDown}
-          onDoubleClick={() => { setWidth(460); localStorage.setItem(PANEL_WIDTH_KEY, '460') }}
-          title="ドラッグで幅を変更（ダブルクリックで既定幅）"
-          className="group absolute inset-y-0 left-0 z-10 flex w-1.5 -translate-x-1/2 cursor-col-resize items-center justify-center"
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="パネルの幅を変更"
+          tabIndex={0}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+          onLostPointerCapture={endDrag}
+          onKeyDown={(e) => {
+            const step = e.shiftKey ? 80 : 24
+            if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
+            e.preventDefault()
+            const next = clamp(widthRef.current + (e.key === 'ArrowLeft' ? step : -step))
+            widthRef.current = next
+            setWidth(next)
+            localStorage.setItem(PANEL_WIDTH_KEY, String(next))
+          }}
+          onDoubleClick={() => {
+            const next = clamp(460)
+            widthRef.current = next
+            setWidth(next)
+            localStorage.setItem(PANEL_WIDTH_KEY, String(next))
+          }}
+          title="ドラッグ（または矢印キー）で幅を変更・ダブルクリックで既定幅"
+          className="group absolute inset-y-0 left-0 z-10 flex w-1.5 -translate-x-1/2 cursor-col-resize touch-none items-center justify-center focus:outline-none"
         >
-          <span className="h-10 w-1 rounded-full bg-outline-variant/60 group-hover:bg-primary-container" />
+          <span className="h-10 w-1 rounded-full bg-outline-variant/60 group-hover:bg-primary-container group-focus:bg-primary-container" />
         </div>
         <div className="flex items-center justify-between border-b border-surface-container-high px-4 py-3">
           <div className="text-[14px] font-bold">{title}</div>

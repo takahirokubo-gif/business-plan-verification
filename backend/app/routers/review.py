@@ -303,6 +303,8 @@ def scenarios_apply(deal_id: int, body: DiffBody, db: Session = Depends(get_db))
             affected_kpis_json=json.dumps(c.get("affected_kpis", []), ensure_ascii=False),
             change_text=c.get("change") or c.get("change_text"),
             change_basis=c.get("change_basis"), impact=c.get("impact"),
+            impact_calc_json=json.dumps(c["impact_calc"], ensure_ascii=False)
+            if c.get("impact_calc") else None,
             safeguards=c.get("safeguards"), questions=c.get("questions"),
             adopted=False,
             order_index=max([s.order_index for s in deal.scenarios], default=0) + 1)

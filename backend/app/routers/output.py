@@ -27,12 +27,16 @@ def _deal(db: Session, deal_id: int) -> Deal:
 def export_preview(deal_id: int, db: Session = Depends(get_db)):
     deal = _deal(db, deal_id)
     held = [i for i in deal.items if i.status == "held"]
+    # 未確認の照会は出力をブロックしないが、警告として提示する（仕様③6）
+    open_inquiries = [q for q in deal.inquiries if q.status == "open"]
     return dict(
         can_export=deal.required_items_confirmed() and deal.kpi_status == "confirmed",
         required_confirmed=deal.required_items_confirmed(),
         kpi_confirmed=deal.kpi_status == "confirmed",
         adopted_scenarios=len([s for s in deal.scenarios if s.adopted]),
         held_items=[dict(key=i.key, label=i.label) for i in held],
+        open_inquiries=[dict(id=q.id, title=q.title, category=q.category,
+                             severity=q.severity) for q in open_inquiries],
         stale_warnings=bool(deal.kpi_stale_reason)
         or any(s.stale_reason for s in deal.scenarios if s.adopted),
     )

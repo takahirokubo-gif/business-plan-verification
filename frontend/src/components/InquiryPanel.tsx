@@ -28,15 +28,20 @@ export function InquiryList({ dealId, inquiries, refresh }: {
 }) {
   const { userKey } = useUser()
   const [busy, setBusy] = useState<number | null>(null)
+  const [errors, setErrors] = useState<Record<number, string>>({})
 
   const toggle = async (q: Inquiry) => {
     setBusy(q.id)
+    setErrors((e) => ({ ...e, [q.id]: '' }))
     try {
       await api.updateInquiry(dealId, q.id, {
         status: q.status === 'open' ? 'resolved' : 'open',
         user: userKey,
       })
       await refresh()
+    } catch (e) {
+      // 失敗を黙って飲み込むと「確認済みにしたつもり」の取り違えが起きる
+      setErrors((prev) => ({ ...prev, [q.id]: (e as Error).message }))
     } finally {
       setBusy(null)
     }
@@ -89,6 +94,12 @@ export function InquiryList({ dealId, inquiries, refresh }: {
               <span className="font-bold">出所：</span>
               {q.source.file}｜{q.source.location}
               {q.source.quote && <span className="block truncate">「{q.source.quote}」</span>}
+            </div>
+          )}
+          {errors[q.id] && (
+            <div className="mt-1.5 flex items-center gap-1 text-[11px] text-error">
+              <Icon name="error" className="text-[14px]" />
+              状態を更新できませんでした（{errors[q.id]}）。再度お試しください。
             </div>
           )}
           {q.suggested_question && (

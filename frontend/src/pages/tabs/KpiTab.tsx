@@ -108,7 +108,9 @@ export function KpiTab({ full, refresh, dealId, stage1Done }: {
     const ids = new Set(nodes.map((n) => n.node_id))
     const map = new Map<string | null, KpiNode[]>()
     for (const n of nodes) {
-      const parent = n.parent_id && ids.has(n.parent_id) ? n.parent_id : null
+      // 自分自身を親に指すノード（AI出力の不備）はルート扱いにして無限再帰を防ぐ
+      const valid = n.parent_id && n.parent_id !== n.node_id && ids.has(n.parent_id)
+      const parent = valid ? n.parent_id! : null
       if (!map.has(parent)) map.set(parent, [])
       map.get(parent)!.push(n)
     }
@@ -148,8 +150,11 @@ export function KpiTab({ full, refresh, dealId, stage1Done }: {
       return next
     })
 
-  const renderTree = (parent: string | null, depth: number): React.ReactNode =>
-    (childrenOf.get(parent) ?? []).map((n) => {
+  // seen で描画済みノードを記録し、循環参照・IDの重複でも無限再帰しないようにする
+  const renderTree = (parent: string | null, depth: number,
+                      seen: Set<string> = new Set()): React.ReactNode =>
+    (childrenOf.get(parent) ?? []).filter((n) => !seen.has(n.node_id)).map((n) => {
+      seen.add(n.node_id)
       const hasChildren = (childrenOf.get(n.node_id) ?? []).length > 0
       const isCollapsed = collapsed.has(n.node_id)
       return (
@@ -164,7 +169,7 @@ export function KpiTab({ full, refresh, dealId, stage1Done }: {
             collapsed={isCollapsed}
             onToggle={() => toggleCollapse(n.node_id)}
           />
-          {!isCollapsed && <div className="space-y-1.5">{renderTree(n.node_id, depth + 1)}</div>}
+          {!isCollapsed && <div className="space-y-1.5">{renderTree(n.node_id, depth + 1, seen)}</div>}
         </div>
       )
     })

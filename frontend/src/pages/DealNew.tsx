@@ -59,6 +59,10 @@ export function DealNew() {
   const [form, setForm] = useState({ ...EMPTY_FORM })
   const [dealId, setDealId] = useState<number | null>(null)
   const [uploads, setUploads] = useState<Record<string, UploadedInfo>>({})
+  // アップロード済みファイル名（重複排除）。件数表示と最小要件の判定に使う
+  const [uploadedFiles, setUploadedFiles] = useState<string[]>([])
+  // 種別未設定で取り込んだファイル名
+  const [unclassified, setUnclassified] = useState<string[]>([])
   const [uploading, setUploading] = useState<string | null>(null)
   const [error, setError] = useState('')
   const [extracting, setExtracting] = useState(false)
@@ -81,10 +85,14 @@ export function DealNew() {
     return s > 0 && ev > 0 ? Math.round((s / ev) * 100) : null
   }, [form.senior_mm, form.ev_mm])
 
+  // 最小要件の判定。種別未設定で取り込んだ資料も拡張子で種類を推定して数える
+  // （種別を選ばずに取り込めるのに登録できない、という行き止まりを作らない）
   const hasModel = SLOTS.some((s) => s.group === 'model' && uploads[s.key])
+    || unclassified.some((f) => /\.xlsx?$/i.test(f))
   const hasDd = SLOTS.some((s) => s.group === 'dd' && uploads[s.key])
+    || unclassified.some((f) => /\.pdf$/i.test(f))
   const requiredUploaded = hasModel && hasDd
-  const uploadedCount = Object.keys(uploads).length
+  const uploadedCount = uploadedFiles.length
   const canRegister = form.name && form.borrower && form.target && requiredUploaded
 
   // 複数ファイルの同時アップロードで下書き案件が二重作成されないよう、
@@ -111,6 +119,10 @@ export function DealNew() {
         for (const s of assigned) next[s] = { filename: file.name, identified_label: null }
         return next
       })
+      setUploadedFiles((prev) => (prev.includes(file.name) ? prev : [...prev, file.name]))
+      if (slots.length === 0) {
+        setUnclassified((prev) => (prev.includes(file.name) ? prev : [...prev, file.name]))
+      }
     } finally {
       setUploading(null)
     }
@@ -280,6 +292,23 @@ export function DealNew() {
               )
             })}
           </div>
+          {unclassified.length > 0 && (
+            <div className="mx-5 mb-4 rounded border border-surface-container-high bg-surface-container-low/60 px-3 py-2">
+              <div className="text-[12px] font-bold text-on-surface-variant">
+                種別未設定で取り込んだ資料（{unclassified.length}件）
+              </div>
+              <ul className="mt-1 flex flex-wrap gap-1.5">
+                {unclassified.map((f) => (
+                  <li key={f} className="badge-base badge-neutral !text-[11px]">
+                    <Icon name="description" className="text-[13px]" /> {f}
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-1 text-[11px] text-outline">
+                種別なしでも解析対象に含まれます。特定の枠に割り当てたい場合は、上のスロットへドラッグしてください。
+              </div>
+            </div>
+          )}
           <div className="flex items-center justify-between border-t border-surface-container-low px-5 py-3">
             <span className="text-[12px] text-outline">
               {uploadedCount === 0

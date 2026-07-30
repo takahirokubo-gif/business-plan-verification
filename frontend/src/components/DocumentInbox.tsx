@@ -65,7 +65,8 @@ export function DocumentInbox({ slots, onUpload }: {
           id: `doc-${++seq}`, file,
           slots: slot ? [slot] : [],
           suggested: slot !== null,
-          ready: slot !== null,      // 自動判定できたものはそのまま取り込む
+          // 自動判定できた場合もいったん確認可能にする（種別の追加・訂正ができるように）
+          ready: false,
           status: 'pending' as const,
         }
       }),
@@ -247,6 +248,8 @@ export function DocumentInbox({ slots, onUpload }: {
                       return (
                         <button
                           key={s.key}
+                          role="checkbox"
+                          aria-checked={on}
                           onClick={() => toggleSlot(it.id, s.key)}
                           className={`flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] transition-colors ${
                             on

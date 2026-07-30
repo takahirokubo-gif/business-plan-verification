@@ -235,19 +235,21 @@ def document_peek(deal_id: int, doc_id: int, location: str,
     if not path.exists() or path.suffix.lower() != ".xlsx":
         raise HTTPException(400, "この資料はExcelの抜粋に対応していません")
 
-    loc = location or ""
-    # 「PL!G9」「Assumptions!D21」形式と「PLシート C9:E9」形式の両方に対応する
-    m = re.search(r"([^\s!'\"、（）]+)\s*!\s*\$?([A-Z]{1,2})\$?(\d+)", loc) \
-        or re.search(r"([^\s!'\"、（）]+?)\s*シート\s*\$?([A-Z]{1,2})\$?(\d+)", loc)
+    # 「PL!G9」「'月次 試算表'!C7」「Assumptions!D21」「PLシート C9:E9」形式に対応する
+    loc = (location or "").replace("'", "").replace('"', "")
+    m = re.search(r"([^\s!、（）]+)\s*!\s*\$?([A-Z]{1,2})\$?(\d+)", loc) \
+        or re.search(r"([^\s!、（）]+?)\s*シート\s*\$?([A-Z]{1,2})\$?(\d+)", loc)
     if not m:
         raise HTTPException(400, "参照箇所（シート・セル）を特定できませんでした")
     sheet_name, col_s, row_s = m.group(1), m.group(2), int(m.group(3))
 
     wb = load_workbook(path)
     if sheet_name not in wb.sheetnames:
-        # 表記ゆれ（「PLシート」「損益計算書」等）は前方一致・部分一致で救済する
-        cand = next((s for s in wb.sheetnames
-                     if s == sheet_name or sheet_name.startswith(s) or s in sheet_name), None)
+        # 表記ゆれ（「PLシート」等）を救済する。ただし短いシート名（PL）が
+        # 別シート（PL_old）の指定に誤ってマッチしないよう、長い候補から順に見る
+        by_len = sorted(wb.sheetnames, key=len, reverse=True)
+        cand = (next((s for s in by_len if sheet_name.startswith(s)), None)
+                or next((s for s in by_len if s in sheet_name), None))
         if not cand:
             raise HTTPException(404, f"シートが見つかりません: {sheet_name}")
         sheet_name = cand
@@ -256,10 +258,13 @@ def document_peek(deal_id: int, doc_id: int, location: str,
     wsv = wbv[sheet_name]
     ev = XlEvaluator(wb)
 
-    col = column_index_from_string(col_s)
+    # Excelの上限（1,048,576行 / 16,384列＝XFD）を超える指定でクラッシュしないよう丸める
+    MAX_ROW, MAX_COL = 1_048_576, 16_384
+    col = min(column_index_from_string(col_s), MAX_COL)
+    row_s = min(max(row_s, 1), MAX_ROW)
     # ヘッダー行（年度行）＋対象セル周辺を抜粋する
-    row_from, row_to = max(1, row_s - 3), row_s + 3
-    col_from, col_to = max(1, col - 3), col + 3
+    row_from, row_to = max(1, row_s - 3), min(row_s + 3, MAX_ROW)
+    col_from, col_to = max(1, col - 3), min(col + 3, MAX_COL)
     header_rows = [r for r in (4, 5) if r < row_from]
 
     def cell_out(r: int, c: int) -> dict:

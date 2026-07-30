@@ -32,9 +32,13 @@ class Extractor(ABC):
         """
 
     @abstractmethod
-    def extract_items(self, deal: dict, documents: list[dict]) -> list[dict]:
+    def extract_items(self, deal: dict, documents: list[dict]) -> dict | list[dict]:
         """財務モデル・DDレポート群から、定性情報・実績・予測数値を抽出する。
         すべての項目に根拠3点セット（参照ファイル・箇所・論理）を付ける。
+
+        returns:
+          新形式 {"items": [...], "inquiries": [...]}（AnthropicExtractor）
+          旧形式 [...]（MockExtractor）。呼び出し側は両方を受け付ける
         """
 
     @abstractmethod

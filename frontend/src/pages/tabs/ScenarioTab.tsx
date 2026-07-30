@@ -349,15 +349,14 @@ export function ScenarioTab({ full, refresh, dealId }: {
 }) {
   const { userKey } = useUser()
   const scenarios = full.scenarios
-  // 既定で全シナリオを展開しておく（読み比べが主タスクのため）
-  const [openKeys, setOpenKeys] = useState<Set<string>>(
-    () => new Set(full.scenarios.map((s) => s.key)),
-  )
+  // 既定で全シナリオを展開する。「閉じたもの」を覚える方式にして、
+  // 解析後やAIチャットで後から増えたシナリオも自動的に開いた状態になるようにする
+  const [closedKeys, setClosedKeys] = useState<Set<string>>(new Set())
   const [fullText, setFullText] = useState<Set<string>>(new Set())
   const nodeLabel = (id: string) => kpiLabelOf(full.kpi_nodes, id)
 
   const toggleOpen = (key: string) => {
-    setOpenKeys((prev) => {
+    setClosedKeys((prev) => {
       const next = new Set(prev)
       if (next.has(key)) next.delete(key)
       else next.add(key)
@@ -426,8 +425,15 @@ export function ScenarioTab({ full, refresh, dealId }: {
   const applyDiff = async (diff: ChatDiff) => {
     await api.scenariosApply(dealId, diff, userKey)
     if (diff.type === 'add_card') {
+      // 追加直後のカードは必ず開いた状態で見せる（閉じ済みリストから外す）
       const key = (diff.card as { key?: string } | undefined)?.key
-      if (key) setOpenKeys((prev) => new Set(prev).add(key))
+      if (key) {
+        setClosedKeys((prev) => {
+          const next = new Set(prev)
+          next.delete(key)
+          return next
+        })
+      }
     }
     await refresh()
   }
@@ -444,16 +450,16 @@ export function ScenarioTab({ full, refresh, dealId }: {
             <button
               className="btn-secondary shrink-0 !py-1 !text-[11px]"
               onClick={() =>
-                setOpenKeys((prev) =>
-                  prev.size >= scenarios.length ? new Set() : new Set(scenarios.map((s) => s.key)),
+                setClosedKeys((prev) =>
+                  prev.size === 0 ? new Set(scenarios.map((s) => s.key)) : new Set(),
                 )
               }
             >
               <Icon
-                name={openKeys.size >= scenarios.length ? 'unfold_less' : 'unfold_more'}
+                name={closedKeys.size === 0 ? 'unfold_less' : 'unfold_more'}
                 className="text-[15px]"
               />
-              {openKeys.size >= scenarios.length ? 'すべて閉じる' : 'すべて開く'}
+              {closedKeys.size === 0 ? 'すべて閉じる' : 'すべて開く'}
             </button>
           </div>
         </div>
@@ -462,7 +468,7 @@ export function ScenarioTab({ full, refresh, dealId }: {
         <div className="card divide-y divide-surface-container-low">
           {scenarios.map((sc) => {
             const findings = full.findings.filter((f) => f.target_type === 'scenario' && f.target_key === sc.key)
-            const open = openKeys.has(sc.key)
+            const open = !closedKeys.has(sc.key)
             return (
               <div key={sc.id}>
                 {/* 行 */}

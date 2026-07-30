@@ -198,6 +198,23 @@ export function ExportTab({ full, refresh, dealId }: {
             </ul>
           </div>
         )}
+        {preview && (preview.open_inquiries?.length ?? 0) > 0 && (
+          <div className="rounded border border-amber-300 bg-amber-50 p-3 text-[12px]">
+            <div className="flex items-center gap-1.5 font-bold text-amber-800">
+              <Icon name="contact_support" className="text-[16px]" />
+              未確認の確認事項が{preview.open_inquiries!.length}件あります
+            </div>
+            <p className="mt-1 text-amber-900">
+              出力自体は可能ですが、スポンサー等への確認が済んでいない論点が残っています
+              （出力資料にも「確認事項」として収録されます）。
+            </p>
+            <ul className="mt-1.5 list-inside list-disc text-amber-900">
+              {preview.open_inquiries!.map((q) => (
+                <li key={q.id}>{q.category}：{q.title}</li>
+              ))}
+            </ul>
+          </div>
+        )}
         {preview?.stale_warnings && (
           <div className="rounded border border-amber-300 bg-amber-50 p-3 text-[12px] text-amber-900">
             <Icon name="warning" className="mr-1 align-middle text-[15px]" />
