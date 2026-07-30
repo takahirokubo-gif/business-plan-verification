@@ -45,11 +45,16 @@ class MockExtractor(Extractor):
 
     # ---- KPIツリー提案
     def propose_kpi_tree(self, deal: dict, documents: list[dict]) -> dict:
-        return dict(nodes=self._kpi_tree["nodes"])
+        # デモでは解析直後の画面がシード済み案件（オートスタッフ中部）と同一になるよう、
+        # チャット追加扱いの「大口派遣先への売上依存度」ノードも最初から含める
+        nodes = list(self._kpi_tree["nodes"])
+        nodes.append(dict(self._kpi_tree["concentration_node"], added_via_chat=True))
+        return dict(nodes=nodes)
 
     # ---- シナリオ提案
     def propose_scenarios(self, deal: dict, documents: list[dict]) -> list[dict]:
-        return self._scenarios["cards"]
+        # 同上：自分の仮説カード（D）も含め、シード済み案件と同じ4シナリオを返す
+        return self._scenarios["cards"] + [self._scenarios["human_card"]]
 
     # ---- チャット（台本方式・対象選択に対応）
     def chat(self, context: str, message: str, state: dict) -> dict:

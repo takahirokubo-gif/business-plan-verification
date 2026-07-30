@@ -193,12 +193,20 @@ const PANEL_WIDTH_KEY = 'bpv.panelWidth'
 const MIN_WIDTH = 360
 const MAX_WIDTH = 1100
 
+/** widthClass（呼び出し側の既定幅指定）から初期ピクセル幅を読む。
+ *  例: 'w-[560px]' → 560。保存済みの幅があればそちらを優先する。 */
+function initialWidth(widthClass: string): number {
+  const m = widthClass.match(/w-\[(\d+)px\]/)
+  return m ? Number(m[1]) : 460
+}
+
 /** 右側スライドパネルの枠。左端をドラッグして幅を変えられる（幅は保持される）。 */
-export function SlidePanel({ title, onClose, children, footer }: {
+export function SlidePanel({ title, onClose, children, footer, widthClass = 'w-[460px]' }: {
   title: ReactNode
   onClose: () => void
   children: ReactNode
   footer?: ReactNode
+  widthClass?: string
 }) {
   /** 画面幅に収まる範囲へ丸める（保存値が現在の画面より広い場合の救済も兼ねる） */
   const clamp = (w: number) =>
@@ -206,7 +214,7 @@ export function SlidePanel({ title, onClose, children, footer }: {
 
   const [width, setWidth] = useState(() => {
     const saved = Number(localStorage.getItem(PANEL_WIDTH_KEY))
-    return clamp(saved > 0 ? saved : 460)
+    return clamp(saved > 0 ? saved : initialWidth(widthClass))
   })
   const widthRef = useRef(width)
   const dragging = useRef(false)

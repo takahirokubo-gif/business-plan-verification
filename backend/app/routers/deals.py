@@ -413,19 +413,24 @@ def analyze(deal_id: int, user: str | None = None, db: Session = Depends(get_db)
             label=n["label"], origin=n.get("origin", "model"), star=n.get("star", False),
             formula=n.get("formula"), value_text=n.get("value_text"), badge=n.get("badge"),
             evidence_json=json.dumps(n.get("evidence"), ensure_ascii=False),
+            added_via_chat=n.get("added_via_chat", False),
             order_index=idx))
+    # シードと同じ項目を保存する（インパクト分解・採用状態・不採用理由を落とさない）
     for idx, c in enumerate(cards):
         db.add(Scenario(
             deal_id=deal.id, key=c["key"], origin=c.get("origin", "ai"),
             type_label=c.get("type_label"), title=c["title"], cause=c.get("cause"),
             affected_kpis_json=json.dumps(c.get("affected_kpis", []), ensure_ascii=False),
+            # 新形式の change_text を優先しつつ旧形式 change も受ける。
+            # adopted/rejection_note は相手側の対応を踏襲（AI提案の初期状態を尊重）
             change_text=c.get("change_text") or c.get("change"),
             change_basis=c.get("change_basis"),
             impact=c.get("impact"),
-            impact_calc_json=json.dumps(c.get("impact_calc"), ensure_ascii=False)
+            impact_calc_json=json.dumps(c["impact_calc"], ensure_ascii=False)
             if c.get("impact_calc") else None,
-            safeguards=c.get("safeguards"),
-            questions=c.get("questions"), adopted=False, order_index=idx))
+            safeguards=c.get("safeguards"), questions=c.get("questions"),
+            adopted=c.get("adopted", False), rejection_note=c.get("rejection_note"),
+            order_index=idx))
     deal.kpi_status = "proposed"
     for d in deal.documents:
         d.status = "analyzed"
