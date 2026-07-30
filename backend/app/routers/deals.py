@@ -13,8 +13,9 @@ from ..config import UPLOAD_DIR
 from ..database import get_db
 from ..extractors import get_extractor
 from ..extractors.base import UnknownSampleFileError
-from ..models import (Deal, Document, ExtractedItem, HistoryEvent, KpiNode,
-                      Scenario, User)
+from ..models import (Deal, Document, ExtractedItem, HistoryEvent, Inquiry,
+                      KpiNode, Scenario, User)
+from ..services.units import normalize_values
 
 router = APIRouter(prefix="/api", tags=["deals"])
 
@@ -171,6 +172,7 @@ def deal_full(deal_id: int, db: Session = Depends(get_db)):
         history=[h.to_dict() for h in reversed(deal.history)],
         exports=[e.to_dict() for e in deal.exports],
         findings=findings,
+        inquiries=[q.to_dict() for q in deal.inquiries],
         chat_suggestions=dict(kpi=extractor.chat_suggestions("kpi"),
                               scenario=extractor.chat_suggestions("scenario")),
     )
@@ -254,25 +256,45 @@ def analyze(deal_id: int, user: str | None = None, db: Session = Depends(get_db)
     docs = [dict(filename=d.filename, slot=d.slot, stored_path=d.stored_path)
             for d in deal.documents]
 
-    items = extractor.extract_items(deal_info, docs)
+    extraction = extractor.extract_items(deal_info, docs)
+    # 新形式は {items, inquiries}、モック等の旧形式は items のリストのみ
+    if isinstance(extraction, dict):
+        items = extraction.get("items", [])
+        inquiries = extraction.get("inquiries", [])
+    else:
+        items, inquiries = extraction, []
     tree = extractor.propose_kpi_tree(deal_info, docs)
     cards = extractor.propose_scenarios(deal_info, docs)
 
     # 再解析時は既存の提案をリセット（確定済み案件の再解析はデモでは想定しない）
-    for coll in (deal.items, deal.kpi_nodes, deal.scenarios):
+    for coll in (deal.items, deal.kpi_nodes, deal.scenarios, deal.inquiries):
         for row in list(coll):
             db.delete(row)
     db.flush()
 
     for idx, it in enumerate(items):
+        # 単位の正規化はシステム側の責務（仕様 ③4）。金額は百万円へ換算し元単位を残す
+        values, unit, source_unit = normalize_values(it.get("values"), it.get("unit", "百万円"))
         db.add(ExtractedItem(
             deal_id=deal.id, key=it["key"], section=it["section"], label=it["label"],
-            unit=it.get("unit", "百万円"), case_name=it.get("case"),
-            values_json=json.dumps(it.get("values"), ensure_ascii=False) if it.get("values") else None,
+            unit=unit or "百万円",
+            source_type=it.get("source_type", "extracted"), source_unit=source_unit,
+            case_name=it.get("case"),
+            values_json=json.dumps(values, ensure_ascii=False) if values else None,
             text_value=it.get("text_value"), required=it.get("required", True),
             evidence_json=json.dumps(it.get("evidence"), ensure_ascii=False),
             mismatch_json=json.dumps(it.get("mismatch"), ensure_ascii=False) if it.get("mismatch") else None,
             status="proposed", order_index=idx))
+    severity_order = {"high": 0, "medium": 1, "low": 2}
+    for idx, q in enumerate(sorted(inquiries,
+                                   key=lambda x: severity_order.get(x.get("severity"), 1))):
+        db.add(Inquiry(
+            deal_id=deal.id, category=q.get("category", "その他"),
+            severity=q.get("severity", "medium"), title=q.get("title", "確認事項"),
+            detail=q.get("detail"),
+            source_json=json.dumps(q.get("source"), ensure_ascii=False) if q.get("source") else None,
+            suggested_question=q.get("suggested_question"),
+            status="open", order_index=idx))
     for idx, n in enumerate(tree["nodes"]):
         db.add(KpiNode(
             deal_id=deal.id, node_id=n["id"], parent_id=n.get("parent"),
@@ -285,14 +307,52 @@ def analyze(deal_id: int, user: str | None = None, db: Session = Depends(get_db)
             deal_id=deal.id, key=c["key"], origin=c.get("origin", "ai"),
             type_label=c.get("type_label"), title=c["title"], cause=c.get("cause"),
             affected_kpis_json=json.dumps(c.get("affected_kpis", []), ensure_ascii=False),
-            change_text=c.get("change"), change_basis=c.get("change_basis"),
-            impact=c.get("impact"), safeguards=c.get("safeguards"),
+            change_text=c.get("change_text") or c.get("change"),
+            change_basis=c.get("change_basis"),
+            impact=c.get("impact"),
+            impact_calc_json=json.dumps(c.get("impact_calc"), ensure_ascii=False)
+            if c.get("impact_calc") else None,
+            safeguards=c.get("safeguards"),
             questions=c.get("questions"), adopted=False, order_index=idx))
     deal.kpi_status = "proposed"
     for d in deal.documents:
         d.status = "analyzed"
     add_history(db, deal, user, "AI解析完了",
-                f"{len(items)}項目を抽出・KPIツリー{len(tree['nodes'])}ノード・"
-                f"推奨シナリオ{len(cards)}件を提案")
+                f"{len(items)}項目を抽出・確認事項{len(inquiries)}件・"
+                f"KPIツリー{len(tree['nodes'])}ノード・推奨シナリオ{len(cards)}件を提案")
     db.commit()
-    return dict(items=len(items), kpi_nodes=len(tree["nodes"]), scenarios=len(cards))
+    return dict(items=len(items), inquiries=len(inquiries),
+                kpi_nodes=len(tree["nodes"]), scenarios=len(cards))
+
+
+class InquiryPatch(BaseModel):
+    status: str | None = None            # open / resolved
+    resolution_note: str | None = None
+    user: str | None = None
+
+
+@router.patch("/deals/{deal_id}/inquiries/{inquiry_id}")
+def update_inquiry(deal_id: int, inquiry_id: int, body: InquiryPatch,
+                   db: Session = Depends(get_db)):
+    """確認事項（照会）の状態更新（確認済みチェック・メモ）。"""
+    deal = _get_deal(db, deal_id)
+    inquiry = next((q for q in deal.inquiries if q.id == inquiry_id), None)
+    if not inquiry:
+        raise HTTPException(404, "確認事項が見つかりません")
+    if body.status is not None:
+        if body.status not in ("open", "resolved"):
+            raise HTTPException(400, f"不明なステータスです: {body.status}")
+        inquiry.status = body.status
+        if body.status == "resolved":
+            inquiry.resolved_by = body.user
+            inquiry.resolved_at = datetime.now()
+        else:
+            inquiry.resolved_by = None
+            inquiry.resolved_at = None
+    if body.resolution_note is not None:
+        inquiry.resolution_note = body.resolution_note
+    add_history(db, deal, body.user,
+                "確認事項を更新",
+                f"「{inquiry.title}」を{'確認済み' if inquiry.status == 'resolved' else '未確認に戻す'}")
+    db.commit()
+    return inquiry.to_dict()

@@ -120,6 +120,11 @@ export const api = {
     request<{ memo: unknown; status_changed: unknown }>(`/api/deals/${dealId}/memos`, {
       method: 'POST', body: JSON.stringify(body),
     }),
+
+  updateInquiry: (dealId: number, inquiryId: number, body: { status?: string; resolution_note?: string; user?: string }) =>
+    request<unknown>(`/api/deals/${dealId}/inquiries/${inquiryId}`, {
+      method: 'PATCH', body: JSON.stringify(body),
+    }),
 }
 
 async function downloadExport(url: string, user: string): Promise<string> {

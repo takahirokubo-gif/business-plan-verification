@@ -5,6 +5,7 @@ import { Layout } from '../components/Layout'
 import { Icon } from '../components/Icon'
 import { ReviewStatusBadge, WorkStatusBadge } from '../components/Badge'
 import { DocumentLinkContext, SlidePanel } from '../components/EvidencePanel'
+import { InquiryList, inquiryOpenCount } from '../components/InquiryPanel'
 import type { DealFull } from '../types'
 import { OverviewTab } from './tabs/OverviewTab'
 import { NumbersTab } from './tabs/NumbersTab'
@@ -40,6 +41,7 @@ export function DealDetail() {
   const [full, setFull] = useState<DealFull | null>(null)
   const [error, setError] = useState('')
   const [showHistory, setShowHistory] = useState(false)
+  const [showInquiries, setShowInquiries] = useState(false)
 
   const refresh = useCallback(async () => {
     try {
@@ -81,13 +83,34 @@ export function DealDetail() {
               <WorkStatusBadge status={deal.work_status} />
             </div>
           </div>
-          <button
-            className="btn-secondary !py-1.5 text-[12px]"
-            onClick={() => setShowHistory(true)}
-            title="操作履歴（誰が・いつ・何を）"
-          >
-            <Icon name="history" className="text-[16px]" /> 操作履歴
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              className={`btn-secondary !py-1.5 text-[12px] ${
+                inquiryOpenCount(full.inquiries ?? []) > 0
+                  ? '!border-amber-300 !bg-amber-50 !text-amber-900' : ''
+              }`}
+              onClick={() => setShowInquiries(true)}
+              title="AIが検知した確認事項（照会）の一覧"
+            >
+              <Icon name="contact_support" className="text-[16px]" />
+              確認事項
+              {(full.inquiries ?? []).length > 0 && (
+                <span className={`ml-1 rounded-full px-1.5 text-[11px] font-bold ${
+                  inquiryOpenCount(full.inquiries ?? []) > 0
+                    ? 'bg-amber-200 text-amber-900' : 'bg-surface-container-high text-outline'
+                }`}>
+                  {inquiryOpenCount(full.inquiries ?? [])}/{(full.inquiries ?? []).length}
+                </span>
+              )}
+            </button>
+            <button
+              className="btn-secondary !py-1.5 text-[12px]"
+              onClick={() => setShowHistory(true)}
+              title="操作履歴（誰が・いつ・何を）"
+            >
+              <Icon name="history" className="text-[16px]" /> 操作履歴
+            </button>
+          </div>
         </div>
 
         {/* タブ */}
@@ -123,6 +146,16 @@ export function DealDetail() {
           {tab === 'memo' && <MemoTab full={full} refresh={refresh} dealId={dealId} />}
         </div>
       </div>
+
+      {/* 確認事項（照会）パネル：AIが検知した要確認事象の一元表示（仕様②6） */}
+      {showInquiries && (
+        <SlidePanel
+          title={`確認事項（未確認 ${inquiryOpenCount(full.inquiries ?? [])}件／全${(full.inquiries ?? []).length}件）`}
+          onClose={() => setShowInquiries(false)}
+        >
+          <InquiryList dealId={dealId} inquiries={full.inquiries ?? []} refresh={refresh} />
+        </SlidePanel>
+      )}
 
       {/* 操作履歴パネル（トレーサビリティ：誰が・いつ・何を） */}
       {showHistory && (

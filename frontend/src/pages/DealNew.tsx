@@ -7,13 +7,16 @@ import { Icon } from '../components/Icon'
 import { LoadingOverlay } from '../components/LoadingOverlay'
 import { useUser } from '../context/UserContext'
 
-const SLOTS: { key: string; label: string; required: boolean; accept: string }[] = [
-  { key: 'model_sponsor', label: '財務モデル：スポンサーケース', required: true, accept: '.xlsx' },
-  { key: 'model_base', label: '財務モデル：ベースケース', required: true, accept: '.xlsx' },
-  { key: 'dd_business', label: '事業DDレポート', required: true, accept: '.pdf' },
-  { key: 'dd_financial', label: '財務DDレポート', required: true, accept: '.pdf' },
-  { key: 'dd_legal', label: '法務DDレポート', required: true, accept: '.pdf' },
-  { key: 'dd_tax', label: '税務DDレポート', required: false, accept: '.pdf' },
+// 最小要件（仕様②4）：財務モデル1点以上＋DDレポート1点以上。
+// ケース（Base/Sponsor）や分冊/統合版の構成は資料に合わせて任意（重複アップロード不要）
+const SLOTS: { key: string; label: string; group: 'model' | 'dd'; accept: string }[] = [
+  { key: 'model_base', label: '財務モデル：ベースケース', group: 'model', accept: '.xlsx' },
+  { key: 'model_sponsor', label: '財務モデル：スポンサーケース', group: 'model', accept: '.xlsx' },
+  { key: 'dd_integrated', label: 'DDレポート：統合版（1冊型）', group: 'dd', accept: '.pdf' },
+  { key: 'dd_business', label: '事業DDレポート', group: 'dd', accept: '.pdf' },
+  { key: 'dd_financial', label: '財務DDレポート', group: 'dd', accept: '.pdf' },
+  { key: 'dd_legal', label: '法務DDレポート', group: 'dd', accept: '.pdf' },
+  { key: 'dd_tax', label: '税務DDレポート', group: 'dd', accept: '.pdf' },
 ]
 
 const EXTRACT_STEPS = [
@@ -78,7 +81,9 @@ export function DealNew() {
     return s > 0 && ev > 0 ? Math.round((s / ev) * 100) : null
   }, [form.senior_mm, form.ev_mm])
 
-  const requiredUploaded = SLOTS.filter((s) => s.required).every((s) => uploads[s.key])
+  const hasModel = SLOTS.some((s) => s.group === 'model' && uploads[s.key])
+  const hasDd = SLOTS.some((s) => s.group === 'dd' && uploads[s.key])
+  const requiredUploaded = hasModel && hasDd
   const uploadedCount = Object.keys(uploads).length
   const canRegister = form.name && form.borrower && form.target && requiredUploaded
 
@@ -201,7 +206,7 @@ export function DealNew() {
               <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary-container text-[11px] font-bold text-white">1</span>
               案件資料をアップロード
             </span>
-            <span className="badge-base badge-neutral">{uploadedCount}/6 アップロード済</span>
+            <span className="badge-base badge-neutral">{uploadedCount}件アップロード済</span>
           </div>
           <div className="px-5 pt-5">
             {/* まとめてインプット → 後からタグ付け（ファイル名から自動判定） */}
@@ -234,8 +239,11 @@ export function DealNew() {
                 >
                   <div className="flex items-start justify-between">
                     <div className="text-[12px] font-bold">{slot.label}</div>
-                    <span className={`badge-base !px-1.5 !py-0 !text-[10px] ${slot.required ? 'badge-error' : 'badge-neutral'}`}>
-                      {slot.required ? '必須' : '任意'}
+                    <span className={`badge-base !px-1.5 !py-0 !text-[10px] ${
+                      (slot.group === 'model' && !hasModel) || (slot.group === 'dd' && !hasDd)
+                        ? 'badge-error' : 'badge-neutral'
+                    }`}>
+                      {slot.group === 'model' ? 'モデル：いずれか1点' : 'DD：いずれか1点'}
                     </span>
                   </div>
                   <input
@@ -387,7 +395,7 @@ export function DealNew() {
         <div className="mt-5 flex items-center justify-end gap-3 pb-10">
           <button className="btn-secondary" onClick={cancelDraft}>キャンセル（下書きを破棄）</button>
           <span className="text-[12px] text-outline">
-            {!requiredUploaded ? '必須資料をアップロードしてください。'
+            {!requiredUploaded ? '財務モデル1点以上とDDレポート1点以上をアップロードしてください。'
               : !canRegister ? '案件名・借入人・対象会社を入力してください。'
                 : '登録の確定と同時に資料のAI解析を実行します。'}
           </span>

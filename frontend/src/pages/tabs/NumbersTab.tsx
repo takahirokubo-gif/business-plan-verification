@@ -410,6 +410,14 @@ export function NumbersTab({ full, refresh, dealId }: {
                           {rowItems.some((it) => it.mismatch) && (
                             <Icon name="warning" className="ml-1 align-middle text-[13px] text-amber-600" />
                           )}
+                          {rowItems.some((it) => it.source_type === 'estimated') && (
+                            <span className="badge-base badge-ai ml-1 !px-1 !py-0 align-middle !text-[9px]"
+                              title="AIによる推定値を含みます（資料に記載が無いため）">AI推定</span>
+                          )}
+                          {rowItems.some((it) => it.source_type === 'calculated') && (
+                            <span className="badge-base badge-neutral ml-1 !px-1 !py-0 align-middle !text-[9px]"
+                              title="資料内の数式からシステムが算出した計算値を含みます">計算値</span>
+                          )}
                         </td>
                         {fin.yearsAct.map((y, i) => cell(r.kpiItem ?? r.items.act, y, i === 0))}
                         {fin.yearsBase.map((y, i) => cell(r.kpiItem ?? r.items.base, y, i === 0))}
@@ -433,6 +441,7 @@ export function NumbersTab({ full, refresh, dealId }: {
           </div>
           <div className="border-t border-surface-container-low px-4 py-1.5 text-[11px] text-outline">
             薄い黄色のセル＝未確定（クリックで根拠を確認して確定）。●＝未確定あり、⚠＝資料間の不整合あり。
+            「計算値」＝資料内の数式からシステムが算出、「AI推定」＝資料に記載が無くAIが推定（要注意）。
           </div>
           {/* 財務ハイライト・ケース前提差異（AI論述。クリックで根拠・確定操作） */}
           {finNotes.length > 0 && (

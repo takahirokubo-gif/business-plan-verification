@@ -364,6 +364,35 @@ def build_export(deal: Deal) -> tuple[str, int]:
             r4 += 1
         r4 += 1
 
+    # ================= シート5：確認事項（照会） =================
+    if deal.inquiries:
+        ws5 = wb.create_sheet("確認事項")
+        ws5.sheet_view.showGridLines = False
+        for col, w in dict(A=3, B=10, C=8, D=12, E=32, F=60, G=40, H=50).items():
+            ws5.column_dimensions[col].width = w
+        _set(ws5, "B2", "確認事項（AIが検知した照会）", TITLE)
+        _set(ws5, "B3", "資料内で根拠が一意に決まらない事象（単位不明・名寄せ・参照切れ・"
+                        "資料間矛盾等）。機械が勝手に解決せず人の確認に委ねた項目。", NOTE)
+        headers = dict(B="状態", C="重要度", D="分類", E="確認事項", F="内容",
+                       G="出所", H="確認質問案")
+        for col, label in headers.items():
+            _set(ws5, f"{col}5", label, HEAD, FILL, border=True)
+        r5 = 6
+        sev = {"high": "高", "medium": "中", "low": "低"}
+        for q in deal.inquiries:
+            src = json.loads(q.source_json) if q.source_json else {}
+            _set(ws5, f"B{r5}", "確認済" if q.status == "resolved" else "未確認",
+                 BODY, border=True)
+            _set(ws5, f"C{r5}", sev.get(q.severity, q.severity), BODY, border=True)
+            _set(ws5, f"D{r5}", q.category, BODY, border=True)
+            _set(ws5, f"E{r5}", q.title, BODY, border=True)
+            _set(ws5, f"F{r5}", q.detail or "", BODY, border=True)
+            _set(ws5, f"G{r5}", f"{src.get('file', '')}｜{src.get('location', '')}",
+                 BODY, border=True)
+            _set(ws5, f"H{r5}", q.suggested_question or "", BODY, border=True)
+            ws5.row_dimensions[r5].height = max(16, 13 * (len(q.detail or "") // 50 + 1))
+            r5 += 1
+
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"審査サマリー_{deal.target}_{ts}.xlsx"
     path = EXPORT_DIR / filename

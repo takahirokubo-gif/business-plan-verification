@@ -5,13 +5,17 @@ import type { ExtractedItem } from './types'
  * 構築ロジック。財務ダイジェストタブ（編集）と概要タブ（読み取り専用）で共用する。
  */
 
-const YEAR_ORDER = ['FY24', 'FY25', 'FY26', 'FY27', 'FY28', 'FY29', 'FY30', 'FY31']
-
-/** 年度キーの表示順。既知のFY形式を先に、それ以外（'2027/3期' など実AIの表記）も
- *  捨てずに末尾へ昇順で並べる（キー形式が想定と違っても数値を必ず表示する）。 */
+/** 年度キーの表示順。FY形式（FY22〜FY33等・A/Eサフィックス許容）は年度の昇順、
+ *  それ以外（'2027/3期' など実AIの表記）も捨てずに末尾へ昇順で並べる
+ *  （期数は資料に追随する可変スキーマ。ハードコードの年度リストは持たない）。 */
 export function sortYears(years: string[]): string[] {
-  const known = YEAR_ORDER.filter((y) => years.includes(y))
-  const unknown = years.filter((y) => !YEAR_ORDER.includes(y)).sort()
+  const fyNum = (y: string): number | null => {
+    const m = y.match(/^FY(\d{2})[AE]?$/)
+    return m ? Number(m[1]) : null
+  }
+  const known = years.filter((y) => fyNum(y) != null)
+    .sort((a, b) => (fyNum(a) as number) - (fyNum(b) as number))
+  const unknown = years.filter((y) => fyNum(y) == null).sort()
   return [...known, ...unknown]
 }
 

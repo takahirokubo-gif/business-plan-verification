@@ -15,7 +15,7 @@ from pathlib import Path
 from .config import FIXTURES_DIR
 from .database import Base, SessionLocal, engine
 from .models import (Deal, Document, ExportRecord, ExtractedItem, HistoryEvent,
-                     KpiNode, Memo, MemoFinding, Scenario, User)
+                     Inquiry, KpiNode, Memo, MemoFinding, Scenario, User)
 
 DUMMY_INPUT = Path(__file__).resolve().parent.parent.parent / "dummy_input"
 
@@ -134,6 +134,35 @@ def run_seed(db):
                         user_key="tanaka",
                         filename="審査サマリー_株式会社オートスタッフ中部_20260705.xlsx",
                         excluded_held=2))
+
+    # ---- 確認事項（照会）のデモデータ：AIが検知した要確認事象（1件は確認済みの例）
+    db.add(Inquiry(
+        deal_id=auto.id, category="資料間矛盾", severity="high",
+        title="のれん想定額がモデルと財務DDで不一致",
+        detail="財務モデルは5,500百万円（Assumptions）、財務DDは試算5,280百万円（p.31）で"
+               "220百万円の差異。差異の主因は取引費用の取扱いと無形資産評価の前提の相違とみられ、"
+               "最終PPAまでにどちらを前提とするかの確認が必要。",
+        source_json=json.dumps(dict(
+            file="AutostaffChubu_Model_Base.xlsx", location="Assumptions!D21",
+            quote="のれん想定額（暫定PPA前） 5,500,000",
+            logic="財務DD p.31の試算値5,280百万円と直接比較"), ensure_ascii=False),
+        suggested_question="のれん想定額はモデル値5,500百万円と財務DD試算5,280百万円のどちらを"
+                           "前提としますか。差異220百万円の内訳をご教示ください。",
+        status="open", order_index=0, created_at=_dt("2026-07-03T15:20:00")))
+    db.add(Inquiry(
+        deal_id=auto.id, category="作成時点差", severity="medium",
+        title="ティーザー記載EBITDAと確定値の時点差",
+        detail="スポンサー提示EBITDA（速報）1,585百万円に対し、財務DDの正常収益力EBITDAは"
+               "1,620百万円（p.34）。ティーザー作成時点の速報値と確定値の時点差とみられる。",
+        source_json=json.dumps(dict(
+            file="AutostaffChubu_Model_Base.xlsx", location="Assumptions（ティーザー行）",
+            quote="スポンサー提示EBITDA（速報・ティーザー記載） 1,585,000",
+            logic="財務DD p.34の正常収益力EBITDA 1,620百万円と比較"), ensure_ascii=False),
+        suggested_question="レバレッジ計算の分母は速報値1,585百万円ではなく"
+                           "確定値1,620百万円へ更新してよいですか。",
+        status="resolved", resolution_note="確定値1,620百万円を採用（7/5審査相談で合意）",
+        resolved_by="tanaka", resolved_at=_dt("2026-07-05T10:00:00"),
+        order_index=1, created_at=_dt("2026-07-03T15:20:00")))
 
     # ---------------- サンメディクス（数値確定中の背景案件）
     sun = deals_by_key["sunmedix"]

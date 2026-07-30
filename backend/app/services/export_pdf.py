@@ -260,6 +260,26 @@ def build_export_pdf(deal: Deal) -> tuple[str, int]:
                 w.text(f"メモ：{m.note}", size=8, color=GRAY, indent=10)
             w.y -= 3
 
+    # ---- 確認事項（AIが検知した照会）
+    if deal.inquiries:
+        w.heading("07｜確認事項（AIが検知した照会）")
+        w.text("資料内で根拠が一意に決まらない事象。機械が勝手に解決せず人の確認に委ねた項目。",
+               size=8, color=GRAY)
+        sev = {"high": "高", "medium": "中", "low": "低"}
+        for q in deal.inquiries:
+            state = "確認済" if q.status == "resolved" else "未確認"
+            w.text(f"■ [{state}／重要度{sev.get(q.severity, q.severity)}／{q.category}] {q.title}",
+                   size=9, color=PRIMARY)
+            if q.detail:
+                w.text(q.detail, size=8.5, indent=10)
+            src = json.loads(q.source_json) if q.source_json else {}
+            if src:
+                w.text(f"出所：{src.get('file', '')}｜{src.get('location', '')}",
+                       size=7.5, color=GRAY, indent=10)
+            if q.suggested_question:
+                w.text(f"確認質問案：{q.suggested_question}", size=8, indent=10)
+            w.y -= 3
+
     if held:
         w.text(f"※ 保留中の{len(held)}項目（{'、'.join(i.label for i in held)}）は本資料から除外しています。",
                size=8, color=GRAY)

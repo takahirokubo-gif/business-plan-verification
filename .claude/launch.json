@@ -2,6 +2,20 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "app",
+      "runtimeExecutable": "/Users/takahiro.kubo/Desktop/JSOL_code/business-plan-verification/backend/.venv/bin/python",
+      "runtimeArgs": [
+        "-m",
+        "uvicorn",
+        "app.main:app",
+        "--app-dir",
+        "backend",
+        "--port",
+        "8014"
+      ],
+      "port": 8014
+    },
+    {
       "name": "bpv-frontend",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],

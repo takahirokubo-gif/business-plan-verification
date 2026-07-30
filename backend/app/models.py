@@ -24,8 +24,14 @@ DOCUMENT_SLOTS = {
     "dd_business": "DDレポート（事業）",
     "dd_financial": "DDレポート（財務）",
     "dd_legal": "DDレポート（法務）",
-    "dd_tax": "DDレポート（税務・任意）",
+    "dd_tax": "DDレポート（税務）",
+    "dd_integrated": "DDレポート（統合版）",
 }
+
+# アップロードの最小要件（仕様 ②4）: 財務モデル1つ以上＋DDレポート1つ以上。
+# ケース（Base/Sponsor）・分冊/統合版の構成はファイル内容から判定する
+MODEL_SLOTS = ("model_base", "model_sponsor")
+DD_SLOTS = ("dd_business", "dd_financial", "dd_legal", "dd_tax", "dd_integrated")
 
 
 def _j(v):
@@ -88,6 +94,8 @@ class Deal(Base):
     history = relationship("HistoryEvent", back_populates="deal",
                            cascade="all, delete-orphan", order_by="HistoryEvent.at")
     exports = relationship("ExportRecord", back_populates="deal", cascade="all, delete-orphan")
+    inquiries = relationship("Inquiry", back_populates="deal",
+                             cascade="all, delete-orphan", order_by="Inquiry.order_index")
 
     # ---- 導出値（四則演算のみ。再計算エンジンには該当しない）
     @property
@@ -191,6 +199,11 @@ class ExtractedItem(Base):
     section: Mapped[str] = mapped_column(String)
     label: Mapped[str] = mapped_column(String)
     unit: Mapped[str] = mapped_column(String, default="百万円")
+    # 数値取得の状態（仕様 ③5）: extracted=記載値の転記／calculated=資料内数式からの
+    # システム計算値／estimated=AI推定（注記必須）／missing=未取得
+    source_type: Mapped[str] = mapped_column(String, default="extracted")
+    # 元資料の単位（例: 千円）。値はシステム側で unit（表示単位）へ正規化して保持する
+    source_unit: Mapped[str | None] = mapped_column(String, nullable=True)
     case_name: Mapped[str | None] = mapped_column(String, nullable=True)  # base/sponsor
     values_json: Mapped[str | None] = mapped_column(Text, nullable=True)   # AI抽出値（年度→値）
     text_value: Mapped[str | None] = mapped_column(Text, nullable=True)    # 定性テキスト
@@ -219,7 +232,8 @@ class ExtractedItem(Base):
     def to_dict(self):
         return dict(
             id=self.id, key=self.key, section=self.section, label=self.label,
-            unit=self.unit, case_name=self.case_name,
+            unit=self.unit, source_type=self.source_type, source_unit=self.source_unit,
+            case_name=self.case_name,
             values=_j(self.values_json), text_value=self.text_value,
             effective_values=self.effective_values(), effective_text=self.effective_text(),
             required=self.required, evidence=_j(self.evidence_json),
@@ -346,6 +360,41 @@ class HistoryEvent(Base):
     def to_dict(self):
         return dict(id=self.id, at=self.at.isoformat() if self.at else None,
                     user=self.user_key, action=self.action, detail=self.detail)
+
+
+class Inquiry(Base):
+    """AIが検知した「人への確認事項（照会）」（仕様 ②6・③6）。
+
+    抽出時に勝手に解決してはいけない事象（単位不明・名寄せ・参照切れ・資料間矛盾・
+    正シート/正ファイル識別・作成時点差）を一元管理する。
+    """
+    __tablename__ = "inquiries"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    deal_id: Mapped[int] = mapped_column(ForeignKey("deals.id"))
+    category: Mapped[str] = mapped_column(String)      # 単位不明/名寄せ/参照切れ/資料間矛盾/…
+    severity: Mapped[str] = mapped_column(String, default="medium")  # high/medium/low
+    title: Mapped[str] = mapped_column(String)
+    detail: Mapped[str | None] = mapped_column(Text, nullable=True)
+    source_json: Mapped[str | None] = mapped_column(Text, nullable=True)   # 根拠3点セット
+    suggested_question: Mapped[str | None] = mapped_column(Text, nullable=True)
+    status: Mapped[str] = mapped_column(String, default="open")  # open/resolved
+    resolution_note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    resolved_by: Mapped[str | None] = mapped_column(String, nullable=True)
+    resolved_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    order_index: Mapped[int] = mapped_column(Integer, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
+
+    deal = relationship("Deal", back_populates="inquiries")
+
+    def to_dict(self):
+        return dict(id=self.id, category=self.category, severity=self.severity,
+                    title=self.title, detail=self.detail,
+                    source=_j(self.source_json),
+                    suggested_question=self.suggested_question,
+                    status=self.status, resolution_note=self.resolution_note,
+                    resolved_by=self.resolved_by,
+                    resolved_at=self.resolved_at.isoformat() if self.resolved_at else None,
+                    created_at=self.created_at.isoformat() if self.created_at else None)
 
 
 class ExportRecord(Base):

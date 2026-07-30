@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Icon } from './Icon'
 
-export interface InboxSlot { key: string; label: string; required: boolean; accept: string }
+export interface InboxSlot { key: string; label: string; required?: boolean; accept: string }
 
 interface StagedItem {
   id: string
@@ -21,6 +21,7 @@ function suggestSlot(name: string): string | null {
     return null
   }
   if (lower.endsWith('.pdf')) {
+    if (lower.includes('integrated') || name.includes('統合')) return 'dd_integrated'
     if (lower.includes('business') || name.includes('事業')) return 'dd_business'
     if (lower.includes('financial') || name.includes('財務')) return 'dd_financial'
     if (lower.includes('legal') || name.includes('法務')) return 'dd_legal'

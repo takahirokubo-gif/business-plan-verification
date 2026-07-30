@@ -74,12 +74,17 @@ export interface Mismatch {
   source_quote?: string
 }
 
+/** 数値取得の状態（仕様③5）: 抽出値／計算値（システムが資料内数式から算出）／AI推定／未取得 */
+export type SourceType = 'extracted' | 'calculated' | 'estimated' | 'missing'
+
 export interface ExtractedItem {
   id: number
   key: string
   section: string
   label: string
   unit: string
+  source_type: SourceType
+  source_unit: string | null
   case_name: string | null
   values: Record<string, number> | null
   text_value: string | null
@@ -187,6 +192,22 @@ export interface DocumentInfo {
   company_match?: boolean
 }
 
+/** AIが検知した「人への確認事項（照会）」（仕様②6・③6） */
+export interface Inquiry {
+  id: number
+  category: string
+  severity: 'high' | 'medium' | 'low'
+  title: string
+  detail: string | null
+  source: Evidence | null
+  suggested_question: string | null
+  status: 'open' | 'resolved'
+  resolution_note: string | null
+  resolved_by: string | null
+  resolved_at: string | null
+  created_at: string | null
+}
+
 export interface DealFull {
   deal: Deal
   documents: DocumentInfo[]
@@ -197,6 +218,7 @@ export interface DealFull {
   history: HistoryEvent[]
   exports: ExportRecord[]
   findings: MemoFinding[]
+  inquiries: Inquiry[]
   chat_suggestions: { kpi: string[]; scenario: string[] }
 }
 
