@@ -349,7 +349,10 @@ export function ScenarioTab({ full, refresh, dealId }: {
 }) {
   const { userKey } = useUser()
   const scenarios = full.scenarios
-  const [openKeys, setOpenKeys] = useState<Set<string>>(new Set())
+  // 既定で全シナリオを展開しておく（読み比べが主タスクのため）
+  const [openKeys, setOpenKeys] = useState<Set<string>>(
+    () => new Set(full.scenarios.map((s) => s.key)),
+  )
   const [fullText, setFullText] = useState<Set<string>>(new Set())
   const nodeLabel = (id: string) => kpiLabelOf(full.kpi_nodes, id)
 
@@ -432,10 +435,26 @@ export function ScenarioTab({ full, refresh, dealId }: {
   return (
     <div className="grid grid-cols-[1fr_360px] gap-4">
       <div>
-        <div className="mb-3 flex items-center justify-between">
+        <div className="mb-3 flex items-center justify-between gap-3">
           <div className="text-[14px] font-bold">検証シナリオ</div>
-          <div className="text-[11px] text-outline">
-            行をクリックで詳細を展開。採用トグルON＝確定シナリオ（エクスポート対象）。
+          <div className="flex items-center gap-3">
+            <div className="text-[11px] text-outline">
+              行をクリックで開閉。採用トグルON＝確定シナリオ（エクスポート対象）。
+            </div>
+            <button
+              className="btn-secondary shrink-0 !py-1 !text-[11px]"
+              onClick={() =>
+                setOpenKeys((prev) =>
+                  prev.size >= scenarios.length ? new Set() : new Set(scenarios.map((s) => s.key)),
+                )
+              }
+            >
+              <Icon
+                name={openKeys.size >= scenarios.length ? 'unfold_less' : 'unfold_more'}
+                className="text-[15px]"
+              />
+              {openKeys.size >= scenarios.length ? 'すべて閉じる' : 'すべて開く'}
+            </button>
           </div>
         </div>
 

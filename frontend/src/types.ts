@@ -192,6 +192,19 @@ export interface DocumentInfo {
   company_match?: boolean
 }
 
+/** 根拠のExcelセル周辺の抜粋（Excelはブラウザで開けないためパネル内に表示する） */
+export interface DocumentPeek {
+  filename: string
+  sheet: string
+  target: string
+  columns: string[]
+  rows: {
+    row: number
+    label: string | null
+    cells: { ref: string; value: string | number | null; formula: string | null; target: boolean }[]
+  }[]
+}
+
 /** AIが検知した「人への確認事項（照会）」（仕様②6・③6） */
 export interface Inquiry {
   id: number

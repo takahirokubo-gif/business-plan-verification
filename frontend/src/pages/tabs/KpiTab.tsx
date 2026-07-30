@@ -102,15 +102,27 @@ export function KpiTab({ full, refresh, dealId, stage1Done }: {
   const deal = full.deal
   const nodes = full.kpi_nodes
 
+  // 親子マップ。親IDが nodes 内に存在しないノード（実AIが未定義の親を返した場合）は
+  // 取りこぼすとツリーから消えてしまうため、ルート扱いにして必ず描画する
   const childrenOf = useMemo(() => {
+    const ids = new Set(nodes.map((n) => n.node_id))
     const map = new Map<string | null, KpiNode[]>()
     for (const n of nodes) {
-      const key = n.parent_id ?? null
-      if (!map.has(key)) map.set(key, [])
-      map.get(key)!.push(n)
+      const parent = n.parent_id && ids.has(n.parent_id) ? n.parent_id : null
+      if (!map.has(parent)) map.set(parent, [])
+      map.get(parent)!.push(n)
     }
     return map
   }, [nodes])
+
+  // 親が見つからずルートへ繰り上げたノード（データ側の不備を画面上で気づけるようにする）
+  const orphans = useMemo(
+    () => {
+      const ids = new Set(nodes.map((n) => n.node_id))
+      return nodes.filter((n) => n.parent_id && !ids.has(n.parent_id))
+    },
+    [nodes],
+  )
 
   // ノードID → 使用しているシナリオ（affected_kpis から逆引き。表記ゆれはあいまい一致で解決）
   const scenariosOf = useMemo(() => {
@@ -260,6 +272,16 @@ export function KpiTab({ full, refresh, dealId, stage1Done }: {
             </div>
           </div>
           <div className="p-4">
+            {orphans.length > 0 && (
+              <div className="mb-3 flex items-start gap-1.5 rounded border border-amber-300 bg-amber-50 px-3 py-2 text-[11px] text-amber-800">
+                <Icon name="warning" className="mt-0.5 shrink-0 text-[14px]" />
+                <span>
+                  親ノードが特定できなかった{orphans.length}件（
+                  {orphans.map((n) => n.label).join('・')}
+                  ）を最上位に表示しています。AIとの対話で正しい親に付け替えられます。
+                </span>
+              </div>
+            )}
             <div className="space-y-1.5">{renderTree(null, 0)}</div>
           </div>
         </div>

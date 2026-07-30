@@ -26,12 +26,15 @@ DOCUMENT_SLOTS = {
     "dd_legal": "DDレポート（法務）",
     "dd_tax": "DDレポート（税務）",
     "dd_integrated": "DDレポート（統合版）",
+    "unclassified": "種別未設定（その他資料）",
 }
 
 # アップロードの最小要件（仕様 ②4）: 財務モデル1つ以上＋DDレポート1つ以上。
 # ケース（Base/Sponsor）・分冊/統合版の構成はファイル内容から判定する
 MODEL_SLOTS = ("model_base", "model_sponsor")
 DD_SLOTS = ("dd_business", "dd_financial", "dd_legal", "dd_tax", "dd_integrated")
+# 同一スロットの上書きをしない（複数ファイルを並べて保持できる）スロット
+MULTI_SLOTS = ("unclassified",)
 
 
 def _j(v):

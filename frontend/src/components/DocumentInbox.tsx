@@ -6,8 +6,11 @@ export interface InboxSlot { key: string; label: string; required?: boolean; acc
 interface StagedItem {
   id: string
   file: File
-  slot: string | null
+  /** 割り当てる資料種別（複数可・空＝種別未設定のまま取り込む） */
+  slots: string[]
   suggested: boolean
+  /** 種別の選択が済んでいる（＝アップロード可）か。空選択での取り込みも可 */
+  ready: boolean
   status: 'pending' | 'uploading' | 'error'
   error?: string
 }
@@ -44,7 +47,7 @@ let seq = 0
  *  タグはファイル名から自動推定し、判定できないものだけ後から人間が選ぶ。 */
 export function DocumentInbox({ slots, onUpload }: {
   slots: InboxSlot[]
-  onUpload: (slot: string, file: File) => Promise<void>
+  onUpload: (slots: string[], file: File) => Promise<void>
 }) {
   const [items, setItems] = useState<StagedItem[]>([])
   const [dragging, setDragging] = useState(false)
@@ -58,19 +61,25 @@ export function DocumentInbox({ slots, onUpload }: {
       ...prev,
       ...list.map((file) => {
         const slot = suggestSlot(file.name)
-        return { id: `doc-${++seq}`, file, slot, suggested: slot !== null, status: 'pending' as const }
+        return {
+          id: `doc-${++seq}`, file,
+          slots: slot ? [slot] : [],
+          suggested: slot !== null,
+          ready: slot !== null,      // 自動判定できたものはそのまま取り込む
+          status: 'pending' as const,
+        }
       }),
     ])
   }
 
-  // タグ（スロット）が決まった資料から順に、1件ずつアップロード＆AI識別する
+  // 種別が決まった資料から順に、1件ずつアップロード＆AI識別する
   useEffect(() => {
     if (busyRef.current) return
-    const next = items.find((it) => it.status === 'pending' && it.slot)
+    const next = items.find((it) => it.status === 'pending' && it.ready)
     if (!next) return
     busyRef.current = true
     setItems((prev) => prev.map((it) => (it.id === next.id ? { ...it, status: 'uploading' } : it)))
-    onUpload(next.slot!, next.file)
+    onUpload(next.slots, next.file)
       .then(() => {
         setItems((prev) => prev.filter((it) => it.id !== next.id))
       })
@@ -88,17 +97,31 @@ export function DocumentInbox({ slots, onUpload }: {
       })
   }, [items, onUpload])
 
-  const setSlot = (id: string, slot: string) => {
+  /** 種別のチェックを1つ切り替える（複数選択可・アップロードは「取り込む」で開始） */
+  const toggleSlot = (id: string, slot: string) => {
     setItems((prev) =>
       prev.map((it) =>
-        it.id === id ? { ...it, slot, suggested: false, status: 'pending', error: undefined } : it,
+        it.id === id
+          ? {
+            ...it,
+            slots: it.slots.includes(slot)
+              ? it.slots.filter((s) => s !== slot)
+              : [...it.slots, slot],
+            suggested: false,
+            status: 'pending',
+            error: undefined,
+          }
+          : it,
       ),
     )
   }
 
+  const commit = (id: string) =>
+    setItems((prev) => prev.map((it) => (it.id === id ? { ...it, ready: true } : it)))
+
   const remove = (id: string) => setItems((prev) => prev.filter((it) => it.id !== id))
 
-  const untagged = items.filter((it) => !it.slot).length
+  const untagged = items.filter((it) => !it.ready).length
 
   return (
     <div
@@ -155,67 +178,89 @@ export function DocumentInbox({ slots, onUpload }: {
               インプット済みの資料（{items.length}件）
             </span>
             {untagged > 0 && (
-              <span className="text-[11px] font-bold text-[#b45309]">タグ未設定が{untagged}件あります</span>
+              <span className="text-[11px] font-bold text-[#b45309]">種別の確認待ちが{untagged}件あります</span>
             )}
           </div>
           <ul className="divide-y divide-surface-container-high">
             {items.map((it) => (
               <li
                 key={it.id}
-                className={`flex flex-wrap items-center gap-3 px-3 py-2 ${
+                className={`px-3 py-2 ${
                   it.status === 'error'
                     ? 'border-l-4 border-l-error bg-error-container/20'
-                    : !it.slot
+                    : !it.ready
                       ? 'border-l-4 border-l-[#f59e0b] bg-amber-50/60'
                       : 'border-l-4 border-l-transparent'
                 }`}
               >
-                <Icon name={fileIcon(it.file.name)} className="text-[20px] text-on-surface-variant" fill />
-                <div className="min-w-[160px] flex-1">
-                  <div className="max-w-[300px] truncate text-[12px] font-medium">{it.file.name}</div>
-                  <div className="text-[11px] text-on-surface-variant">
-                    {(it.file.size / 1024).toFixed(1)} KB
-                    {it.slot && it.suggested && '・種類はファイル名から自動判定'}
-                    {!it.slot && <span className="font-bold text-[#b45309]">・何の資料かタグ付けしてください</span>}
-                    {it.status === 'error' && <span className="block text-error">{it.error}</span>}
+                <div className="flex flex-wrap items-center gap-3">
+                  <Icon name={fileIcon(it.file.name)} className="text-[20px] text-on-surface-variant" fill />
+                  <div className="min-w-[160px] flex-1">
+                    <div className="max-w-[320px] truncate text-[12px] font-medium">{it.file.name}</div>
+                    <div className="text-[11px] text-on-surface-variant">
+                      {(it.file.size / 1024).toFixed(1)} KB
+                      {it.ready && it.suggested && '・種類はファイル名から自動判定'}
+                      {!it.ready && (
+                        <span className="font-bold text-[#b45309]">
+                          ・該当する種別を選んでください（複数選択可・未選択のままでも取り込めます）
+                        </span>
+                      )}
+                      {it.status === 'error' && <span className="block text-error">{it.error}</span>}
+                    </div>
                   </div>
+                  <div className="w-32 text-[11px]">
+                    {it.status === 'uploading' ? (
+                      <span className="flex items-center gap-1.5 text-primary-container">
+                        <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-surface-container-high border-t-primary-container" />
+                        AI識別中…
+                      </span>
+                    ) : it.status === 'error' ? (
+                      <button className="font-bold text-primary-container hover:underline"
+                        onClick={() => setItems((prev) => prev.map((p) => (p.id === it.id ? { ...p, status: 'pending', error: undefined } : p)))}>
+                        再試行
+                      </button>
+                    ) : it.ready ? (
+                      <span className="text-outline">待機中…</span>
+                    ) : (
+                      <button
+                        className="btn-primary !px-2 !py-1 !text-[11px]"
+                        onClick={() => commit(it.id)}
+                      >
+                        {it.slots.length > 0 ? `この${it.slots.length}種別で取り込む` : '種別なしで取り込む'}
+                      </button>
+                    )}
+                  </div>
+                  <button
+                    className="rounded p-1 text-on-surface-variant hover:text-error"
+                    title="一覧から削除"
+                    disabled={it.status === 'uploading'}
+                    onClick={() => remove(it.id)}
+                  >
+                    <Icon name="delete" className="text-[18px]" />
+                  </button>
                 </div>
-                <select
-                  className="input-base !w-56 !py-1 !text-[12px]"
-                  value={it.slot ?? ''}
-                  disabled={it.status === 'uploading'}
-                  onChange={(e) => setSlot(it.id, e.target.value)}
-                >
-                  <option value="" disabled>種類を選択…</option>
-                  {slots.map((s) => (
-                    <option key={s.key} value={s.key}>{s.label}</option>
-                  ))}
-                </select>
-                <div className="w-32 text-[11px]">
-                  {it.status === 'uploading' ? (
-                    <span className="flex items-center gap-1.5 text-primary-container">
-                      <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-surface-container-high border-t-primary-container" />
-                      AI識別中…
-                    </span>
-                  ) : it.status === 'error' ? (
-                    <button className="font-bold text-primary-container hover:underline"
-                      onClick={() => setItems((prev) => prev.map((p) => (p.id === it.id ? { ...p, status: 'pending', error: undefined } : p)))}>
-                      再試行
-                    </button>
-                  ) : it.slot ? (
-                    <span className="text-outline">待機中…</span>
-                  ) : (
-                    <span className="text-outline">—</span>
-                  )}
-                </div>
-                <button
-                  className="rounded p-1 text-on-surface-variant hover:text-error"
-                  title="一覧から削除"
-                  disabled={it.status === 'uploading'}
-                  onClick={() => remove(it.id)}
-                >
-                  <Icon name="delete" className="text-[18px]" />
-                </button>
+                {/* 資料種別の複数選択（1ファイルが複数の役割を兼ねる統合版DD等に対応） */}
+                {it.status !== 'uploading' && (
+                  <div className="mt-1.5 flex flex-wrap gap-1.5 pl-8">
+                    {slots.map((s) => {
+                      const on = it.slots.includes(s.key)
+                      return (
+                        <button
+                          key={s.key}
+                          onClick={() => toggleSlot(it.id, s.key)}
+                          className={`flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] transition-colors ${
+                            on
+                              ? 'border-primary-container bg-primary-fixed/50 font-medium text-primary-container'
+                              : 'border-surface-container-high text-on-surface-variant hover:border-primary-container/50'
+                          }`}
+                        >
+                          <Icon name={on ? 'check_box' : 'check_box_outline_blank'} className="text-[14px]" />
+                          {s.label}
+                        </button>
+                      )
+                    })}
+                  </div>
+                )}
               </li>
             ))}
           </ul>

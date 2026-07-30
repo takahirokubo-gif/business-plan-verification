@@ -13,8 +13,9 @@ from ..config import UPLOAD_DIR
 from ..database import get_db
 from ..extractors import get_extractor
 from ..extractors.base import UnknownSampleFileError
-from ..models import (Deal, Document, ExtractedItem, HistoryEvent, Inquiry,
-                      KpiNode, Scenario, User)
+from ..models import (DOCUMENT_SLOTS, MULTI_SLOTS, Deal, Document, ExtractedItem,
+                      HistoryEvent, Inquiry, KpiNode, Scenario, User)
+from ..services.text_clean import clean_obj, clean_text
 from ..services.units import normalize_values
 
 router = APIRouter(prefix="/api", tags=["deals"])
@@ -142,6 +143,13 @@ def extract_deal_info(deal_id: int, user: str | None = None,
     docs = [dict(filename=d.filename, slot=d.slot, stored_path=d.stored_path)
             for d in deal.documents]
     result = get_extractor().extract_deal_info(docs)
+    # 画面に出る説明文（note・出典）から内部表現を除去する
+    if isinstance(result, dict):
+        if isinstance(result.get("note"), str):
+            result["note"] = clean_text(result["note"])
+        if isinstance(result.get("sources"), dict):
+            result["sources"] = {k: clean_text(v) if isinstance(v, str) else v
+                                 for k, v in result["sources"].items()}
     add_history(db, deal, user, "案件情報の自動読み取り",
                 f"{len(result.get('fields', {}))}フィールドを資料から抽出")
     db.commit()
@@ -204,10 +212,96 @@ def document_file(deal_id: int, doc_id: int, db: Session = Depends(get_db)):
     )
 
 
-@router.post("/deals/{deal_id}/documents")
-def upload_document(deal_id: int, slot: str = Form(...), user: str = Form(None),
-                    file: UploadFile = File(...), db: Session = Depends(get_db)):
+@router.get("/deals/{deal_id}/documents/{doc_id}/peek")
+def document_peek(deal_id: int, doc_id: int, location: str,
+                  db: Session = Depends(get_db)):
+    """根拠のExcelセル周辺を抜粋して返す（パネル内で中身を確認できるようにする）。
+
+    Excelはブラウザで開けないため、location（例「PL!G9」「Assumptions!D21」）を解釈し、
+    該当セルを中心に前後の行・列を値と数式つきで返す。
+    """
+    import re
+
+    from openpyxl import load_workbook
+    from openpyxl.utils import column_index_from_string, get_column_letter
+
+    from ..services.xl_eval import XlEvaluator
+
     deal = _get_deal(db, deal_id)
+    doc = next((d for d in deal.documents if d.id == doc_id), None)
+    if not doc or not doc.stored_path:
+        raise HTTPException(404, "資料が見つかりません")
+    path = Path(doc.stored_path)
+    if not path.exists() or path.suffix.lower() != ".xlsx":
+        raise HTTPException(400, "この資料はExcelの抜粋に対応していません")
+
+    loc = location or ""
+    # 「PL!G9」「Assumptions!D21」形式と「PLシート C9:E9」形式の両方に対応する
+    m = re.search(r"([^\s!'\"、（）]+)\s*!\s*\$?([A-Z]{1,2})\$?(\d+)", loc) \
+        or re.search(r"([^\s!'\"、（）]+?)\s*シート\s*\$?([A-Z]{1,2})\$?(\d+)", loc)
+    if not m:
+        raise HTTPException(400, "参照箇所（シート・セル）を特定できませんでした")
+    sheet_name, col_s, row_s = m.group(1), m.group(2), int(m.group(3))
+
+    wb = load_workbook(path)
+    if sheet_name not in wb.sheetnames:
+        # 表記ゆれ（「PLシート」「損益計算書」等）は前方一致・部分一致で救済する
+        cand = next((s for s in wb.sheetnames
+                     if s == sheet_name or sheet_name.startswith(s) or s in sheet_name), None)
+        if not cand:
+            raise HTTPException(404, f"シートが見つかりません: {sheet_name}")
+        sheet_name = cand
+    ws = wb[sheet_name]
+    wbv = load_workbook(path, data_only=True)
+    wsv = wbv[sheet_name]
+    ev = XlEvaluator(wb)
+
+    col = column_index_from_string(col_s)
+    # ヘッダー行（年度行）＋対象セル周辺を抜粋する
+    row_from, row_to = max(1, row_s - 3), row_s + 3
+    col_from, col_to = max(1, col - 3), col + 3
+    header_rows = [r for r in (4, 5) if r < row_from]
+
+    def cell_out(r: int, c: int) -> dict:
+        cell = ws.cell(row=r, column=c)
+        raw = cell.value
+        display = raw
+        formula = None
+        if isinstance(raw, str) and raw.startswith("="):
+            formula = raw
+            cached = wsv.cell(row=r, column=c).value
+            display = cached if cached is not None else ev.value(sheet_name, cell.coordinate)
+        return dict(ref=cell.coordinate, value=display, formula=formula,
+                    target=(r == row_s and c == col))
+
+    cols = list(range(col_from, col_to + 1))
+    rows = []
+    for r in header_rows + list(range(row_from, row_to + 1)):
+        # B列（行ラベル）は常に添えて、どの科目の行かが分かるようにする
+        label = ws.cell(row=r, column=2).value
+        cells = [cell_out(r, c) for c in cols]
+        if any(c["value"] is not None for c in cells) or label:
+            rows.append(dict(row=r, label=label, cells=cells))
+    return dict(filename=doc.filename, sheet=sheet_name,
+                target=f"{col_s}{row_s}",
+                columns=[get_column_letter(c) for c in cols], rows=rows)
+
+
+@router.post("/deals/{deal_id}/documents")
+def upload_document(deal_id: int, slot: str = Form("unclassified"), user: str = Form(None),
+                    file: UploadFile = File(...), db: Session = Depends(get_db)):
+    """資料を1件アップロードする。
+
+    slot は複数指定（カンマ区切り）・未指定のいずれも可（仕様②4）。
+    - 複数指定：同じファイルを各スロットに登録する（統合版DDが事業・財務を兼ねる等）
+    - 未指定：unclassified として保持し、解析対象には含める
+    """
+    deal = _get_deal(db, deal_id)
+    slots = [s.strip() for s in (slot or "").split(",") if s.strip()] or ["unclassified"]
+    unknown = [s for s in slots if s not in DOCUMENT_SLOTS]
+    if unknown:
+        raise HTTPException(400, f"不明な資料種別です: {'、'.join(unknown)}")
+
     dest_dir = UPLOAD_DIR / str(deal_id)
     dest_dir.mkdir(parents=True, exist_ok=True)
     dest = dest_dir / file.filename
@@ -220,20 +314,28 @@ def upload_document(deal_id: int, slot: str = Form(...), user: str = Form(None),
         dest.unlink(missing_ok=True)
         raise HTTPException(400, e.message)
 
-    # 同一スロットは上書き
-    for d in list(deal.documents):
-        if d.slot == slot:
-            db.delete(d)
-    doc = Document(deal_id=deal.id, slot=slot, filename=file.filename,
-                   stored_path=str(dest), status="uploaded",
-                   identified_company=info.get("company"),
-                   identified_label=info.get("label"),
-                   identified_detail=info.get("detail"))
-    db.add(doc)
+    docs = []
+    for s in slots:
+        # 単一スロットは上書き（種別未設定は複数ファイルを並べて保持する）
+        if s not in MULTI_SLOTS:
+            for d in list(deal.documents):
+                if d.slot == s:
+                    db.delete(d)
+        elif any(d.slot == s and d.filename == file.filename for d in deal.documents):
+            continue  # 同じファイルの重複登録は無視
+        doc = Document(deal_id=deal.id, slot=s, filename=file.filename,
+                       stored_path=str(dest), status="uploaded",
+                       identified_company=info.get("company"),
+                       identified_label=info.get("label"),
+                       identified_detail=info.get("detail"))
+        db.add(doc)
+        docs.append(doc)
     db.flush()
-    add_history(db, deal, user, "資料アップロード", f"{file.filename}（{slot}）")
+    labels = "、".join(DOCUMENT_SLOTS.get(s, s) for s in slots)
+    add_history(db, deal, user, "資料アップロード", f"{file.filename}（{labels}）")
     db.commit()
-    result = doc.to_dict()
+    result = docs[0].to_dict() if docs else dict(filename=file.filename, slot=slots[0])
+    result["slots"] = slots
     # 案件照合（社名の一致チェック）。対象会社が未設定（下書き）の場合は判定しない
     company = info.get("company") or ""
     if company and deal.target:
@@ -265,6 +367,11 @@ def analyze(deal_id: int, user: str | None = None, db: Session = Depends(get_db)
         items, inquiries = extraction, []
     tree = extractor.propose_kpi_tree(deal_info, docs)
     cards = extractor.propose_scenarios(deal_info, docs)
+    # 人が読む文章から内部表現（values=null 等）を除去する
+    items = clean_obj(items)
+    inquiries = clean_obj(inquiries)
+    tree = clean_obj(tree)
+    cards = clean_obj(cards)
 
     # 再解析時は既存の提案をリセット（確定済み案件の再解析はデモでは想定しない）
     for coll in (deal.items, deal.kpi_nodes, deal.scenarios, deal.inquiries):

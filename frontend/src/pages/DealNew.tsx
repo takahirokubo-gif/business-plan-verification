@@ -98,16 +98,19 @@ export function DealNew() {
     return d.id
   }
 
-  // アップロード本体（失敗時はthrow。インボックスは行単位でエラー表示する）
-  const uploadCore = async (slot: string, file: File) => {
-    setUploading(slot)
+  // アップロード本体（失敗時はthrow。インボックスは行単位でエラー表示する）。
+  // slots は複数指定可・空配列＝種別未設定で取り込む
+  const uploadCore = async (slots: string[], file: File) => {
+    setUploading(slots[0] ?? 'unclassified')
     try {
       const id = await ensureDraft()
-      await api.uploadDocument(id, slot, file, userKey)
-      setUploads((u) => ({
-        ...u,
-        [slot]: { filename: file.name, identified_label: null },
-      }))
+      await api.uploadDocument(id, slots, file, userKey)
+      const assigned = slots.length > 0 ? slots : ['unclassified']
+      setUploads((u) => {
+        const next = { ...u }
+        for (const s of assigned) next[s] = { filename: file.name, identified_label: null }
+        return next
+      })
     } finally {
       setUploading(null)
     }
@@ -117,7 +120,7 @@ export function DealNew() {
   const upload = async (slot: string, file: File) => {
     setError('')
     try {
-      await uploadCore(slot, file)
+      await uploadCore([slot], file)
     } catch (e) {
       setError(`${file.name}: ${(e as Error).message}`)
     }

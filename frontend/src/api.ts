@@ -1,5 +1,5 @@
 import type {
-  ChatResult, DealFull, DealListItem, ExportPreview, User,
+  ChatResult, DealFull, DealListItem, DocumentPeek, ExportPreview, User,
 } from './types'
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
@@ -45,12 +45,14 @@ export const api = {
 
   dealFull: (id: number) => request<DealFull>(`/api/deals/${id}/full`),
 
-  uploadDocument: (dealId: number, slot: string, file: File, user: string) => {
+  /** 資料アップロード。slots は複数指定可・空配列＝種別未設定（unclassified）で取り込む */
+  uploadDocument: (dealId: number, slots: string[] | string, file: File, user: string) => {
     const fd = new FormData()
-    fd.append('slot', slot)
+    const list = Array.isArray(slots) ? slots : [slots]
+    fd.append('slot', list.length > 0 ? list.join(',') : 'unclassified')
     fd.append('user', user)
     fd.append('file', file)
-    return request<{ id: number; company_match: boolean; identified_company: string | null; identified_label: string | null }>(
+    return request<{ id: number; slots: string[]; company_match: boolean; identified_company: string | null; identified_label: string | null }>(
       `/api/deals/${dealId}/documents`, { method: 'POST', body: fd })
   },
 
@@ -120,6 +122,11 @@ export const api = {
     request<{ memo: unknown; status_changed: unknown }>(`/api/deals/${dealId}/memos`, {
       method: 'POST', body: JSON.stringify(body),
     }),
+
+  /** 根拠のExcelセル周辺を抜粋取得する（パネル内で中身を確認するため） */
+  documentPeek: (dealId: number, docId: number, location: string) =>
+    request<DocumentPeek>(
+      `/api/deals/${dealId}/documents/${docId}/peek?location=${encodeURIComponent(location)}`),
 
   updateInquiry: (dealId: number, inquiryId: number, body: { status?: string; resolution_note?: string; user?: string }) =>
     request<unknown>(`/api/deals/${dealId}/inquiries/${inquiryId}`, {
