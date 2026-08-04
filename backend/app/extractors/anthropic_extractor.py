@@ -401,33 +401,67 @@ def _docs_digest(documents: list[dict], excel_limit: int | None = None,
     return "\n".join(parts)
 
 
+MAX_OUTPUT_TOKENS = 32000
+
+
+class TruncatedOutputError(RuntimeError):
+    """出力が最大長で打ち切られた（＝結果の取りこぼしが確定している）。
+
+    「AIが検知しなかった」のと区別するため専用の例外にする。
+    """
+
+
 class AnthropicExtractor(Extractor):
     def __init__(self):
         import anthropic
         if not ANTHROPIC_API_KEY:
             raise RuntimeError("EXTRACTOR_MODE=anthropic には ANTHROPIC_API_KEY が必要です")
         self.client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+        # 直近のAI呼び出しの診断情報（呼び出し側が解析ログに記録する）
+        self.last_call: dict | None = None
 
     def _call(self, prompt: str, schema: dict, tool_name: str) -> dict:
         # 根拠3点セット付きの抽出項目一覧は長くなる。8192では途中で切れて
         # tool入力のJSONが不完全になる（実APIで確認済み）ため大きめに取る。
         # 大きなmax_tokensはSDKがストリーミングを要求するためstreamで受ける
-        with self.client.messages.stream(
-            model=get_model(),  # 設定UIから実行時に切替可能
-            max_tokens=32000,
-            system=SYSTEM_PROMPT,
-            tools=[dict(name=tool_name, description="構造化された抽出結果を返す",
-                        input_schema=schema)],
-            tool_choice=dict(type="tool", name=tool_name),
-            messages=[dict(role="user", content=prompt)],
-        ) as stream:
-            resp = stream.get_final_message()
+        import time
+        started = time.monotonic()
+        model = get_model()  # 設定UIから実行時に切替可能
+        self.last_call = dict(mode="anthropic", model=model, prompt_chars=len(prompt),
+                              max_tokens=MAX_OUTPUT_TOKENS)
+        try:
+            with self.client.messages.stream(
+                model=model,
+                max_tokens=MAX_OUTPUT_TOKENS,
+                system=SYSTEM_PROMPT,
+                tools=[dict(name=tool_name, description="構造化された抽出結果を返す",
+                            input_schema=schema)],
+                tool_choice=dict(type="tool", name=tool_name),
+                messages=[dict(role="user", content=prompt)],
+            ) as stream:
+                resp = stream.get_final_message()
+        except Exception as e:
+            self.last_call.update(status="error", error=f"{type(e).__name__}: {e}",
+                                  duration_ms=int((time.monotonic() - started) * 1000))
+            raise
+        usage = getattr(resp, "usage", None)
+        self.last_call.update(
+            stop_reason=resp.stop_reason,
+            input_tokens=getattr(usage, "input_tokens", None),
+            output_tokens=getattr(usage, "output_tokens", None),
+            duration_ms=int((time.monotonic() - started) * 1000),
+        )
         if resp.stop_reason == "max_tokens":
-            raise RuntimeError(
-                "AI応答が最大出力長に達して打ち切られました。資料の分量を減らして再実行してください")
+            self.last_call.update(status="truncated")
+            raise TruncatedOutputError(
+                f"AI応答が最大出力長（{MAX_OUTPUT_TOKENS:,}トークン）に達して打ち切られました。"
+                "結果の一部が失われています（AIが検知しなかったのではありません）。"
+                "資料の分量を減らすか、対象を絞って再実行してください")
         for block in resp.content:
             if block.type == "tool_use":
+                self.last_call.update(status="ok")
                 return block.input
+        self.last_call.update(status="error", error="tool_use ブロックが返らなかった")
         raise RuntimeError("構造化出力が得られませんでした")
 
     def identify_document(self, filename: str, path: Path | None) -> dict:

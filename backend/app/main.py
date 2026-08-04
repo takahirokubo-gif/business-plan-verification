@@ -11,7 +11,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 
 from .config import IS_SERVERLESS, SHARE_PASSWORD, SHARE_USER
@@ -84,6 +84,23 @@ if IS_SERVERLESS:
 @app.on_event("startup")
 def startup():
     _seed_if_empty()
+
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception):
+    """未処理例外の詳細を返す。
+
+    既定では 500 "Internal Server Error" に潰れてしまい、AI解析の失敗理由
+    （出力の打ち切り・APIエラー等）が画面から分からなくなる。検証時に
+    「AIが検知しなかった」のか「処理が失敗した」のかを切り分けられるよう、
+    例外の型とメッセージをそのまま返す。
+    """
+    name = type(exc).__name__
+    truncated = name == "TruncatedOutputError"
+    return JSONResponse(
+        status_code=502 if truncated else 500,
+        content=dict(detail=str(exc) or name, error_type=name, truncated=truncated),
+    )
 
 
 app.include_router(deals.router)

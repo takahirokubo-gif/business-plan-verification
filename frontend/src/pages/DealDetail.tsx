@@ -6,6 +6,7 @@ import { Icon } from '../components/Icon'
 import { ReviewStatusBadge, WorkStatusBadge } from '../components/Badge'
 import { DocumentLinkContext, SlidePanel } from '../components/EvidencePanel'
 import { InquiryList, inquiryOpenCount } from '../components/InquiryPanel'
+import { AnalysisLogList, analysisHasProblem } from '../components/AnalysisLogPanel'
 import type { DealFull } from '../types'
 import { OverviewTab } from './tabs/OverviewTab'
 import { NumbersTab } from './tabs/NumbersTab'
@@ -42,6 +43,8 @@ export function DealDetail() {
   const [error, setError] = useState('')
   const [showHistory, setShowHistory] = useState(false)
   const [showInquiries, setShowInquiries] = useState(false)
+  const [showAnalysisLog, setShowAnalysisLog] = useState(false)
+  const [dumping, setDumping] = useState(false)
 
   const refresh = useCallback(async () => {
     try {
@@ -104,6 +107,19 @@ export function DealDetail() {
               )}
             </button>
             <button
+              className={`btn-secondary !py-1.5 text-[12px] ${
+                analysisHasProblem(full.analysis_runs ?? [])
+                  ? '!border-error/40 !bg-error-container/30 !text-on-error-container' : ''
+              }`}
+              onClick={() => setShowAnalysisLog(true)}
+              title="AI解析の実行記録（出力の打ち切り・エラーの有無を確認）"
+            >
+              <Icon name="monitoring" className="text-[16px]" /> 解析ログ
+              {analysisHasProblem(full.analysis_runs ?? []) && (
+                <Icon name="warning" className="ml-0.5 text-[14px]" />
+              )}
+            </button>
+            <button
               className="btn-secondary !py-1.5 text-[12px]"
               onClick={() => setShowHistory(true)}
               title="操作履歴（誰が・いつ・何を）"
@@ -154,6 +170,31 @@ export function DealDetail() {
           onClose={() => setShowInquiries(false)}
         >
           <InquiryList dealId={dealId} inquiries={full.inquiries ?? []} refresh={refresh} />
+        </SlidePanel>
+      )}
+
+      {/* 解析ログパネル：AI解析の実行記録（出力の打ち切り・エラーの切り分け用） */}
+      {showAnalysisLog && (
+        <SlidePanel
+          title="AI解析ログ（検証用）"
+          onClose={() => setShowAnalysisLog(false)}
+          footer={
+            <button
+              className="btn-secondary w-full !py-2 text-[12px]"
+              disabled={dumping}
+              onClick={async () => {
+                setDumping(true)
+                try { await api.exportRaw(dealId) } catch (e) { setError((e as Error).message) }
+                finally { setDumping(false) }
+              }}
+              title="確定状態によらず、解析の生結果（抽出項目・確認事項・KPI・シナリオ・ログ）をExcelで出力します"
+            >
+              <Icon name="download" className="text-[16px]" />
+              {dumping ? '出力中…' : '検証用ダンプをダウンロード（.xlsx）'}
+            </button>
+          }
+        >
+          <AnalysisLogList runs={full.analysis_runs ?? []} />
         </SlidePanel>
       )}
 

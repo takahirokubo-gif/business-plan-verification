@@ -70,6 +70,7 @@ export function DealNew() {
   const [sources, setSources] = useState<Record<string, string>>({})
   const [extractNote, setExtractNote] = useState('')
   const [analyzing, setAnalyzing] = useState(false)
+  const [analyzeStep, setAnalyzeStep] = useState('')
   const [dragSlot, setDragSlot] = useState<string | null>(null)
   const fileInputs = useRef<Record<string, HTMLInputElement | null>>({})
 
@@ -188,10 +189,17 @@ export function DealNew() {
         sponsor_ebitda_mm: form.sponsor_ebitda_mm ? Number(form.sponsor_ebitda_mm) : null,
         summary: form.summary || null, owner: form.owner || userKey, user: userKey,
       })
-      await api.analyze(dealId, userKey)
+      // 3ステップに分けて順に実行する（1リクエストが実行時間の上限を超えないように）。
+      // 途中で失敗しても、そこまでの結果は保存済みなので案件画面で確認できる
+      setAnalyzeStep('抽出（数値・定性情報・確認事項）')
+      await api.analyzeItems(dealId, userKey)
+      setAnalyzeStep('KPI構造の提案')
+      await api.analyzeKpi(dealId, userKey)
+      setAnalyzeStep('ストレスシナリオの提案')
+      await api.analyzeScenarios(dealId, userKey)
       navigate(`/deals/${dealId}?tab=overview`)
     } catch (e) {
-      setError((e as Error).message)
+      setError(`解析中に失敗しました（${analyzeStep}）：${(e as Error).message}`)
       setAnalyzing(false)
     }
   }
@@ -206,7 +214,17 @@ export function DealNew() {
   return (
     <Layout breadcrumb={<><span className="text-outline-variant">/</span><span className="font-medium">新規案件を登録</span></>}>
       {extracting && <LoadingOverlay title="案件情報を読み取っています…" steps={EXTRACT_STEPS} />}
-      {analyzing && <LoadingOverlay title="資料を解析しています…" />}
+      {analyzing && (
+        <LoadingOverlay
+          title={analyzeStep ? `資料を解析しています…（${analyzeStep}）` : '資料を解析しています…'}
+          steps={[
+            '① 数値・定性情報の抽出と確認事項の検知',
+            '② KPI構造の提案',
+            '③ ストレスシナリオの提案',
+            '資料の分量によっては数分かかります',
+          ]}
+        />
+      )}
       <div className="mx-auto max-w-[960px]">
         <h1 className="text-[24px] font-bold">案件登録</h1>
         <p className="mt-1 text-[13px] text-on-surface-variant">

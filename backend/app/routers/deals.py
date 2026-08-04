@@ -12,9 +12,10 @@ from sqlalchemy.orm import Session
 from ..config import UPLOAD_DIR
 from ..database import get_db
 from ..extractors import get_extractor
+from ..extractors.factory import get_mode
 from ..extractors.base import UnknownSampleFileError
-from ..models import (DOCUMENT_SLOTS, MULTI_SLOTS, Deal, Document, ExtractedItem,
-                      HistoryEvent, Inquiry, KpiNode, Scenario, User)
+from ..models import (DOCUMENT_SLOTS, MULTI_SLOTS, AnalysisRun, Deal, Document,
+                      ExtractedItem, HistoryEvent, Inquiry, KpiNode, Scenario, User)
 from ..services.text_clean import clean_obj, clean_text
 from ..services.units import normalize_values
 
@@ -181,6 +182,7 @@ def deal_full(deal_id: int, db: Session = Depends(get_db)):
         exports=[e.to_dict() for e in deal.exports],
         findings=findings,
         inquiries=[q.to_dict() for q in deal.inquiries],
+        analysis_runs=[r.to_dict() for r in reversed(deal.analysis_runs)],
         chat_suggestions=dict(kpi=extractor.chat_suggestions("kpi"),
                               scenario=extractor.chat_suggestions("scenario")),
     )
@@ -350,36 +352,71 @@ def upload_document(deal_id: int, slot: str = Form("unclassified"), user: str = 
     return result
 
 
-@router.post("/deals/{deal_id}/analyze")
-def analyze(deal_id: int, user: str | None = None, db: Session = Depends(get_db)):
-    """AI解析の実行：抽出項目・KPIツリー提案・AI推奨シナリオを一括生成する。"""
+def _deal_info(deal: Deal) -> dict:
+    return dict(name=deal.name, deal_type=deal.deal_type, borrower=deal.borrower,
+                target=deal.target, sponsor=deal.sponsor,
+                ev_mm=deal.ev_mm, senior_mm=deal.senior_mm)
+
+
+def _docs_of(deal: Deal) -> list[dict]:
+    return [dict(filename=d.filename, slot=d.slot, stored_path=d.stored_path)
+            for d in deal.documents]
+
+
+def _record_run(db: Session, deal: Deal, step: str, extractor, summary: str = "",
+                error: str | None = None, status: str | None = None):
+    """AI呼び出し1回分の診断を記録する（結果の取りこぼしを後から切り分けるため）。"""
+    info = dict(getattr(extractor, "last_call", None) or {})
+    db.add(AnalysisRun(
+        deal_id=deal.id, step=step,
+        status=status or info.get("status") or ("error" if error else "ok"),
+        mode=info.get("mode") or get_mode(), model=info.get("model"),
+        input_tokens=info.get("input_tokens"), output_tokens=info.get("output_tokens"),
+        max_tokens=info.get("max_tokens"), stop_reason=info.get("stop_reason"),
+        duration_ms=info.get("duration_ms"), prompt_chars=info.get("prompt_chars"),
+        result_summary=summary or None, error=error or info.get("error"),
+        at=datetime.now()))
+
+
+def _run_step(db: Session, deal: Deal, step: str, extractor, fn):
+    """AIステップを実行し、成否にかかわらず診断を残す。失敗は原因つきで返す。"""
+    try:
+        result = fn()
+    except Exception as e:
+        _record_run(db, deal, step, extractor, error=f"{type(e).__name__}: {e}",
+                    status="truncated" if type(e).__name__ == "TruncatedOutputError" else "error")
+        db.commit()
+        raise
+    return result
+
+
+@router.post("/deals/{deal_id}/analyze/items")
+def analyze_items(deal_id: int, user: str | None = None, db: Session = Depends(get_db)):
+    """解析ステップ1：抽出項目と確認事項（照会）を生成する。
+
+    資料が多い案件でも1リクエストの実行時間が上限（サーバーレス300秒）に
+    収まるよう、KPIツリー・シナリオとはステップを分けている。
+    """
     deal = _get_deal(db, deal_id)
     if not deal.documents:
         raise HTTPException(400, "資料がアップロードされていません")
     extractor = get_extractor()
-    deal_info = dict(name=deal.name, deal_type=deal.deal_type, borrower=deal.borrower,
-                     target=deal.target, sponsor=deal.sponsor,
-                     ev_mm=deal.ev_mm, senior_mm=deal.senior_mm)
-    docs = [dict(filename=d.filename, slot=d.slot, stored_path=d.stored_path)
-            for d in deal.documents]
+    deal_info, docs = _deal_info(deal), _docs_of(deal)
 
-    extraction = extractor.extract_items(deal_info, docs)
+    extraction = _run_step(db, deal, "items", extractor,
+                           lambda: extractor.extract_items(deal_info, docs))
     # 新形式は {items, inquiries}、モック等の旧形式は items のリストのみ
     if isinstance(extraction, dict):
         items = extraction.get("items", [])
         inquiries = extraction.get("inquiries", [])
     else:
         items, inquiries = extraction, []
-    tree = extractor.propose_kpi_tree(deal_info, docs)
-    cards = extractor.propose_scenarios(deal_info, docs)
     # 人が読む文章から内部表現（values=null 等）を除去する
     items = clean_obj(items)
     inquiries = clean_obj(inquiries)
-    tree = clean_obj(tree)
-    cards = clean_obj(cards)
 
     # 再解析時は既存の提案をリセット（確定済み案件の再解析はデモでは想定しない）
-    for coll in (deal.items, deal.kpi_nodes, deal.scenarios, deal.inquiries):
+    for coll in (deal.items, deal.inquiries):
         for row in list(coll):
             db.delete(row)
     db.flush()
@@ -407,6 +444,31 @@ def analyze(deal_id: int, user: str | None = None, db: Session = Depends(get_db)
             source_json=json.dumps(q.get("source"), ensure_ascii=False) if q.get("source") else None,
             suggested_question=q.get("suggested_question"),
             status="open", order_index=idx))
+    for d in deal.documents:
+        d.status = "analyzed"
+    _record_run(db, deal, "items", extractor,
+                summary=f"抽出{len(items)}項目・確認事項{len(inquiries)}件")
+    add_history(db, deal, user, "AI解析（抽出）",
+                f"{len(items)}項目を抽出・確認事項{len(inquiries)}件を検知")
+    db.commit()
+    return dict(items=len(items), inquiries=len(inquiries))
+
+
+@router.post("/deals/{deal_id}/analyze/kpi")
+def analyze_kpi(deal_id: int, user: str | None = None, db: Session = Depends(get_db)):
+    """解析ステップ2：KPIツリーを提案する。"""
+    deal = _get_deal(db, deal_id)
+    if not deal.documents:
+        raise HTTPException(400, "資料がアップロードされていません")
+    extractor = get_extractor()
+    deal_info, docs = _deal_info(deal), _docs_of(deal)
+    tree = _run_step(db, deal, "kpi", extractor,
+                     lambda: extractor.propose_kpi_tree(deal_info, docs))
+    tree = clean_obj(tree)
+
+    for row in list(deal.kpi_nodes):
+        db.delete(row)
+    db.flush()
     for idx, n in enumerate(tree["nodes"]):
         db.add(KpiNode(
             deal_id=deal.id, node_id=n["id"], parent_id=n.get("parent"),
@@ -415,6 +477,29 @@ def analyze(deal_id: int, user: str | None = None, db: Session = Depends(get_db)
             evidence_json=json.dumps(n.get("evidence"), ensure_ascii=False),
             added_via_chat=n.get("added_via_chat", False),
             order_index=idx))
+    deal.kpi_status = "proposed"
+    _record_run(db, deal, "kpi", extractor, summary=f"KPI {len(tree['nodes'])}ノード")
+    add_history(db, deal, user, "AI解析（KPI構造）",
+                f"KPIツリー{len(tree['nodes'])}ノードを提案")
+    db.commit()
+    return dict(kpi_nodes=len(tree["nodes"]))
+
+
+@router.post("/deals/{deal_id}/analyze/scenarios")
+def analyze_scenarios(deal_id: int, user: str | None = None, db: Session = Depends(get_db)):
+    """解析ステップ3：ストレスシナリオを提案する。"""
+    deal = _get_deal(db, deal_id)
+    if not deal.documents:
+        raise HTTPException(400, "資料がアップロードされていません")
+    extractor = get_extractor()
+    deal_info, docs = _deal_info(deal), _docs_of(deal)
+    cards = _run_step(db, deal, "scenarios", extractor,
+                      lambda: extractor.propose_scenarios(deal_info, docs))
+    cards = clean_obj(cards)
+
+    for row in list(deal.scenarios):
+        db.delete(row)
+    db.flush()
     # シードと同じ項目を保存する（インパクト分解・採用状態・不採用理由を落とさない）
     for idx, c in enumerate(cards):
         db.add(Scenario(
@@ -431,15 +516,23 @@ def analyze(deal_id: int, user: str | None = None, db: Session = Depends(get_db)
             safeguards=c.get("safeguards"), questions=c.get("questions"),
             adopted=c.get("adopted", False), rejection_note=c.get("rejection_note"),
             order_index=idx))
-    deal.kpi_status = "proposed"
-    for d in deal.documents:
-        d.status = "analyzed"
-    add_history(db, deal, user, "AI解析完了",
-                f"{len(items)}項目を抽出・確認事項{len(inquiries)}件・"
-                f"KPIツリー{len(tree['nodes'])}ノード・推奨シナリオ{len(cards)}件を提案")
+    _record_run(db, deal, "scenarios", extractor, summary=f"シナリオ{len(cards)}件")
+    add_history(db, deal, user, "AI解析（シナリオ）", f"推奨シナリオ{len(cards)}件を提案")
     db.commit()
-    return dict(items=len(items), inquiries=len(inquiries),
-                kpi_nodes=len(tree["nodes"]), scenarios=len(cards))
+    return dict(scenarios=len(cards))
+
+
+@router.post("/deals/{deal_id}/analyze")
+def analyze(deal_id: int, user: str | None = None, db: Session = Depends(get_db)):
+    """AI解析の一括実行（後方互換）。
+
+    資料が多い案件では実行時間が上限を超えるため、フロントエンドは
+    analyze/items → analyze/kpi → analyze/scenarios を順に呼ぶ。
+    """
+    r1 = analyze_items(deal_id, user, db)
+    r2 = analyze_kpi(deal_id, user, db)
+    r3 = analyze_scenarios(deal_id, user, db)
+    return dict(**r1, **r2, **r3)
 
 
 class InquiryPatch(BaseModel):

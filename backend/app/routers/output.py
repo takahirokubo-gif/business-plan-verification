@@ -91,6 +91,25 @@ def export_pdf(deal_id: int, body: ExportBody, db: Session = Depends(get_db)):
     )
 
 
+@router.post("/export/raw")
+def export_raw(deal_id: int, db: Session = Depends(get_db)):
+    """検証用ダンプ：確定状態によらず解析の生結果をExcelで出力する。
+
+    通常のエクスポートは必須項目の確定が前提のため、確認事項が多く確定が
+    進まない検証データでは出力できない。テスト・採点作業のために用意する。
+    """
+    deal = _deal(db, deal_id)
+    from ..services.export_raw import build_raw_export
+    path = build_raw_export(deal)
+    filename = Path(path).name
+    quoted = urllib.parse.quote(filename)
+    return FileResponse(
+        path,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": f"attachment; filename*=UTF-8''{quoted}"},
+    )
+
+
 class FindingBody(BaseModel):
     target_type: str | None = None  # scenario / item / kpi
     target_key: str | None = None

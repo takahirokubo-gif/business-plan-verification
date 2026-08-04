@@ -99,6 +99,8 @@ class Deal(Base):
     exports = relationship("ExportRecord", back_populates="deal", cascade="all, delete-orphan")
     inquiries = relationship("Inquiry", back_populates="deal",
                              cascade="all, delete-orphan", order_by="Inquiry.order_index")
+    analysis_runs = relationship("AnalysisRun", back_populates="deal",
+                                 cascade="all, delete-orphan", order_by="AnalysisRun.at")
 
     # ---- 導出値（四則演算のみ。再計算エンジンには該当しない）
     @property
@@ -398,6 +400,40 @@ class Inquiry(Base):
                     resolved_by=self.resolved_by,
                     resolved_at=self.resolved_at.isoformat() if self.resolved_at else None,
                     created_at=self.created_at.isoformat() if self.created_at else None)
+
+
+class AnalysisRun(Base):
+    """AI解析1ステップ分の診断記録。
+
+    「AIが検知しなかった」のか「出力が上限で切れた／APIが失敗した」のかを
+    後から切り分けられるようにするための記録（テスト・検証用）。
+    """
+    __tablename__ = "analysis_runs"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    deal_id: Mapped[int] = mapped_column(ForeignKey("deals.id"))
+    step: Mapped[str] = mapped_column(String)          # items/kpi/scenarios/deal_info
+    status: Mapped[str] = mapped_column(String)        # ok/truncated/error
+    mode: Mapped[str | None] = mapped_column(String, nullable=True)    # mock/anthropic
+    model: Mapped[str | None] = mapped_column(String, nullable=True)
+    input_tokens: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    output_tokens: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    max_tokens: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    stop_reason: Mapped[str | None] = mapped_column(String, nullable=True)
+    duration_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    prompt_chars: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    result_summary: Mapped[str | None] = mapped_column(Text, nullable=True)
+    error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
+
+    deal = relationship("Deal", back_populates="analysis_runs")
+
+    def to_dict(self):
+        return dict(id=self.id, step=self.step, status=self.status, mode=self.mode,
+                    model=self.model, input_tokens=self.input_tokens,
+                    output_tokens=self.output_tokens, max_tokens=self.max_tokens,
+                    stop_reason=self.stop_reason, duration_ms=self.duration_ms,
+                    prompt_chars=self.prompt_chars, result_summary=self.result_summary,
+                    error=self.error, at=self.at.isoformat() if self.at else None)
 
 
 class ExportRecord(Base):

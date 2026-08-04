@@ -221,6 +221,25 @@ export interface Inquiry {
   created_at: string | null
 }
 
+/** AI解析1ステップ分の診断記録（検証用）。
+ *  「AIが検知しなかった」のか「出力が上限で切れた／APIが失敗した」のかを切り分ける。 */
+export interface AnalysisRun {
+  id: number
+  step: string                 // items / kpi / scenarios
+  status: 'ok' | 'truncated' | 'error'
+  mode: string | null
+  model: string | null
+  input_tokens: number | null
+  output_tokens: number | null
+  max_tokens: number | null
+  stop_reason: string | null
+  duration_ms: number | null
+  prompt_chars: number | null
+  result_summary: string | null
+  error: string | null
+  at: string | null
+}
+
 export interface DealFull {
   deal: Deal
   documents: DocumentInfo[]
@@ -232,6 +251,7 @@ export interface DealFull {
   exports: ExportRecord[]
   findings: MemoFinding[]
   inquiries: Inquiry[]
+  analysis_runs?: AnalysisRun[]
   chat_suggestions: { kpi: string[]; scenario: string[] }
 }
 

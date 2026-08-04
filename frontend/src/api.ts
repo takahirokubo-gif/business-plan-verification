@@ -56,8 +56,25 @@ export const api = {
       `/api/deals/${dealId}/documents`, { method: 'POST', body: fd })
   },
 
+  // 解析は3ステップに分けて実行する（資料が多い案件で1リクエストの実行時間が
+  // サーバーレスの上限を超えないようにするため）
+  analyzeItems: (dealId: number, user: string) =>
+    request<{ items: number; inquiries: number }>(
+      `/api/deals/${dealId}/analyze/items?user=${encodeURIComponent(user)}`, { method: 'POST' }),
+
+  analyzeKpi: (dealId: number, user: string) =>
+    request<{ kpi_nodes: number }>(
+      `/api/deals/${dealId}/analyze/kpi?user=${encodeURIComponent(user)}`, { method: 'POST' }),
+
+  analyzeScenarios: (dealId: number, user: string) =>
+    request<{ scenarios: number }>(
+      `/api/deals/${dealId}/analyze/scenarios?user=${encodeURIComponent(user)}`, { method: 'POST' }),
+
   analyze: (dealId: number, user: string) =>
     request<{ items: number }>(`/api/deals/${dealId}/analyze?user=${encodeURIComponent(user)}`, { method: 'POST' }),
+
+  /** 検証用ダンプ（確定前でも解析の生結果をExcelで取得する） */
+  exportRaw: (dealId: number) => downloadExport(`/api/deals/${dealId}/export/raw`, ''),
 
   itemAction: (dealId: number, itemId: number, body: Record<string, unknown>) =>
     request<{ item: unknown; deal: unknown }>(`/api/deals/${dealId}/items/${itemId}/action`, {
