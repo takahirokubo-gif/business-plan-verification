@@ -3,6 +3,7 @@ import json
 import shutil
 from datetime import datetime
 from pathlib import Path
+from uuid import uuid4
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse
@@ -309,14 +310,24 @@ def upload_document(deal_id: int, slot: str = Form("unclassified"), user: str = 
     if unknown:
         raise HTTPException(400, f"不明な資料種別です: {'、'.join(unknown)}")
 
+    # クライアント指定のファイル名はそのまま使わない（"../" でUPLOAD_DIR外へ書けてしまう）
+    safe_name = Path(file.filename or "").name
+    if not safe_name or safe_name.startswith("."):
+        raise HTTPException(400, "ファイル名が不正です")
+    if Path(safe_name).suffix.lower() not in (".xlsx", ".pdf"):
+        raise HTTPException(400, "対応形式は .xlsx / .pdf のみです")
+
     dest_dir = UPLOAD_DIR / str(deal_id)
     dest_dir.mkdir(parents=True, exist_ok=True)
-    dest = dest_dir / file.filename
+    # 保存名は一意化する。同名で中身の違うファイルを別スロットに上げたときに、
+    # 先に登録した資料の実体を黙って上書きしないようにするため
+    # （画面に出す名前は safe_name、実体の場所だけがユニークになる）
+    dest = dest_dir / f"{uuid4().hex[:8]}_{safe_name}"
     with dest.open("wb") as f:
         shutil.copyfileobj(file.file, f)
 
     try:
-        info = get_extractor().identify_document(file.filename, dest)
+        info = get_extractor().identify_document(safe_name, dest)
     except UnknownSampleFileError as e:
         dest.unlink(missing_ok=True)
         raise HTTPException(400, e.message)
@@ -328,9 +339,9 @@ def upload_document(deal_id: int, slot: str = Form("unclassified"), user: str = 
             for d in list(deal.documents):
                 if d.slot == s:
                     db.delete(d)
-        elif any(d.slot == s and d.filename == file.filename for d in deal.documents):
+        elif any(d.slot == s and d.filename == safe_name for d in deal.documents):
             continue  # 同じファイルの重複登録は無視
-        doc = Document(deal_id=deal.id, slot=s, filename=file.filename,
+        doc = Document(deal_id=deal.id, slot=s, filename=safe_name,
                        stored_path=str(dest), status="uploaded",
                        identified_company=info.get("company"),
                        identified_label=info.get("label"),
@@ -339,9 +350,9 @@ def upload_document(deal_id: int, slot: str = Form("unclassified"), user: str = 
         docs.append(doc)
     db.flush()
     labels = "、".join(DOCUMENT_SLOTS.get(s, s) for s in slots)
-    add_history(db, deal, user, "資料アップロード", f"{file.filename}（{labels}）")
+    add_history(db, deal, user, "資料アップロード", f"{safe_name}（{labels}）")
     db.commit()
-    result = docs[0].to_dict() if docs else dict(filename=file.filename, slot=slots[0])
+    result = docs[0].to_dict() if docs else dict(filename=safe_name, slot=slots[0])
     result["slots"] = slots
     # 案件照合（社名の一致チェック）。対象会社が未設定（下書き）の場合は判定しない
     company = info.get("company") or ""
@@ -561,8 +572,12 @@ def update_inquiry(deal_id: int, inquiry_id: int, body: InquiryPatch,
             inquiry.resolved_at = None
     if body.resolution_note is not None:
         inquiry.resolution_note = body.resolution_note
-    add_history(db, deal, body.user,
-                "確認事項を更新",
-                f"「{inquiry.title}」を{'確認済み' if inquiry.status == 'resolved' else '未確認に戻す'}")
+    # 状態を変えていない（メモだけの更新）ときに状態変更として記録しない
+    if body.status is not None:
+        detail = (f"「{inquiry.title}」を"
+                  f"{'確認済みにした' if body.status == 'resolved' else '未確認に戻した'}")
+    else:
+        detail = f"「{inquiry.title}」の確認メモを更新"
+    add_history(db, deal, body.user, "確認事項を更新", detail)
     db.commit()
     return inquiry.to_dict()
