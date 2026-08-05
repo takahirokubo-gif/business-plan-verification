@@ -176,6 +176,9 @@ export function DealNew() {
     if (!dealId) return
     setAnalyzing(true)
     setError('')
+    // どのステップで失敗したかはローカル変数で持つ。state（analyzeStep）は
+    // この関数のクロージャに閉じ込められた古い値のままなので、catchで読むと空になる
+    let step = '案件情報の保存'
     try {
       await api.updateDeal(dealId, {
         name: form.name, deal_type: form.deal_type, borrower: form.borrower,
@@ -191,15 +194,18 @@ export function DealNew() {
       })
       // 3ステップに分けて順に実行する（1リクエストが実行時間の上限を超えないように）。
       // 途中で失敗しても、そこまでの結果は保存済みなので案件画面で確認できる
-      setAnalyzeStep('抽出（数値・定性情報・確認事項）')
+      step = '抽出（数値・定性情報・確認事項）'
+      setAnalyzeStep(step)
       await api.analyzeItems(dealId, userKey)
-      setAnalyzeStep('KPI構造の提案')
+      step = 'KPI構造の提案'
+      setAnalyzeStep(step)
       await api.analyzeKpi(dealId, userKey)
-      setAnalyzeStep('ストレスシナリオの提案')
+      step = 'ストレスシナリオの提案'
+      setAnalyzeStep(step)
       await api.analyzeScenarios(dealId, userKey)
       navigate(`/deals/${dealId}?tab=overview`)
     } catch (e) {
-      setError(`解析中に失敗しました（${analyzeStep}）：${(e as Error).message}`)
+      setError(`解析中に失敗しました（${step}）：${(e as Error).message}`)
       setAnalyzing(false)
     }
   }

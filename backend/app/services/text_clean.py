@@ -35,17 +35,26 @@ def clean_text(text: str | None) -> str | None:
     return out.strip()
 
 
+_HUMAN_KEYS = {"text_value", "detail", "note", "logic", "quote", "summary",
+               "impact", "cause", "change_text", "change_basis", "safeguards",
+               "questions", "title", "suggested_question", "value_text",
+               "before", "after", "label"}
+
+
+def _clean_human(v):
+    """人が読むフィールドの値を整形する。文字列の配列（questions等）にも対応する。"""
+    if isinstance(v, str):
+        return clean_text(v)
+    if isinstance(v, list):
+        return [clean_text(x) if isinstance(x, str) else clean_obj(x) for x in v]
+    return clean_obj(v)
+
+
 def clean_obj(obj):
     """dict/list を再帰的に走査し、人が読むフィールドだけを整形する。"""
-    human_keys = {"text_value", "detail", "note", "logic", "quote", "summary",
-                  "impact", "cause", "change_text", "change_basis", "safeguards",
-                  "questions", "title", "suggested_question", "value_text",
-                  "before", "after", "label"}
     if isinstance(obj, dict):
-        return {
-            k: (clean_text(v) if k in human_keys and isinstance(v, str) else clean_obj(v))
-            for k, v in obj.items()
-        }
+        return {k: (_clean_human(v) if k in _HUMAN_KEYS else clean_obj(v))
+                for k, v in obj.items()}
     if isinstance(obj, list):
         return [clean_obj(v) for v in obj]
     return obj
