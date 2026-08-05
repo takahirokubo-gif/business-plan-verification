@@ -168,10 +168,24 @@ class XlEvaluator:
         c1, r1 = coordinate_from_string(a.replace("$", ""))
         c2, r2 = coordinate_from_string(b.replace("$", ""))
         i1, i2 = column_index_from_string(c1), column_index_from_string(c2)
+        try:
+            ws = self.wb[sheet]
+        except KeyError:
+            raise ValueError(f"unknown sheet in SUM: {sheet}")
         total = 0.0
         for r in range(min(r1, r2), max(r1, r2) + 1):
             for i in range(min(i1, i2), max(i1, i2) + 1):
-                v = self.value(sheet, f"{get_column_letter(i)}{r}")
+                coord = f"{get_column_letter(i)}{r}"
+                v = self.value(sheet, coord)
                 if isinstance(v, (int, float)):
                     total += float(v)
+                    continue
+                raw = ws[coord].value
+                if isinstance(raw, str) and raw.startswith("="):
+                    # 数式セルが評価不能（未対応関数・参照切れ・循環参照）。
+                    # 部分和を「計算値」として返すと、実際より小さい値が
+                    # source_type=calculated（信頼できる値）としてAIに渡ってしまう。
+                    # 一意に定まらない以上、SUM全体を計算不能に倒す
+                    raise ValueError(f"unevaluable formula in SUM range: {sheet}!{coord}")
+                # 空セル・文字列定数はExcelのSUMと同様に無視する
         return total

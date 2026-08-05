@@ -9,9 +9,11 @@
 _MONEY_FACTORS = {
     "円": 1 / 1_000_000,
     "千円": 1 / 1_000,
+    "万円": 1 / 100,
     "百万円": 1.0,
     "百万": 1.0,
     "億円": 100.0,
+    "億": 100.0,
     "十億円": 1_000.0,
 }
 
@@ -39,8 +41,8 @@ def normalize_values(values: dict | None, unit: str | None) -> tuple[dict | None
     for year, v in values.items():
         if isinstance(v, (int, float)):
             converted = v * factor
-            # 浮動小数の表示ノイズを防ぐ（千円→百万円は小数3桁で十分に可逆）
-            out[year] = round(converted, 3)
+            # 浮動小数の表示ノイズを防ぐ（小数6桁あれば円→百万円でも1円単位まで可逆）
+            out[year] = round(converted, 6)
         else:
             out[year] = v
     return out, DISPLAY_MONEY_UNIT, unit

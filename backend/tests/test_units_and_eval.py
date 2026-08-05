@@ -24,6 +24,19 @@ def test_normalize_million_passthrough():
     assert source_unit is None
 
 
+def test_normalize_man_yen_to_million():
+    values, unit, source_unit = normalize_values({"FY26": 12_345}, "万円")
+    assert values == {"FY26": 123.45}
+    assert unit == "百万円"
+    assert source_unit == "万円"
+
+
+def test_normalize_yen_keeps_one_yen_precision():
+    values, _, source_unit = normalize_values({"FY26": 1_234_567}, "円")
+    assert values == {"FY26": 1.234567}
+    assert source_unit == "円"
+
+
 def test_normalize_non_money_unchanged():
     values, unit, source_unit = normalize_values({"FY26": 88}, "%")
     assert values == {"FY26": 88}
@@ -65,3 +78,35 @@ def test_evaluator_marks_broken_ref():
     assert ev.value("PL", "D9") is None
     assert ev.is_broken("PL", "D9")
     assert ("PL", "D9") in ev.broken
+
+
+def _sum_wb(a2_value):
+    """A1=1・A2=可変・A3=SUM(A1:A2) のブックを作る。"""
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "S"
+    ws["A1"] = 1
+    ws["A2"] = a2_value
+    ws["A3"] = "=SUM(A1:A2)"
+    return wb
+
+
+def test_sum_ignores_text_and_empty_cells():
+    """文字列定数・空セルはExcelのSUMと同じく無視する。"""
+    assert XlEvaluator(_sum_wb("メモ")).value("S", "A3") == 1.0
+    assert XlEvaluator(_sum_wb(None)).value("S", "A3") == 1.0
+    assert XlEvaluator(_sum_wb(2)).value("S", "A3") == 3.0
+
+
+def test_sum_with_unevaluable_formula_is_not_partial():
+    """未対応関数を含む数式セルがあるとき、部分和を返さず計算不能にする。
+
+    部分和を「計算値」として返すと、実際より小さい値が信頼できる値として
+    AIに渡ってしまうため。
+    """
+    assert XlEvaluator(_sum_wb("=IF(A1>0,10,0)")).value("S", "A3") is None
+
+
+def test_sum_with_broken_ref_is_not_partial():
+    """参照切れ（#REF!）を含む範囲も同様に計算不能にする。"""
+    assert XlEvaluator(_sum_wb("=#REF!B1")).value("S", "A3") is None
