@@ -15,7 +15,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 
 from .config import IS_SERVERLESS, SHARE_PASSWORD, SHARE_USER
-from .database import Base, SessionLocal, engine
+from .database import Base, SessionLocal, engine, ensure_schema
 from .extractors.factory import (
     anthropic_available,
     get_mode,
@@ -66,6 +66,8 @@ async def basic_auth_middleware(request: Request, call_next):
 
 def _seed_if_empty():
     Base.metadata.create_all(engine)
+    # 手元に前バージョンのDBファイルが残っている場合に不足列を補う
+    ensure_schema(engine)
     db = SessionLocal()
     try:
         if db.query(Deal).count() == 0:
