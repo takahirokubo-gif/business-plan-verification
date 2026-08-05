@@ -28,3 +28,4 @@ docs/stitch/output/*.zip
 
 # 実資料サンプル（実在社名・confidential 表記を含むため公開リポジトリには載せない）
 actual_data_sample/
+.env*
