@@ -38,10 +38,13 @@ class MockExtractor(Extractor):
         time.sleep(min(MOCK_DELAY_SECONDS, 2.0))
         return self._deal_info
 
-    # ---- 抽出（数値確定タブの入力）
-    def extract_items(self, deal: dict, documents: list[dict]) -> list[dict]:
+    # ---- 抽出（数値確定タブの入力）＋確認事項（照会）
+    def extract_items(self, deal: dict, documents: list[dict]) -> dict:
+        # 照会もfixtureから返す。ここを空にすると、シード済みデモ案件を
+        # モックで再解析したときにデモ用の照会が消えてしまう
         time.sleep(MOCK_DELAY_SECONDS)
-        return self._extraction["items"]
+        return dict(items=self._extraction["items"],
+                    inquiries=self._extraction.get("inquiries", []))
 
     # ---- KPIツリー提案
     def propose_kpi_tree(self, deal: dict, documents: list[dict]) -> dict:

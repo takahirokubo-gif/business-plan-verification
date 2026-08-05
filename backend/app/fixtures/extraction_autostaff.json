@@ -4582,5 +4582,33 @@
       },
       "mismatch": null
     }
+  ],
+  "inquiries": [
+    {
+      "category": "資料間矛盾",
+      "severity": "high",
+      "title": "のれん想定額がモデルと財務DDで不一致",
+      "detail": "財務モデルは5,500百万円（Assumptions）、財務DDは試算5,280百万円（p.31）で220百万円の差異。差異の主因は取引費用の取扱いと無形資産評価の前提の相違とみられ、最終PPAまでにどちらを前提とするかの確認が必要。",
+      "source": {
+        "file": "AutostaffChubu_Model_Base.xlsx",
+        "location": "Assumptions!D21",
+        "quote": "のれん想定額（暫定PPA前） 5,500,000",
+        "logic": "財務DD p.31の試算値5,280百万円と直接比較"
+      },
+      "suggested_question": "のれん想定額はモデル値5,500百万円と財務DD試算5,280百万円のどちらを前提としますか。差異220百万円の内訳をご教示ください。"
+    },
+    {
+      "category": "作成時点差",
+      "severity": "medium",
+      "title": "ティーザー記載EBITDAと確定値の時点差",
+      "detail": "スポンサー提示EBITDA（速報）1,585百万円に対し、財務DDの正常収益力EBITDAは1,620百万円（p.34）。ティーザー作成時点の速報値と確定値の時点差とみられる。",
+      "source": {
+        "file": "AutostaffChubu_Model_Base.xlsx",
+        "location": "Assumptions（ティーザー行）",
+        "quote": "スポンサー提示EBITDA（速報・ティーザー記載） 1,585,000",
+        "logic": "財務DD p.34の正常収益力EBITDA 1,620百万円と比較"
+      },
+      "suggested_question": "レバレッジ計算の分母は速報値1,585百万円ではなく確定値1,620百万円へ更新してよいですか。"
+    }
   ]
 }

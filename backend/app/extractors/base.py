@@ -37,8 +37,8 @@ class Extractor(ABC):
         すべての項目に根拠3点セット（参照ファイル・箇所・論理）を付ける。
 
         returns:
-          新形式 {"items": [...], "inquiries": [...]}（AnthropicExtractor）
-          旧形式 [...]（MockExtractor）。呼び出し側は両方を受け付ける
+          {"items": [...], "inquiries": [...]}
+          呼び出し側は旧形式（itemsのリストのみ）も後方互換で受け付ける
         """
 
     @abstractmethod
