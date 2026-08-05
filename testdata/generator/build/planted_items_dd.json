@@ -1,0 +1,47 @@
+[
+  {
+    "id": "D1",
+    "dataset": "A",
+    "file": "A_standard/DD_Report_統合版_オートスタッフ中部_A.pdf",
+    "sheet": "-",
+    "cell": "全73ページ",
+    "desc": "統合版DD（単一分冊・73ページ・図表68点・横置きスライド形式）",
+    "expect": "自動処理"
+  },
+  {
+    "id": "D2",
+    "dataset": "A",
+    "file": "A_standard/DD_Report_統合版_オートスタッフ中部_A.pdf",
+    "sheet": "2章/4章/5章/6章/9章",
+    "cell": "-",
+    "desc": "計画前提（稼働率・単価改定・CPA・採用人数）が複数章に分散して記載",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E6",
+    "dataset": "A",
+    "file": "A_standard/DD_Report_統合版_オートスタッフ中部_A.pdf",
+    "sheet": "全編",
+    "cell": "-",
+    "desc": "業界用語15語（稼働率・派遣単価・スプレッド・在籍登録スタッフ・稼働人数・採用単価（CPA）・リファラル・離職率・法定福利費率・労使協定方式・構内請負・コーディネーター・寮・送迎・早期離職率）",
+    "expect": "自動処理"
+  },
+  {
+    "id": "X2",
+    "dataset": "A",
+    "file": "A_standard/DD_Report_統合版_オートスタッフ中部_A.pdf",
+    "sheet": "-",
+    "cell": "-",
+    "desc": "単位系の統一：DD・Excelとも千円（月次試算表のみ円・ラベル明記）→資料間不一致0件",
+    "expect": "自動処理"
+  },
+  {
+    "id": "X3",
+    "dataset": "A",
+    "file": "A_standard/DD_Report_統合版_オートスタッフ中部_A.pdf",
+    "sheet": "7.6節",
+    "cell": "-",
+    "desc": "のれん想定額はExcel・DDとも5,500,000千円で一致（数値の食い違いなし）",
+    "expect": "自動処理"
+  }
+]

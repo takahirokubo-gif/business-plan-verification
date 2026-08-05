@@ -1,0 +1,758 @@
+[
+  {
+    "id": "E1",
+    "dataset": "A",
+    "file": "A_standard/AutostaffChubu_Model_A.xlsx",
+    "sheet": "-",
+    "cell": "-",
+    "desc": "PL・BS・CFが別シートの複数シート構成（Cover除き6シート以上・inp/calc/debt分離型）",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E1/E5",
+    "dataset": "A",
+    "file": "A_standard/AutostaffChubu_Model_A.xlsx",
+    "sheet": "PL/BS/CF/calc/inp",
+    "cell": "C4:N5",
+    "desc": "FY22A〜FY33Eの12期ヘッダー（実績A・予想Eサフィックス）と実績/計画区分行",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E3",
+    "dataset": "A",
+    "file": "A_standard/AutostaffChubu_Model_A.xlsx",
+    "sheet": "PL",
+    "cell": "N2",
+    "desc": "単位表記の位置ゆれ①：ヘッダー行右端「単位:千円」",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E3",
+    "dataset": "A",
+    "file": "A_standard/AutostaffChubu_Model_A.xlsx",
+    "sheet": "CF",
+    "cell": "A1",
+    "desc": "単位表記の位置ゆれ②：タイトル内「…（Projected C/F・千円）」",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E3",
+    "dataset": "A",
+    "file": "A_standard/AutostaffChubu_Model_A.xlsx",
+    "sheet": "BS",
+    "cell": "A2",
+    "desc": "単位表記の位置ゆれ③：A2セル「（単位：千円）」",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E4",
+    "dataset": "A",
+    "file": "A_standard/AutostaffChubu_Model_A.xlsx",
+    "sheet": "PL/BS/calc",
+    "cell": "B9,B21,B13,B23,B8",
+    "desc": "英語併記科目：営業利益（Operating Profit）・のれん（Goodwill）・純資産（Net Assets）・稼働率（Utilization）等",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E5",
+    "dataset": "A",
+    "file": "A_standard/AutostaffChubu_Model_A.xlsx",
+    "sheet": "PL/BS/CF/calc",
+    "cell": "C:D列",
+    "desc": "FY22〜23実績の新規作成（全期黒字・売上CAGR6.4%・貸借一致）",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E5",
+    "dataset": "A",
+    "file": "A_standard/AutostaffChubu_Model_A.xlsx",
+    "sheet": "PL/BS/CF/calc",
+    "cell": "M:N列",
+    "desc": "FY32〜33計画の新規作成（稼働率88%維持・単価改定+1%/年・FY33残額一括弁済）",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E6",
+    "dataset": "A",
+    "file": "A_standard/AutostaffChubu_Model_A.xlsx",
+    "sheet": "calc/月次試算表_FY26",
+    "cell": "-",
+    "desc": "業界用語（稼働率・派遣単価・在籍登録スタッフ・稼働人数・採用単価（CPA）・離職率・法定福利費率等）",
+    "expect": "自動処理"
+  },
+  {
+    "id": "符号規約",
+    "dataset": "A",
+    "file": "A_standard/AutostaffChubu_Model_A.xlsx",
+    "sheet": "PL",
+    "cell": "C11:N13",
+    "desc": "費用・返済・支払利息の負値表記＋SUM縦計算（実務モデルの符号規約）→符号の正規化が必要",
+    "expect": "自動処理"
+  },
+  {
+    "id": "入力色規約",
+    "dataset": "A",
+    "file": "A_standard/AutostaffChubu_Model_A.xlsx",
+    "sheet": "Cover",
+    "cell": "B12",
+    "desc": "青字＝入力セル・黒字＝数式セルの色規約（Coverに凡例記載）",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E2",
+    "dataset": "A",
+    "file": "A_standard/AutostaffChubu_Model_A.xlsx",
+    "sheet": "月次試算表_FY26",
+    "cell": "C7:N15",
+    "desc": "月次試算表（単位：円・A2ラベル明記）。12ヶ月合計＝年次PL FY26、3月末残高＝年次BS FY26",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E2",
+    "dataset": "A",
+    "file": "A_standard/AutostaffChubu_Model_A.xlsx",
+    "sheet": "月次試算表_FY26",
+    "cell": "D7,G7,L7",
+    "desc": "季節性：2025/05△6.0%・2025/08△6.5%・2026/01△7.0%（対他9ヶ月平均）",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E3",
+    "dataset": "A",
+    "file": "A_standard/AutostaffChubu_Model_A.xlsx",
+    "sheet": "debt",
+    "cell": "A2",
+    "desc": "単位表記の位置ゆれ④：英語表記「(Unit: JPY thousands)」",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E4",
+    "dataset": "A",
+    "file": "A_standard/AutostaffChubu_Model_A.xlsx",
+    "sheet": "debt",
+    "cell": "B6:B22",
+    "desc": "行ラベル英語100%（Beginning Balance / Mandatory Amortization等・銘柄別2ブロック）",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E1",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "-",
+    "cell": "-",
+    "desc": "PL・BS・CFが別シートの複数シート構成（Cover除き6シート以上・inp/calc/debt分離型）",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E1/E5",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "PL/BS/CF/calc/inp",
+    "cell": "C4:N5",
+    "desc": "FY22A〜FY33Eの12期ヘッダー（実績A・予想Eサフィックス）と実績/計画区分行",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E3",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "PL",
+    "cell": "N2",
+    "desc": "単位表記の位置ゆれ①：ヘッダー行右端「単位:千円」",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E3",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "CF",
+    "cell": "A1",
+    "desc": "単位表記の位置ゆれ②：タイトル内「…（Projected C/F・千円）」",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E3",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "BS",
+    "cell": "A2",
+    "desc": "単位表記の位置ゆれ③：A2セル「（単位：千円）」",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E4",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "PL/BS/calc",
+    "cell": "B9,B21,B13,B23,B8",
+    "desc": "英語併記科目：営業利益（Operating Profit）・のれん（Goodwill）・純資産（Net Assets）・稼働率（Utilization）等",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E5",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "PL/BS/CF/calc",
+    "cell": "C:D列",
+    "desc": "FY22〜23実績の新規作成（全期黒字・売上CAGR6.4%・貸借一致）",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E5",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "PL/BS/CF/calc",
+    "cell": "M:N列",
+    "desc": "FY32〜33計画の新規作成（稼働率88%維持・単価改定+1%/年・FY33残額一括弁済）",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E6",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "calc/月次試算表_FY26",
+    "cell": "-",
+    "desc": "業界用語（稼働率・派遣単価・在籍登録スタッフ・稼働人数・採用単価（CPA）・離職率・法定福利費率等）",
+    "expect": "自動処理"
+  },
+  {
+    "id": "符号規約",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "PL",
+    "cell": "C11:N13",
+    "desc": "費用・返済・支払利息の負値表記＋SUM縦計算（実務モデルの符号規約）→符号の正規化が必要",
+    "expect": "自動処理"
+  },
+  {
+    "id": "入力色規約",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "Cover",
+    "cell": "B12",
+    "desc": "青字＝入力セル・黒字＝数式セルの色規約（Coverに凡例記載）",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E2",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "月次試算表_FY26",
+    "cell": "シート全体",
+    "desc": "月次試算表に単位ラベル0件（円フル桁のみ）→単位の確認照会が必要",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "E7/X1",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "PL",
+    "cell": "B9",
+    "desc": "科目改称「売上高（Net Sales）」→「売上収益」（DD側呼称は「売上高」）",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "E7/X1",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "PL",
+    "cell": "B11",
+    "desc": "科目改称「スタッフ労務費（法定福利費込）」→「現業人件費（福利込）」（DD側呼称は「スタッフ労務費（法定福利費込）」）",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "E7/X1",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "PL",
+    "cell": "B25",
+    "desc": "科目改称「Adj. EBITDA」→「修正EBITDA」（DD側呼称は「EBITDA（正常収益力EBITDA）」）",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "E7/X1",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "BS",
+    "cell": "B8",
+    "desc": "科目改称「売上債権」→「売掛金等」（DD側呼称は「売上債権」）",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "E7/X1",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "BS",
+    "cell": "B9",
+    "desc": "科目改称「その他流動資産」→「その他流動」（DD側呼称は「その他流動資産」）",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "E7/X1",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "BS",
+    "cell": "B18",
+    "desc": "科目改称「仕入債務・未払費用」→「買掛・未払等」（DD側呼称は「仕入債務・未払費用」）",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "E8",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "PL_old",
+    "cell": "A1",
+    "desc": "旧版シート（「※使用しないこと」注記付き・旧科目名・全値0.965倍・旧符号規約の正値表記）",
+    "expect": "正シート・正ファイル識別"
+  },
+  {
+    "id": "E8",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "Scratch",
+    "cell": "B10:C10",
+    "desc": "作業用シート（誤った年間換算係数4,233,600を含む）",
+    "expect": "正シート・正ファイル識別"
+  },
+  {
+    "id": "E8",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "Sheet1",
+    "cell": "-",
+    "desc": "空シート",
+    "expect": "正シート・正ファイル識別"
+  },
+  {
+    "id": "E10",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "PL",
+    "cell": "P3:R11",
+    "desc": "本表グリッド外の補足小表①：単価改定履歴（FY27E〜33E・calcの派遣単価と整合）",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "E10",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "calc",
+    "cell": "B23:D28",
+    "desc": "本表グリッド外の補足小表②：採用チャネル内訳（合計1,180名＝FY26新規採用人数と整合）",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "E10",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "BS",
+    "cell": "P3:Q8",
+    "desc": "本表グリッド外の補足小表③：寮関連メモ（12棟・約900名収容・借上げ賃料210,000千円）",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "E11",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "PL",
+    "cell": "H28:N28",
+    "desc": "支払利息（FY27E〜33Eの7セル）が =#REF! の解決不能参照（debtシート分離に伴うリンク切れ）",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "X3",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "inp",
+    "cell": "D21",
+    "desc": "のれん想定額5,500,000千円（財務DD p.31の試算5,280百万円と220百万円の差異）",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "X3",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "inp",
+    "cell": "D28",
+    "desc": "ティーザー記載EBITDA 1,585,000千円（財務DD p.34の確定値1,620百万円と時点差）",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "X4",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "Scratch",
+    "cell": "B12",
+    "desc": "旧のれん試算5,656,000千円のメモ（現行5,500,000千円との時点差）",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "E1",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Sponsor_B.xlsx",
+    "sheet": "-",
+    "cell": "-",
+    "desc": "PL・BS・CFが別シートの複数シート構成（Cover除き6シート以上・inp/calc/debt分離型）",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E1/E5",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Sponsor_B.xlsx",
+    "sheet": "PL/BS/CF/calc/inp",
+    "cell": "C4:N5",
+    "desc": "FY22A〜FY33Eの12期ヘッダー（実績A・予想Eサフィックス）と実績/計画区分行",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E3",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Sponsor_B.xlsx",
+    "sheet": "PL",
+    "cell": "N2",
+    "desc": "単位表記の位置ゆれ①：ヘッダー行右端「単位:千円」",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E3",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Sponsor_B.xlsx",
+    "sheet": "CF",
+    "cell": "A1",
+    "desc": "単位表記の位置ゆれ②：タイトル内「…（Projected C/F・千円）」",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E3",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Sponsor_B.xlsx",
+    "sheet": "BS",
+    "cell": "A2",
+    "desc": "単位表記の位置ゆれ③：A2セル「（単位：千円）」",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E4",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Sponsor_B.xlsx",
+    "sheet": "PL/BS/calc",
+    "cell": "B9,B21,B13,B23,B8",
+    "desc": "英語併記科目：営業利益（Operating Profit）・のれん（Goodwill）・純資産（Net Assets）・稼働率（Utilization）等",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E5",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Sponsor_B.xlsx",
+    "sheet": "PL/BS/CF/calc",
+    "cell": "C:D列",
+    "desc": "FY22〜23実績の新規作成（全期黒字・売上CAGR6.4%・貸借一致）",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E5",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Sponsor_B.xlsx",
+    "sheet": "PL/BS/CF/calc",
+    "cell": "M:N列",
+    "desc": "FY32〜33計画の新規作成（稼働率88%維持・単価改定+1%/年・FY33残額一括弁済）",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E6",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Sponsor_B.xlsx",
+    "sheet": "calc/月次試算表_FY26",
+    "cell": "-",
+    "desc": "業界用語（稼働率・派遣単価・在籍登録スタッフ・稼働人数・採用単価（CPA）・離職率・法定福利費率等）",
+    "expect": "自動処理"
+  },
+  {
+    "id": "符号規約",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Sponsor_B.xlsx",
+    "sheet": "PL",
+    "cell": "C11:N13",
+    "desc": "費用・返済・支払利息の負値表記＋SUM縦計算（実務モデルの符号規約）→符号の正規化が必要",
+    "expect": "自動処理"
+  },
+  {
+    "id": "入力色規約",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Sponsor_B.xlsx",
+    "sheet": "Cover",
+    "cell": "B12",
+    "desc": "青字＝入力セル・黒字＝数式セルの色規約（Coverに凡例記載）",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E2",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Sponsor_B.xlsx",
+    "sheet": "月次試算表_FY26",
+    "cell": "シート全体",
+    "desc": "月次試算表に単位ラベル0件（円フル桁のみ）→単位の確認照会が必要",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "E7/X1",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Sponsor_B.xlsx",
+    "sheet": "PL",
+    "cell": "B9",
+    "desc": "科目改称「売上高（Net Sales）」→「売上収益」（DD側呼称は「売上高」）",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "E7/X1",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Sponsor_B.xlsx",
+    "sheet": "PL",
+    "cell": "B11",
+    "desc": "科目改称「スタッフ労務費（法定福利費込）」→「現業人件費（福利込）」（DD側呼称は「スタッフ労務費（法定福利費込）」）",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "E7/X1",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Sponsor_B.xlsx",
+    "sheet": "PL",
+    "cell": "B25",
+    "desc": "科目改称「Adj. EBITDA」→「修正EBITDA」（DD側呼称は「EBITDA（正常収益力EBITDA）」）",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "E7/X1",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Sponsor_B.xlsx",
+    "sheet": "BS",
+    "cell": "B8",
+    "desc": "科目改称「売上債権」→「売掛金等」（DD側呼称は「売上債権」）",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "E7/X1",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Sponsor_B.xlsx",
+    "sheet": "BS",
+    "cell": "B9",
+    "desc": "科目改称「その他流動資産」→「その他流動」（DD側呼称は「その他流動資産」）",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "E7/X1",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Sponsor_B.xlsx",
+    "sheet": "BS",
+    "cell": "B18",
+    "desc": "科目改称「仕入債務・未払費用」→「買掛・未払等」（DD側呼称は「仕入債務・未払費用」）",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "E8",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Sponsor_B.xlsx",
+    "sheet": "PL_old",
+    "cell": "A1",
+    "desc": "旧版シート（「※使用しないこと」注記付き・旧科目名・全値0.965倍・旧符号規約の正値表記）",
+    "expect": "正シート・正ファイル識別"
+  },
+  {
+    "id": "E8",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Sponsor_B.xlsx",
+    "sheet": "Scratch",
+    "cell": "B10:C10",
+    "desc": "作業用シート（誤った年間換算係数4,233,600を含む）",
+    "expect": "正シート・正ファイル識別"
+  },
+  {
+    "id": "E8",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Sponsor_B.xlsx",
+    "sheet": "Sheet1",
+    "cell": "-",
+    "desc": "空シート",
+    "expect": "正シート・正ファイル識別"
+  },
+  {
+    "id": "E10",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Sponsor_B.xlsx",
+    "sheet": "PL",
+    "cell": "P3:R11",
+    "desc": "本表グリッド外の補足小表①：単価改定履歴（FY27E〜33E・calcの派遣単価と整合）",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "E10",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Sponsor_B.xlsx",
+    "sheet": "calc",
+    "cell": "B23:D28",
+    "desc": "本表グリッド外の補足小表②：採用チャネル内訳（合計1,180名＝FY26新規採用人数と整合）",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "E10",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Sponsor_B.xlsx",
+    "sheet": "BS",
+    "cell": "P3:Q8",
+    "desc": "本表グリッド外の補足小表③：寮関連メモ（12棟・約900名収容・借上げ賃料210,000千円）",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "E11",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Sponsor_B.xlsx",
+    "sheet": "PL",
+    "cell": "H28:N28",
+    "desc": "支払利息（FY27E〜33Eの7セル）が =#REF! の解決不能参照（debtシート分離に伴うリンク切れ）",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "X3",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Sponsor_B.xlsx",
+    "sheet": "inp",
+    "cell": "D21",
+    "desc": "のれん想定額5,500,000千円（財務DD p.31の試算5,280百万円と220百万円の差異）",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "X3",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Sponsor_B.xlsx",
+    "sheet": "inp",
+    "cell": "D28",
+    "desc": "ティーザー記載EBITDA 1,585,000千円（財務DD p.34の確定値1,620百万円と時点差）",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "X4",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Sponsor_B.xlsx",
+    "sheet": "Scratch",
+    "cell": "B12",
+    "desc": "旧のれん試算5,656,000千円のメモ（現行5,500,000千円との時点差）",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "E9",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx ほか",
+    "sheet": "-",
+    "cell": "-",
+    "desc": "同一構造・同一科目名のケース違い2ファイル（Base_B/Sponsor_B・計画期の数値差分30セル以上）",
+    "expect": "正シート・正ファイル識別"
+  },
+  {
+    "id": "E11",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Debt_B.xlsx",
+    "sheet": "debt",
+    "cell": "C4:N19",
+    "desc": "分離されたデットスケジュール本体（英語ラベル・銘柄別2ブロック・FY33残額一括）",
+    "expect": "正シート・正ファイル識別"
+  },
+  {
+    "id": "X2",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx ほか",
+    "sheet": "-",
+    "cell": "-",
+    "desc": "単位系不一致：Excelは千円・DD4分冊は百万円",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "X4",
+    "dataset": "B",
+    "file": "B_hard/AutostaffChubu_Model_Base_B.xlsx",
+    "sheet": "PL",
+    "cell": "F9",
+    "desc": "丸め差：Excel FY25売上高13,363,127千円 vs 財務DD p.9「13,363百万円」",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "D3",
+    "dataset": "B",
+    "file": "B_hard/DD_Financial_オートスタッフ中部.pdf",
+    "sheet": "p.6/p.33",
+    "cell": "-",
+    "desc": "多段のQoE調整表（符号付き調整行＋脚注参照）",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "D4",
+    "dataset": "B",
+    "file": "B_hard/DD_*.pdf",
+    "sheet": "-",
+    "cell": "-",
+    "desc": "DD報告書が4分冊（事業・財務・法務・税務）に分かれている",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "D5",
+    "dataset": "B",
+    "file": "B_hard/DD_Business_オートスタッフ中部.pdf",
+    "sheet": "p.11/p.19",
+    "cell": "-",
+    "desc": "分冊間クロスリファレンス（事業DD→法務DD参照等）",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "D6",
+    "dataset": "B",
+    "file": "B_hard/DD_Legal_オートスタッフ中部.pdf",
+    "sheet": "p.12",
+    "cell": "-",
+    "desc": "三表に載らない簿外リスク：未払残業代の潜在債務 最大300百万円",
+    "expect": "検知して照会"
+  },
+  {
+    "id": "D1",
+    "dataset": "A",
+    "file": "A_standard/DD_Report_統合版_オートスタッフ中部_A.pdf",
+    "sheet": "-",
+    "cell": "全73ページ",
+    "desc": "統合版DD（単一分冊・73ページ・図表68点・横置きスライド形式）",
+    "expect": "自動処理"
+  },
+  {
+    "id": "D2",
+    "dataset": "A",
+    "file": "A_standard/DD_Report_統合版_オートスタッフ中部_A.pdf",
+    "sheet": "2章/4章/5章/6章/9章",
+    "cell": "-",
+    "desc": "計画前提（稼働率・単価改定・CPA・採用人数）が複数章に分散して記載",
+    "expect": "自動処理"
+  },
+  {
+    "id": "E6",
+    "dataset": "A",
+    "file": "A_standard/DD_Report_統合版_オートスタッフ中部_A.pdf",
+    "sheet": "全編",
+    "cell": "-",
+    "desc": "業界用語15語",
+    "expect": "自動処理"
+  },
+  {
+    "id": "X2",
+    "dataset": "A",
+    "file": "A_standard/DD_Report_統合版_オートスタッフ中部_A.pdf",
+    "sheet": "-",
+    "cell": "-",
+    "desc": "単位系の統一：DD・Excelとも千円（月次試算表のみ円・ラベル明記）→資料間不一致0件",
+    "expect": "自動処理"
+  },
+  {
+    "id": "X3",
+    "dataset": "A",
+    "file": "A_standard/DD_Report_統合版_オートスタッフ中部_A.pdf",
+    "sheet": "7.6節",
+    "cell": "-",
+    "desc": "のれん想定額はExcel・DDとも5,500,000千円で一致（数値の食い違いなし）",
+    "expect": "自動処理"
+  }
+]

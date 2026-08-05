@@ -1,0 +1,2689 @@
+{
+  "dataset": "B",
+  "deal_id": 5,
+  "model": {
+    "mode": "anthropic",
+    "anthropic_available": true,
+    "model": "claude-sonnet-4-6",
+    "models": [
+      {
+        "id": "claude-opus-5",
+        "display_name": "Claude Opus 5"
+      },
+      {
+        "id": "claude-sonnet-5",
+        "display_name": "Claude Sonnet 5"
+      },
+      {
+        "id": "claude-fable-5",
+        "display_name": "Claude Fable 5"
+      },
+      {
+        "id": "claude-opus-4-8",
+        "display_name": "Claude Opus 4.8"
+      },
+      {
+        "id": "claude-opus-4-7",
+        "display_name": "Claude Opus 4.7"
+      },
+      {
+        "id": "claude-sonnet-4-6",
+        "display_name": "Claude Sonnet 4.6"
+      },
+      {
+        "id": "claude-opus-4-6",
+        "display_name": "Claude Opus 4.6"
+      },
+      {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Claude Opus 4.5"
+      },
+      {
+        "id": "claude-haiku-4-5-20251001",
+        "display_name": "Claude Haiku 4.5"
+      },
+      {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Claude Sonnet 4.5"
+      },
+      {
+        "id": "claude-opus-4-1-20250805",
+        "display_name": "Claude Opus 4.1"
+      }
+    ]
+  },
+  "uploads": [
+    {
+      "id": 9,
+      "slot": "unclassified",
+      "slot_label": "種別未設定（その他資料）",
+      "filename": "AutostaffChubu_Model_Base_B.xlsx",
+      "status": "uploaded",
+      "identified_company": "株式会社オートスタッフ中部",
+      "identified_label": "財務モデル（オペレーティングモデル）― Base Case",
+      "identified_detail": "Coverシートに「株式会社オートスタッフ中部　財務モデル（オペレーティングモデル）」「ケース：Base Case（ベースケース）」と明記されており、ファイル名も「AutostaffChubu_Model_Base_B.xlsx」とBase Caseであることを示している。シート構成はinp（前提条件）・PL・BS・CF（財務三表）・calc（KPI計算）・debt（デットスケジュール）からなる典型的なLBO財務モデルであり、EV・エクイティ出資・シニアローン・金利・弁済スケジュール等のストラクチャー前提がinpシートに一元管理されている。DDレポートではなくExcel形式のオペレーティングモデルであることから、model_base（ベースケース財務モデル）と判定した。",
+      "uploaded_at": "2026-08-04T12:15:58.413045",
+      "slots": [
+        "unclassified"
+      ],
+      "company_match": null
+    },
+    {
+      "id": 10,
+      "slot": "unclassified",
+      "slot_label": "種別未設定（その他資料）",
+      "filename": "AutostaffChubu_Model_Sponsor_B.xlsx",
+      "status": "uploaded",
+      "identified_company": "株式会社オートスタッフ中部",
+      "identified_label": "財務モデル（スポンサーケース）",
+      "identified_detail": "Coverシートに「株式会社オートスタッフ中部　財務モデル（オペレーティングモデル）」および「ケース：Sponsor Case（スポンサーケース）」と明記されている。ファイル名にも \"Model_Sponsor\" の文字列を含む。inpシートにはEV・エクイティ・シニアローン等のLBOストラクチャー前提が入力されており、PL・BS・CF三表およびdebtスケジュール、calcシートで構成される典型的なLBO財務モデルのExcelファイルである。スポンサーが提示した強気前提（Sponsor Case）に基づく計画値を収録しており、ベースケースとは別建てのスポンサーケース専用モデルと判定した。",
+      "uploaded_at": "2026-08-04T12:16:07.881813",
+      "slots": [
+        "unclassified"
+      ],
+      "company_match": null
+    },
+    {
+      "id": 11,
+      "slot": "unclassified",
+      "slot_label": "種別未設定（その他資料）",
+      "filename": "AutostaffChubu_Debt_B.xlsx",
+      "status": "uploaded",
+      "identified_company": "AutostaffChubu",
+      "identified_label": "財務モデル（デットスケジュール）",
+      "identified_detail": "ファイル名「AutostaffChubu_Debt_B.xlsx」のシート「debt」には、シニアタームローンA（TIBOR+200bp、元本6,500,000千円）の期首残高・強制償還・期末残高・平均残高・金利・支払利息がFY22A〜FY33Eにわたって記載されており、また既存銀行ファシリティ（リファイナンス対象）の償還スケジュールも併記されている。ヘッダに「Project Gear — Senior Facility」とあり、LBOファイナンス組成を前提としたデットスケジュール専用シートと判断できる。DDレポートではなく、Excel形式のモデルファイル（財務モデルの一部）であることから、model_base（財務モデル）に分類する。",
+      "uploaded_at": "2026-08-04T12:16:16.272316",
+      "slots": [
+        "unclassified"
+      ],
+      "company_match": null
+    },
+    {
+      "id": 12,
+      "slot": "dd_business",
+      "slot_label": "DDレポート（事業）",
+      "filename": "DD_Business_オートスタッフ中部.pdf",
+      "status": "uploaded",
+      "identified_company": "株式会社オートスタッフ中部",
+      "identified_label": "事業デューデリジェンス報告書（株式会社オートスタッフ中部／Project Gear）",
+      "identified_detail": "表紙（p.1）に「事業デューデリジェンス報告書」と明記されており、対象会社は「株式会社オートスタッフ中部」、作成者は「桜田ビジネスアドバイザリー株式会社」（2026年6月20日付）。目次（p.3）の構成は「1.エグゼクティブサマリー／2.会社概要／3.市場環境／4.競合環境／5.事業モデルとKPI／6.顧客分析／7.SWOT分析と総合評価」と、事業領域のみを対象とした全7章構成となっており、財務・法務・税務等の他領域を包含する統合版DDには該当しない。したがって資料種別は事業DDと判定する。",
+      "uploaded_at": "2026-08-04T12:16:23.183822",
+      "slots": [
+        "dd_business"
+      ],
+      "company_match": null
+    },
+    {
+      "id": 13,
+      "slot": "dd_financial",
+      "slot_label": "DDレポート（財務）",
+      "filename": "DD_Financial_オートスタッフ中部.pdf",
+      "status": "uploaded",
+      "identified_company": "株式会社オートスタッフ中部",
+      "identified_label": "財務デューデリジェンス報告書",
+      "identified_detail": "表紙に「財務デューデリジェンス報告書」と明記されており、資料種別は財務DDと明確に判定できる。作成者は東都監査法人アドバイザリー株式会社、依頼者は日本橋キャピタルパートナーズ株式会社、対象会社は株式会社オートスタッフ中部（Project Gear）、作成日は2026年6月27日。目次構成はP/L分析・QoE分析・貸借対照表分析・キャッシュフロー分析・正常収益力の総括など財務領域に特化した章立てとなっており、法務・税務・事業など他領域の章は含まれていないことから、統合版DDではなく財務DD単独の報告書と判定する。",
+      "uploaded_at": "2026-08-04T12:16:29.677851",
+      "slots": [
+        "dd_financial"
+      ],
+      "company_match": null
+    },
+    {
+      "id": 14,
+      "slot": "dd_legal",
+      "slot_label": "DDレポート（法務）",
+      "filename": "DD_Legal_オートスタッフ中部.pdf",
+      "status": "uploaded",
+      "identified_company": "株式会社オートスタッフ中部",
+      "identified_label": "法務デューデリジェンス報告書",
+      "identified_detail": "表紙（p.1）に「法務デューデリジェンス報告書」と明記されており、作成者は霞ヶ関総合法律事務所（法律事務所）。目次（p.3）を確認すると、収録章は「許認可・重要契約・労務・訴訟・紛争・総括と提言」と法務領域に特化した構成となっており、財務・税務・事業等の領域は含まれていない。依頼者は日本橋キャピタルパートナーズ株式会社で、プロジェクトコード「Project Gear」のM&A取引検討のために作成された資料。以上より、本資料は法務DD単独レポートと判定する。",
+      "uploaded_at": "2026-08-04T12:16:36.040427",
+      "slots": [
+        "dd_legal"
+      ],
+      "company_match": null
+    },
+    {
+      "id": 15,
+      "slot": "dd_tax",
+      "slot_label": "DDレポート（税務）",
+      "filename": "DD_Tax_オートスタッフ中部.pdf",
+      "status": "uploaded",
+      "identified_company": "株式会社オートスタッフ中部",
+      "identified_label": "税務デューデリジェンス報告書",
+      "identified_detail": "p.1タイトルに「税務デューデリジェンス報告書」と明記され、目次構成も「税務申告・調査の状況」「繰越欠損金」「組織再編税制上の論点」「消費税・源泉所得税」等、税務領域に特化した章立てとなっている。作成者は大手町税理士法人（税務専門家）。事業・財務・法務等の他領域を包含する統合版DDではなく、税務単独の報告書と判定。対象会社は株式会社オートスタッフ中部、依頼者は日本橋キャピタルパートナーズ株式会社（Project Gear案件）。",
+      "uploaded_at": "2026-08-04T12:16:41.564216",
+      "slots": [
+        "dd_tax"
+      ],
+      "company_match": null
+    }
+  ],
+  "deal_info": {
+    "fields": {
+      "name": "株式会社オートスタッフ中部 LBO（Project Gear）",
+      "deal_type": "LBO",
+      "borrower": "株式会社ASホールディングス",
+      "target": "株式会社オートスタッフ中部",
+      "sponsor": "日本橋キャピタルパートナーズ株式会社",
+      "industry": "製造派遣・製造請負（人材サービス）",
+      "close_date": "2026-09-30",
+      "ev_mm": 12000,
+      "senior_mm": 6500,
+      "equity_mm": 5500,
+      "tenor_years": 7,
+      "sponsor_ebitda_mm": 1585,
+      "summary": "本件は、愛知県を中心とする東海地区で自動車メーカー・部品メーカー向け製造派遣・製造請負を主力とする株式会社オートスタッフ中部を、日本橋キャピタルパートナーズ株式会社が組成するSPC（株式会社ASホールディングス）を通じて買収するLBOである。創業者（青山誠一氏・株式85%保有）の後継者不在を背景とした事業承継型の取引であり、買収資金はエクイティ5,500百万円・シニアローン6,500百万円（7年・年間約定弁済650百万円）で構成される。クローズ想定は2026年9月末、EV12,000百万円（FY26実績EBITDAベース倍率7.4倍）であり、クロージング後にSPCと対象会社を合併することが予定されている。"
+    },
+    "sources": {
+      "name": "AutostaffChubu_Model_Base_B.xlsx／Coverシート B4（'Project Gear'）および B6（対象会社名）",
+      "deal_type": "DD_Financial_オートスタッフ中部.pdf／p.30（7.1節：LBOストラクチャーである旨の明記）",
+      "borrower": "DD_Financial_オートスタッフ中部.pdf／p.30（7.1節：「スポンサーが組成するSPC（株式会社ASホールディングス）が対象会社株式の100%を取得するLBOストラクチャーである」との記載）",
+      "target": "DD_Business_オートスタッフ中部.pdf／p.4（1.1節：「株式会社オートスタッフ中部」）",
+      "sponsor": "AutostaffChubu_Model_Base_B.xlsx／Coverシート B10（「作成：日本橋キャピタルパートナーズ株式会社」）。DD各報告書p.1の依頼者表示でも同一名称を確認。",
+      "industry": "DD_Business_オートスタッフ中部.pdf／p.4（1.1節：「自動車完成車メーカーおよび部品メーカー向けの製造派遣・製造請負を主力事業とする人材サービス会社」）",
+      "close_date": "AutostaffChubu_Model_Base_B.xlsx／inpシート B20・D20（「クローズ想定：2026年9月末」）。AutostaffChubu_Model_Sponsor_B.xlsx／inpシート B20・D20でも同値を確認。",
+      "ev_mm": "AutostaffChubu_Model_Base_B.xlsx／inpシート B13・D13 に記載値 12,000,000（単位：千円）。1,000で除して12,000百万円に換算。AutostaffChubu_Model_Sponsor_B.xlsx／inpシート D13でも同値（12,000,000千円）を確認。DD_Financial_オートスタッフ中部.pdf／p.30（7.1節：「エンタープライズ・バリュー（EV）12,000百万円」）とも一致。",
+      "senior_mm": "AutostaffChubu_Model_Base_B.xlsx／inpシート B15・D15 に記載値 6,500,000（単位：千円）。1,000で除して6,500百万円に換算。AutostaffChubu_Model_Sponsor_B.xlsx／inpシート D15でも同値を確認。DD_Financial_オートスタッフ中部.pdf／p.30（7.1節：「シニアローン6,500百万円」）とも一致。",
+      "equity_mm": "AutostaffChubu_Model_Base_B.xlsx／inpシート B14・D14 に記載値 5,500,000（単位：千円）。1,000で除して5,500百万円に換算。AutostaffChubu_Model_Sponsor_B.xlsx／inpシート D14でも同値を確認。DD_Financial_オートスタッフ中部.pdf／p.30（7.1節：「エクイティ出資5,500百万円」）とも一致。",
+      "tenor_years": "AutostaffChubu_Model_Base_B.xlsx／inpシート B17・D17（「ローン期間（年）：7」）。AutostaffChubu_Model_Sponsor_B.xlsx／inpシート D17でも同値を確認。AutostaffChubu_Debt_B.xlsx／debtシート B21（「Annual mandatory amortization of JPY 650,000 thousand; bullet repayment of the remaining balance in FY33」、FY27起算でFY33=7年）とも整合。",
+      "sponsor_ebitda_mm": "AutostaffChubu_Model_Base_B.xlsx／inpシート B28・D28 に記載値 1,585,000（「スポンサー提示EBITDA（速報・ティーザー記載）」・単位：千円）。1,000で除して1,585百万円に換算。AutostaffChubu_Model_Sponsor_B.xlsx／inpシート D28でも同値（1,585,000千円）を確認。",
+      "summary": "DD_Financial_オートスタッフ中部.pdf／p.30（7.1節・ストラクチャー概要）、DD_Business_オートスタッフ中部.pdf／p.4（1.1節・会社概要）、p.6（2.3節・後継者不在の背景）、AutostaffChubu_Model_Base_B.xlsx／inpシート各ストラクチャー項目を総合。"
+    },
+    "note": "【照会事項】借入人SPCの名称「株式会社ASホールディングス」は財務DDレポート（p.30）の記載に基づく。財務モデルExcelおよびその他のDDレポートにはSPC名の明示がないため、ファイル横断での名称の同一性について担当者による確認を推奨する。\n【参照切れについて】財務モデルのPLシート（両ケース）において、FY27E以降の支払利息セル（H28:N28）の数式が#REF!エラー（参照切れ）となっており、計画期間の支払利息はPLから取得できない。デットスケジュール（AutostaffChubu_Debt_B.xlsx／debtシート）では計算値（FY27：▲135,850千円～FY33：▲28,600千円）が存在するが、PLとの紐付きが断絶しており、財務三表の整合性確認が必要である。担当者への確認を推奨する。\n【旧前提の扱い】inpシートB30には「旧前提 v2.1：シニア7,000,000／金利2.4%　※現行版では使用しない」との注記があり、現行の抽出値（シニア6,500百万円・金利2.2%）はVer.4.0の現行前提に基づく。\n【EV換算】ev_mmはスキーマ指定に従い千円建て記載値12,000,000千円を1,000で除して12,000百万円に換算した。"
+  },
+  "analyze": {
+    "items": {
+      "status_code": 200,
+      "ok": true,
+      "body": {
+        "items": 36,
+        "inquiries": 6
+      }
+    },
+    "kpi": {
+      "status_code": 200,
+      "ok": true,
+      "body": {
+        "kpi_nodes": 28
+      }
+    },
+    "scenarios": {
+      "status_code": 200,
+      "ok": true,
+      "body": {
+        "scenarios": 3
+      }
+    }
+  },
+  "timing": [
+    {
+      "step": "下書き案件の作成",
+      "seconds": 0.1
+    },
+    {
+      "step": "アップロード＋種別判定: AutostaffChubu_Model_Base_B.xlsx",
+      "seconds": 10.2
+    },
+    {
+      "step": "アップロード＋種別判定: AutostaffChubu_Model_Sponsor_B.xlsx",
+      "seconds": 9.5
+    },
+    {
+      "step": "アップロード＋種別判定: AutostaffChubu_Debt_B.xlsx",
+      "seconds": 8.4
+    },
+    {
+      "step": "アップロード＋種別判定: DD_Business_オートスタッフ中部.pdf",
+      "seconds": 6.9
+    },
+    {
+      "step": "アップロード＋種別判定: DD_Financial_オートスタッフ中部.pdf",
+      "seconds": 6.5
+    },
+    {
+      "step": "アップロード＋種別判定: DD_Legal_オートスタッフ中部.pdf",
+      "seconds": 6.4
+    },
+    {
+      "step": "アップロード＋種別判定: DD_Tax_オートスタッフ中部.pdf",
+      "seconds": 5.5
+    },
+    {
+      "step": "案件情報の自動読み取り",
+      "seconds": 41.9
+    },
+    {
+      "step": "案件情報の確定（PATCH）",
+      "seconds": 0.0
+    },
+    {
+      "step": "AI解析: items",
+      "seconds": 305.6
+    },
+    {
+      "step": "AI解析: kpi",
+      "seconds": 123.4
+    },
+    {
+      "step": "AI解析: scenarios",
+      "seconds": 116.0
+    }
+  ],
+  "full": {
+    "deal": {
+      "id": 5,
+      "name": "株式会社オートスタッフ中部 LBO（Project Gear）",
+      "deal_type": "LBO",
+      "borrower": "株式会社ASホールディングス",
+      "target": "株式会社オートスタッフ中部",
+      "our_commitment_mm": null,
+      "review_status": "検討中",
+      "work_status": "数値確定中",
+      "owner": "shinsa",
+      "next_meeting_date": null,
+      "updated_at": "2026-08-04T12:26:28.437534",
+      "industry": "製造派遣・製造請負（人材サービス）",
+      "sponsor": "日本橋キャピタルパートナーズ株式会社",
+      "close_date": "2026-09-30",
+      "ev_mm": 12000,
+      "senior_mm": 6500,
+      "equity_mm": 5500,
+      "tenor_years": 7,
+      "sponsor_ebitda_mm": 1585,
+      "summary": "本件は、愛知県を中心とする東海地区で自動車メーカー・部品メーカー向け製造派遣・製造請負を主力とする株式会社オートスタッフ中部を、日本橋キャピタルパートナーズ株式会社が組成するSPC（株式会社ASホールディングス）を通じて買収するLBOである。創業者（青山誠一氏・株式85%保有）の後継者不在を背景とした事業承継型の取引であり、買収資金はエクイティ5,500百万円・シニアローン6,500百万円（7年・年間約定弁済650百万円）で構成される。クローズ想定は2026年9月末、EV12,000百万円（FY26実績EBITDAベース倍率7.4倍）であり、クロージング後にSPCと対象会社を合併することが予定されている。",
+      "initial_leverage": 4.1,
+      "ltv_pct": 54,
+      "kpi_status": "proposed",
+      "kpi_confirmed_by": null,
+      "kpi_confirmed_at": null,
+      "kpi_stale_reason": null,
+      "progress": {
+        "required": 30,
+        "confirmed": 0,
+        "held": 0,
+        "total": 36
+      },
+      "created_at": "2026-08-04T12:15:48.176137"
+    },
+    "documents": [
+      {
+        "id": 9,
+        "slot": "unclassified",
+        "slot_label": "種別未設定（その他資料）",
+        "filename": "AutostaffChubu_Model_Base_B.xlsx",
+        "status": "analyzed",
+        "identified_company": "株式会社オートスタッフ中部",
+        "identified_label": "財務モデル（オペレーティングモデル）― Base Case",
+        "identified_detail": "Coverシートに「株式会社オートスタッフ中部　財務モデル（オペレーティングモデル）」「ケース：Base Case（ベースケース）」と明記されており、ファイル名も「AutostaffChubu_Model_Base_B.xlsx」とBase Caseであることを示している。シート構成はinp（前提条件）・PL・BS・CF（財務三表）・calc（KPI計算）・debt（デットスケジュール）からなる典型的なLBO財務モデルであり、EV・エクイティ出資・シニアローン・金利・弁済スケジュール等のストラクチャー前提がinpシートに一元管理されている。DDレポートではなくExcel形式のオペレーティングモデルであることから、model_base（ベースケース財務モデル）と判定した。",
+        "uploaded_at": "2026-08-04T12:15:58.413045"
+      },
+      {
+        "id": 10,
+        "slot": "unclassified",
+        "slot_label": "種別未設定（その他資料）",
+        "filename": "AutostaffChubu_Model_Sponsor_B.xlsx",
+        "status": "analyzed",
+        "identified_company": "株式会社オートスタッフ中部",
+        "identified_label": "財務モデル（スポンサーケース）",
+        "identified_detail": "Coverシートに「株式会社オートスタッフ中部　財務モデル（オペレーティングモデル）」および「ケース：Sponsor Case（スポンサーケース）」と明記されている。ファイル名にも \"Model_Sponsor\" の文字列を含む。inpシートにはEV・エクイティ・シニアローン等のLBOストラクチャー前提が入力されており、PL・BS・CF三表およびdebtスケジュール、calcシートで構成される典型的なLBO財務モデルのExcelファイルである。スポンサーが提示した強気前提（Sponsor Case）に基づく計画値を収録しており、ベースケースとは別建てのスポンサーケース専用モデルと判定した。",
+        "uploaded_at": "2026-08-04T12:16:07.881813"
+      },
+      {
+        "id": 11,
+        "slot": "unclassified",
+        "slot_label": "種別未設定（その他資料）",
+        "filename": "AutostaffChubu_Debt_B.xlsx",
+        "status": "analyzed",
+        "identified_company": "AutostaffChubu",
+        "identified_label": "財務モデル（デットスケジュール）",
+        "identified_detail": "ファイル名「AutostaffChubu_Debt_B.xlsx」のシート「debt」には、シニアタームローンA（TIBOR+200bp、元本6,500,000千円）の期首残高・強制償還・期末残高・平均残高・金利・支払利息がFY22A〜FY33Eにわたって記載されており、また既存銀行ファシリティ（リファイナンス対象）の償還スケジュールも併記されている。ヘッダに「Project Gear — Senior Facility」とあり、LBOファイナンス組成を前提としたデットスケジュール専用シートと判断できる。DDレポートではなく、Excel形式のモデルファイル（財務モデルの一部）であることから、model_base（財務モデル）に分類する。",
+        "uploaded_at": "2026-08-04T12:16:16.272316"
+      },
+      {
+        "id": 12,
+        "slot": "dd_business",
+        "slot_label": "DDレポート（事業）",
+        "filename": "DD_Business_オートスタッフ中部.pdf",
+        "status": "analyzed",
+        "identified_company": "株式会社オートスタッフ中部",
+        "identified_label": "事業デューデリジェンス報告書（株式会社オートスタッフ中部／Project Gear）",
+        "identified_detail": "表紙（p.1）に「事業デューデリジェンス報告書」と明記されており、対象会社は「株式会社オートスタッフ中部」、作成者は「桜田ビジネスアドバイザリー株式会社」（2026年6月20日付）。目次（p.3）の構成は「1.エグゼクティブサマリー／2.会社概要／3.市場環境／4.競合環境／5.事業モデルとKPI／6.顧客分析／7.SWOT分析と総合評価」と、事業領域のみを対象とした全7章構成となっており、財務・法務・税務等の他領域を包含する統合版DDには該当しない。したがって資料種別は事業DDと判定する。",
+        "uploaded_at": "2026-08-04T12:16:23.183822"
+      },
+      {
+        "id": 13,
+        "slot": "dd_financial",
+        "slot_label": "DDレポート（財務）",
+        "filename": "DD_Financial_オートスタッフ中部.pdf",
+        "status": "analyzed",
+        "identified_company": "株式会社オートスタッフ中部",
+        "identified_label": "財務デューデリジェンス報告書",
+        "identified_detail": "表紙に「財務デューデリジェンス報告書」と明記されており、資料種別は財務DDと明確に判定できる。作成者は東都監査法人アドバイザリー株式会社、依頼者は日本橋キャピタルパートナーズ株式会社、対象会社は株式会社オートスタッフ中部（Project Gear）、作成日は2026年6月27日。目次構成はP/L分析・QoE分析・貸借対照表分析・キャッシュフロー分析・正常収益力の総括など財務領域に特化した章立てとなっており、法務・税務・事業など他領域の章は含まれていないことから、統合版DDではなく財務DD単独の報告書と判定する。",
+        "uploaded_at": "2026-08-04T12:16:29.677851"
+      },
+      {
+        "id": 14,
+        "slot": "dd_legal",
+        "slot_label": "DDレポート（法務）",
+        "filename": "DD_Legal_オートスタッフ中部.pdf",
+        "status": "analyzed",
+        "identified_company": "株式会社オートスタッフ中部",
+        "identified_label": "法務デューデリジェンス報告書",
+        "identified_detail": "表紙（p.1）に「法務デューデリジェンス報告書」と明記されており、作成者は霞ヶ関総合法律事務所（法律事務所）。目次（p.3）を確認すると、収録章は「許認可・重要契約・労務・訴訟・紛争・総括と提言」と法務領域に特化した構成となっており、財務・税務・事業等の領域は含まれていない。依頼者は日本橋キャピタルパートナーズ株式会社で、プロジェクトコード「Project Gear」のM&A取引検討のために作成された資料。以上より、本資料は法務DD単独レポートと判定する。",
+        "uploaded_at": "2026-08-04T12:16:36.040427"
+      },
+      {
+        "id": 15,
+        "slot": "dd_tax",
+        "slot_label": "DDレポート（税務）",
+        "filename": "DD_Tax_オートスタッフ中部.pdf",
+        "status": "analyzed",
+        "identified_company": "株式会社オートスタッフ中部",
+        "identified_label": "税務デューデリジェンス報告書",
+        "identified_detail": "p.1タイトルに「税務デューデリジェンス報告書」と明記され、目次構成も「税務申告・調査の状況」「繰越欠損金」「組織再編税制上の論点」「消費税・源泉所得税」等、税務領域に特化した章立てとなっている。作成者は大手町税理士法人（税務専門家）。事業・財務・法務等の他領域を包含する統合版DDではなく、税務単独の報告書と判定。対象会社は株式会社オートスタッフ中部、依頼者は日本橋キャピタルパートナーズ株式会社（Project Gear案件）。",
+        "uploaded_at": "2026-08-04T12:16:41.564216"
+      }
+    ],
+    "items": [
+      {
+        "id": 67,
+        "key": "business_summary",
+        "section": "定性情報",
+        "label": "事業要約",
+        "unit": "百万円",
+        "source_type": "extracted",
+        "source_unit": null,
+        "case_name": null,
+        "values": null,
+        "text_value": "株式会社オートスタッフ中部は、愛知県を中心とする東海地区において、自動車完成車メーカーおよび部品メーカー向けの製造派遣・製造請負を主力とする人材サービス会社である。1998年創業以来、東海地区の自動車産業特化を一貫して維持し、在籍登録スタッフ約3,800名（FY26末）・稼働率88%（業界水準80〜84%を上回る）・売上高14,160百万円（FY26）の地場大手である。収益構造は「稼働人数×月間平均稼働時間×派遣単価」に集約され、売上の98.8%が派遣料収入である。スタッフ寮12棟（約900名収容）・送迎バス18台・資格取得支援等の定着施策が高稼働率の基盤となっており、FY26の粗利率は20.1%、EBITDAマージンは11.4%である。本件は創業者（青山誠一氏・68歳・株式85%保有）の後継者不在を背景とした事業承継型LBOであり、スポンサーである日本橋キャピタルパートナーズがSPC（株式会社ASホールディングス）を通じて100%取得する。",
+        "effective_values": null,
+        "effective_text": "株式会社オートスタッフ中部は、愛知県を中心とする東海地区において、自動車完成車メーカーおよび部品メーカー向けの製造派遣・製造請負を主力とする人材サービス会社である。1998年創業以来、東海地区の自動車産業特化を一貫して維持し、在籍登録スタッフ約3,800名（FY26末）・稼働率88%（業界水準80〜84%を上回る）・売上高14,160百万円（FY26）の地場大手である。収益構造は「稼働人数×月間平均稼働時間×派遣単価」に集約され、売上の98.8%が派遣料収入である。スタッフ寮12棟（約900名収容）・送迎バス18台・資格取得支援等の定着施策が高稼働率の基盤となっており、FY26の粗利率は20.1%、EBITDAマージンは11.4%である。本件は創業者（青山誠一氏・68歳・株式85%保有）の後継者不在を背景とした事業承継型LBOであり、スポンサーである日本橋キャピタルパートナーズがSPC（株式会社ASホールディングス）を通じて100%取得する。",
+        "required": true,
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.4, p.14, p.17",
+          "quote": "在籍登録スタッフ約3,800名（2026年3月末時点）を擁する地場大手の地位を確立している。…売上構成：派遣料収入 98.8%／その他営業収入 1.2%（FY26）…粗利率 20.1%（FY26実績）",
+          "logic": "事業DDのエグゼクティブサマリー（p.4）および事業モデルKPI章（p.14）から対象会社の事業概要・主要指標を抽出し、財務DDの財務ハイライト（p.4）の数値で補完。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 68,
+        "key": "key_risks",
+        "section": "定性情報",
+        "label": "主要リスク",
+        "unit": "百万円",
+        "source_type": "extracted",
+        "source_unit": null,
+        "case_name": null,
+        "values": null,
+        "text_value": "（1）顧客集中リスク：上位3社への売上依存度62%（うち最大手A社28%）。A社基本契約は残存2年で、同社は電動化部品への工程転換・内製化を検討中。支配権変動時の事前通知条項（CoC条項）が存在し、クロージング前の事前説明が必要。（2）採用コスト上昇：採用単価（CPA）はFY24の225千円からFY26に250千円へ年率5%超で上昇。東海地区の製造工程職種の有効求人倍率は1.9倍（2026年5月）。（3）EVシフトに伴う中期的需要構成変化：対象会社の派遣先工程のうちパワートレイン系が約31%を占め、5〜10年の時間軸でスキル転換への対応力が問われる。（4）未払残業代の潜在債務（最大300百万円）：拠点コーディネーター職（約80名）の固定残業代制度の運用不備に起因。表明保証・特別補償・エスクロー等の契約上の手当てが必要。（5）のれん想定額の前提差異：財務DDによる試算5,280百万円に対しスポンサーモデルは5,500百万円を計上しており、220百万円の差異が存在。最終PPAまでに前提の摺り合わせが必要。（6）クロージング後の手元流動性：期首現金1,100百万円は月間給与支払約900百万円に対して最低限であり、コミットメントライン等のバックアップファシリティの設定が推奨される。",
+        "effective_values": null,
+        "effective_text": "（1）顧客集中リスク：上位3社への売上依存度62%（うち最大手A社28%）。A社基本契約は残存2年で、同社は電動化部品への工程転換・内製化を検討中。支配権変動時の事前通知条項（CoC条項）が存在し、クロージング前の事前説明が必要。（2）採用コスト上昇：採用単価（CPA）はFY24の225千円からFY26に250千円へ年率5%超で上昇。東海地区の製造工程職種の有効求人倍率は1.9倍（2026年5月）。（3）EVシフトに伴う中期的需要構成変化：対象会社の派遣先工程のうちパワートレイン系が約31%を占め、5〜10年の時間軸でスキル転換への対応力が問われる。（4）未払残業代の潜在債務（最大300百万円）：拠点コーディネーター職（約80名）の固定残業代制度の運用不備に起因。表明保証・特別補償・エスクロー等の契約上の手当てが必要。（5）のれん想定額の前提差異：財務DDによる試算5,280百万円に対しスポンサーモデルは5,500百万円を計上しており、220百万円の差異が存在。最終PPAまでに前提の摺り合わせが必要。（6）クロージング後の手元流動性：期首現金1,100百万円は月間給与支払約900百万円に対して最低限であり、コミットメントライン等のバックアップファシリティの設定が推奨される。",
+        "required": true,
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.5, p.18, p.10, p.19",
+          "quote": "上位3社への売上依存度は62%（うち最大手A社28%）…採用単価（CPA）はFY24の225千円からFY26には250千円へと年率5%超のペースで上昇…パワートレイン系が約31%を占めており…",
+          "logic": "事業DD（p.5発見事項サマリー、p.10 EVシフト、p.18 顧客集中、p.19 契約条件）、財務DD（p.5, p.25, p.31, p.32, p.36）、法務DD（p.12未払残業代）から各リスク要因を統合。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 69,
+        "key": "act_revenue",
+        "section": "過去実績PL",
+        "label": "売上高（実績）",
+        "unit": "百万円",
+        "source_type": "extracted",
+        "source_unit": "千円",
+        "case_name": null,
+        "values": {
+          "FY22": 11059.485,
+          "FY23": 11807.061,
+          "FY24": 12460.0,
+          "FY25": 13363.127,
+          "FY26": 14160.0
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY22": 11059.485,
+          "FY23": 11807.061,
+          "FY24": 12460.0,
+          "FY25": 13363.127,
+          "FY26": 14160.0
+        },
+        "effective_text": null,
+        "required": true,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:PL、行9（売上収益）、C9〜G9",
+          "quote": "C9:11059485 / D9:11807061 / E9:12460000 / F9:13363127 / G9:14160000",
+          "logic": "PLシートの「売上収益」（派遣事業売上＋その他営業収入の合計）をFY22A〜FY26A実績として抽出。財務DDのp.4 財務ハイライト表（百万円単位）の値（FY24:12,460・FY25:13,363・FY26:14,160百万円）とも整合。なお財務DDはFY24〜FY26の3期のみ掲載。FY22・FY23はモデルの実績列から取得。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 70,
+        "key": "act_op",
+        "section": "過去実績PL",
+        "label": "営業利益（実績）",
+        "unit": "百万円",
+        "source_type": "extracted",
+        "source_unit": "千円",
+        "case_name": null,
+        "values": {
+          "FY22": 1039.999,
+          "FY23": 1148.624,
+          "FY24": 1228.864,
+          "FY25": 1388.106,
+          "FY26": 1514.957
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY22": 1039.999,
+          "FY23": 1148.624,
+          "FY24": 1228.864,
+          "FY25": 1388.106,
+          "FY26": 1514.957
+        },
+        "effective_text": null,
+        "required": true,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:PL、行21（営業利益）、C21〜G21",
+          "quote": "C21:1039999 / D21:1148624 / E21:1228864 / F21:1388106 / G21:1514957",
+          "logic": "PLシートの「営業利益（Operating Profit）」行（行21）の計算値をFY22A〜FY26A実績として抽出。財務DDのp.13の営業利益表（FY24〜26）と対照しmismatchを記録した。"
+        },
+        "mismatch": {
+          "other_value": 1229000,
+          "other_file": "DD_Financial_オートスタッフ中部.pdf",
+          "other_location": "p.13（3.5 EBITDAの推移）",
+          "other_quote": "営業利益：FY24 1,229 / FY25 1,388 / FY26 1,515（百万円）",
+          "other_unit": "百万円",
+          "note": "財務DDはFY24営業利益を1,229百万円（1,229,000千円相当）と記載しているが、モデルPLシートの計算値は1,228,864千円であり、百万円単位への丸め差（136千円）により生じた表示上の相違と考えられる。FY25・FY26は両資料で整合。実質的な差異は軽微だが参考として記録する。"
+        },
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 71,
+        "key": "act_ebitda",
+        "section": "過去実績PL",
+        "label": "修正EBITDA（実績）",
+        "unit": "百万円",
+        "source_type": "extracted",
+        "source_unit": "千円",
+        "case_name": null,
+        "values": {
+          "FY22": 1123.999,
+          "FY23": 1236.624,
+          "FY24": 1320.864,
+          "FY25": 1486.106,
+          "FY26": 1620.0
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY22": 1123.999,
+          "FY23": 1236.624,
+          "FY24": 1320.864,
+          "FY25": 1486.106,
+          "FY26": 1620.0
+        },
+        "effective_text": null,
+        "required": true,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:PL、行25（修正EBITDA）、C25〜G25",
+          "quote": "C25:1123999 / D25:1236624 / E25:1320864 / F25:1486106 / G25:1620000",
+          "logic": "PLシートの「修正EBITDA」行（行25）＝営業利益＋減価償却費。財務DDの「EBITDA（報告ベース）」と同一定義（p.13注記「営業利益＋減価償却費」）に該当するとして名寄せ。"
+        },
+        "mismatch": {
+          "other_value": 1321000,
+          "other_file": "DD_Financial_オートスタッフ中部.pdf",
+          "other_location": "p.4（財務ハイライト）、p.13（3.5 EBITDAの推移）",
+          "other_quote": "EBITDA（報告ベース）：FY24 1,321 / FY25 1,486 / FY26 1,620（百万円）",
+          "other_unit": "百万円",
+          "note": "財務DDはFY24 EBITDAを1,321百万円と記載（モデル計算値は1,320,864千円）。百万円丸め差（136千円）による表示上の相違であり実質差異はない。財務DDは「修正EBITDA（営業利益＋減価償却費）」をEBITDAと呼称しており、モデルの「修正EBITDA」と同一定義と判断。"
+        },
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 72,
+        "key": "act_ni",
+        "section": "過去実績PL",
+        "label": "当期純利益（実績）",
+        "unit": "百万円",
+        "source_type": "extracted",
+        "source_unit": "千円",
+        "case_name": null,
+        "values": {
+          "FY22": 709.457,
+          "FY23": 785.306,
+          "FY24": 841.568,
+          "FY25": 952.411,
+          "FY26": 1040.835
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY22": 709.457,
+          "FY23": 785.306,
+          "FY24": 841.568,
+          "FY25": 952.411,
+          "FY26": 1040.835
+        },
+        "effective_text": null,
+        "required": true,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:PL、行32（当期純利益）、C32〜G32",
+          "quote": "C32:709457 / D32:785306 / E32:841568 / F32:952411 / G32:1040835",
+          "logic": "PLシートの「当期純利益」行（行32）の計算値をFY22A〜FY26A実績として抽出。財務DDのp.4 財務ハイライト（FY24:842・FY25:952・FY26:1,041百万円）と百万円丸め範囲内で整合。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 73,
+        "key": "act_cash",
+        "section": "過去実績BS",
+        "label": "現金及び預金（実績）",
+        "unit": "百万円",
+        "source_type": "extracted",
+        "source_unit": "千円",
+        "case_name": null,
+        "values": {
+          "FY22": 1150.0,
+          "FY23": 1300.0,
+          "FY24": 1420.0,
+          "FY25": 1640.0,
+          "FY26": 1850.0
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY22": 1150.0,
+          "FY23": 1300.0,
+          "FY24": 1420.0,
+          "FY25": 1640.0,
+          "FY26": 1850.0
+        },
+        "effective_text": null,
+        "required": true,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:BS、行7（現金及び預金）、C7〜G7",
+          "quote": "C7:1150000 / D7:1300000 / E7:1420000 / F7:1640000 / G7:1850000",
+          "logic": "BSシートの「現金及び預金」行（行7）の実績値FY22A〜FY26A。財務DDのp.21 B/S概観表（FY24:1,420・FY25:1,640・FY26:1,850百万円）と整合。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 74,
+        "key": "act_net_assets",
+        "section": "過去実績BS",
+        "label": "純資産（実績）",
+        "unit": "百万円",
+        "source_type": "extracted",
+        "source_unit": "千円",
+        "case_name": null,
+        "values": {
+          "FY22": 945.0,
+          "FY23": 1465.0,
+          "FY24": 1950.0,
+          "FY25": 2560.0,
+          "FY26": 3150.0
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY22": 945.0,
+          "FY23": 1465.0,
+          "FY24": 1950.0,
+          "FY25": 2560.0,
+          "FY26": 3150.0
+        },
+        "effective_text": null,
+        "required": true,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:BS、行23（純資産）、C23〜G23",
+          "quote": "C23:945000 / D23:1465000 / E23:1950000 / F23:2560000 / G23:3150000",
+          "logic": "BSシートの「純資産（Net Assets）」行（行23）の実績値FY22A〜FY26A。財務DDのp.4（FY24:1,950・FY25:2,560・FY26:3,150百万円）と整合。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 75,
+        "key": "act_debt",
+        "section": "過去実績BS",
+        "label": "有利子負債（実績）",
+        "unit": "百万円",
+        "source_type": "extracted",
+        "source_unit": "千円",
+        "case_name": null,
+        "values": {
+          "FY22": 500.0,
+          "FY23": 450.0,
+          "FY24": 400.0,
+          "FY25": 350.0,
+          "FY26": 300.0
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY22": 500.0,
+          "FY23": 450.0,
+          "FY24": 400.0,
+          "FY25": 350.0,
+          "FY26": 300.0
+        },
+        "effective_text": null,
+        "required": true,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:BS、行20（有利子負債）、C20〜G20",
+          "quote": "C20:500000 / D20:450000 / E20:400000 / F20:350000 / G20:300000",
+          "logic": "BSシートの「有利子負債」行（行20）の実績値FY22A〜FY26A。財務DDのp.4・p.25（FY24:400・FY25:350・FY26:300百万円）と整合。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 76,
+        "key": "act_fcf",
+        "section": "過去実績CF",
+        "label": "フリー・キャッシュフロー（実績）",
+        "unit": "百万円",
+        "source_type": "extracted",
+        "source_unit": "千円",
+        "case_name": null,
+        "values": {
+          "FY22": 890.0,
+          "FY23": 970.0,
+          "FY24": 1050.0,
+          "FY25": 1180.0,
+          "FY26": 1305.0
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY22": 890.0,
+          "FY23": 970.0,
+          "FY24": 1050.0,
+          "FY25": 1180.0,
+          "FY26": 1305.0
+        },
+        "effective_text": null,
+        "required": true,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:CF、行13（フリー・キャッシュフロー）、C13〜G13",
+          "quote": "C13:890000 / D13:970000 / E13:1050000 / F13:1180000 / G13:1305000",
+          "logic": "CFシートの「フリー・キャッシュフロー（FCF）」行（行13）＝営業CF＋投資CF。財務DDのp.27 CF推移表（FY24:1,050・FY25:1,180・FY26:1,305百万円）と整合。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 77,
+        "key": "normalized_ebitda",
+        "section": "正常収益力",
+        "label": "正常収益力EBITDA（FY26）",
+        "unit": "百万円",
+        "source_type": "extracted",
+        "source_unit": null,
+        "case_name": null,
+        "values": {
+          "FY24": 1327,
+          "FY25": 1484,
+          "FY26": 1620
+        },
+        "text_value": "FY26における正常収益力ベースのEBITDAは1,620百万円。一過性費用の足し戻し（+45百万円：採用DX外部委託+33百万円・本社増床移転+12百万円）と役員報酬適正化（△45百万円）が相殺し、報告EBITDAと同額。",
+        "effective_values": {
+          "FY24": 1327,
+          "FY25": 1484,
+          "FY26": 1620
+        },
+        "effective_text": "FY26における正常収益力ベースのEBITDAは1,620百万円。一過性費用の足し戻し（+45百万円：採用DX外部委託+33百万円・本社増床移転+12百万円）と役員報酬適正化（△45百万円）が相殺し、報告EBITDAと同額。",
+        "required": true,
+        "evidence": {
+          "file": "DD_Financial_オートスタッフ中部.pdf",
+          "location": "p.19（4.3 EBITDAブリッジ）、p.33（8.1 調整項目一覧）、p.34（8.2 結論）",
+          "quote": "正常収益力EBITDA（FY26）1,620…FY24：1,327百万円・FY25：1,484百万円…一過性費用の足し戻し（+45百万円）と役員報酬適正化（△45百万円）が相殺し、報告EBITDAと同額",
+          "logic": "財務DDのp.19 EBITDAブリッジ・p.33 8.1調整一覧・p.34 8.2結論から直接抽出。3年分の正常収益力EBITDAを記録。単位は百万円（DDレポートの表記のまま）。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 78,
+        "key": "base_revenue",
+        "section": "Baseケース計画PL",
+        "label": "売上収益（Baseケース計画）",
+        "unit": "百万円",
+        "source_type": "calculated",
+        "source_unit": "千円",
+        "case_name": "base",
+        "values": {
+          "FY27": 14890.0,
+          "FY28": 15453.975,
+          "FY29": 16004.574,
+          "FY30": 16574.714,
+          "FY31": 17148.601,
+          "FY32": 17730.552,
+          "FY33": 18325.059
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY27": 14890.0,
+          "FY28": 15453.975,
+          "FY29": 16004.574,
+          "FY30": 16574.714,
+          "FY31": 17148.601,
+          "FY32": 17730.552,
+          "FY33": 18325.059
+        },
+        "effective_text": null,
+        "required": true,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:PL、行9（売上収益）、H9〜N9",
+          "quote": "H9:14890000 / I9:15453975 / J9:16004574 / K9:16574714 / L9:17148601 / M9:17730552 / N9:18325059",
+          "logic": "Base Caseファイルのカバーシート（B8）で「ケース：Base Case」と明示。PLシート行9の売上収益（派遣事業売上＋その他営業収入）の計算値をFY27E〜FY33E全期間分抽出。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 79,
+        "key": "base_op",
+        "section": "Baseケース計画PL",
+        "label": "営業利益（Baseケース計画）",
+        "unit": "百万円",
+        "source_type": "calculated",
+        "source_unit": "千円",
+        "case_name": "base",
+        "values": {
+          "FY27": 1636.3,
+          "FY28": 1720.071,
+          "FY29": 1803.205,
+          "FY30": 1896.064,
+          "FY31": 1989.677,
+          "FY32": 2084.966,
+          "FY33": 2182.893
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY27": 1636.3,
+          "FY28": 1720.071,
+          "FY29": 1803.205,
+          "FY30": 1896.064,
+          "FY31": 1989.677,
+          "FY32": 2084.966,
+          "FY33": 2182.893
+        },
+        "effective_text": null,
+        "required": true,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:PL、行21（営業利益）、H21〜N21",
+          "quote": "H21:1636300 / I21:1720071 / J21:1803205 / K21:1896064 / L21:1989677 / M21:2084966 / N21:2182893",
+          "logic": "Base CaseファイルPLシート行21の計算値。FY27E〜FY33E全期間。財務DDのp.34でFY27計画EBITDAベースケース1,750百万円が言及されており、本値（1,636,300千円+減価償却費113,700千円=1,750,000千円）と整合。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 80,
+        "key": "base_ebitda",
+        "section": "Baseケース計画PL",
+        "label": "修正EBITDA（Baseケース計画）",
+        "unit": "百万円",
+        "source_type": "calculated",
+        "source_unit": "千円",
+        "case_name": "base",
+        "values": {
+          "FY27": 1750.0,
+          "FY28": 1835.771,
+          "FY29": 1920.905,
+          "FY30": 2015.764,
+          "FY31": 2111.377,
+          "FY32": 2208.666,
+          "FY33": 2308.593
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY27": 1750.0,
+          "FY28": 1835.771,
+          "FY29": 1920.905,
+          "FY30": 2015.764,
+          "FY31": 2111.377,
+          "FY32": 2208.666,
+          "FY33": 2308.593
+        },
+        "effective_text": null,
+        "required": true,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:PL、行25（修正EBITDA）、H25〜N25",
+          "quote": "H25:1750000 / I25:1835771 / J25:1920905 / K25:2015764 / L25:2111377 / M25:2208666 / N25:2308593",
+          "logic": "Base CaseファイルPLシート行25（修正EBITDA＝営業利益＋減価償却費）の計算値。FY27E〜FY33E全期間。"
+        },
+        "mismatch": {
+          "other_value": 1750,
+          "other_file": "DD_Financial_オートスタッフ中部.pdf",
+          "other_location": "p.34（8.2 結論：正常収益力EBITDA）",
+          "other_quote": "スポンサー提出モデルのFY27計画EBITDA（ベースケース1,750百万円）",
+          "other_unit": "百万円",
+          "note": "財務DDがBaseケースFY27計画EBITDAを1,750百万円と明記しており、モデルの1,750,000千円と完全一致。FY28〜FY33についてはDDに計画値の掲載なし。"
+        },
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 81,
+        "key": "base_ni",
+        "section": "Baseケース計画PL",
+        "label": "当期純利益（Baseケース計画）",
+        "unit": "百万円",
+        "source_type": "extracted",
+        "source_unit": "千円",
+        "case_name": "base",
+        "values": {
+          "FY27": 1039.45,
+          "FY28": 1107.119,
+          "FY29": 1174.349,
+          "FY30": 1248.289,
+          "FY31": 1322.749,
+          "FY32": 1398.365,
+          "FY33": 1490.602
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY27": 1039.45,
+          "FY28": 1107.119,
+          "FY29": 1174.349,
+          "FY30": 1248.289,
+          "FY31": 1322.749,
+          "FY32": 1398.365,
+          "FY33": 1490.602
+        },
+        "effective_text": null,
+        "required": true,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:PL、行32（当期純利益）、H32〜N32",
+          "quote": "H32:1039450 / I32:1107119 / J32:1174349 / K32:1248289 / L32:1322749 / M32:1398365 / N32:1490602",
+          "logic": "Base CaseファイルPLシート行32の記載値（FY27以降は直接入力値）。FY27〜FY33の全計画年度を抽出。なお支払利息セル（H28〜N28）が#REF!エラーのため経常利益・税引後純利益は手入力値が残存しており、これらはデットスケジュールファイルの利息計算値と整合しない可能性がある（照会参照）。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 82,
+        "key": "base_cash",
+        "section": "Baseケース計画BS",
+        "label": "現金及び預金（Baseケース計画）",
+        "unit": "百万円",
+        "source_type": "extracted",
+        "source_unit": "千円",
+        "case_name": "base",
+        "values": {
+          "FY27": 1457.15,
+          "FY28": 1860.969,
+          "FY29": 2335.018,
+          "FY30": 2883.007,
+          "FY31": 3506.456,
+          "FY32": 4206.521,
+          "FY33": 3049.823
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY27": 1457.15,
+          "FY28": 1860.969,
+          "FY29": 2335.018,
+          "FY30": 2883.007,
+          "FY31": 3506.456,
+          "FY32": 4206.521,
+          "FY33": 3049.823
+        },
+        "effective_text": null,
+        "required": true,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:BS、行7（現金及び預金）、H7〜N7",
+          "quote": "H7:1457150 / I7:1860969 / J7:2335018 / K7:2883007 / L7:3506456 / M7:4206521 / N7:3049823",
+          "logic": "Base CaseファイルBSシート行7の記載値。FY33はシニアローン一括返済により現金が大幅減少。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 83,
+        "key": "base_net_assets",
+        "section": "Baseケース計画BS",
+        "label": "純資産（Baseケース計画）",
+        "unit": "百万円",
+        "source_type": "extracted",
+        "source_unit": "千円",
+        "case_name": "base",
+        "values": {
+          "FY27": 2749.45,
+          "FY28": 3856.569,
+          "FY29": 5030.918,
+          "FY30": 6279.207,
+          "FY31": 7601.956,
+          "FY32": 9000.321,
+          "FY33": 10490.923
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY27": 2749.45,
+          "FY28": 3856.569,
+          "FY29": 5030.918,
+          "FY30": 6279.207,
+          "FY31": 7601.956,
+          "FY32": 9000.321,
+          "FY33": 10490.923
+        },
+        "effective_text": null,
+        "required": true,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:BS、行23（純資産）、H23〜N23",
+          "quote": "H23:2749450 / I23:3856569 / J23:5030918 / K23:6279207 / L23:7601956 / M23:9000321 / N23:10490923",
+          "logic": "Base CaseファイルBSシート行23の記載値。FY27以降は買収後連結（のれん5,500,000千円計上・買収時調整を純資産に含む）。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 84,
+        "key": "base_fcf",
+        "section": "Baseケース計画CF",
+        "label": "フリー・キャッシュフロー（Baseケース計画）",
+        "unit": "百万円",
+        "source_type": "calculated",
+        "source_unit": "千円",
+        "case_name": "base",
+        "values": {
+          "FY27": 997.15,
+          "FY28": 1053.819,
+          "FY29": 1124.049,
+          "FY30": 1197.989,
+          "FY31": 1273.449,
+          "FY32": 1350.065,
+          "FY33": 1443.302
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY27": 997.15,
+          "FY28": 1053.819,
+          "FY29": 1124.049,
+          "FY30": 1197.989,
+          "FY31": 1273.449,
+          "FY32": 1350.065,
+          "FY33": 1443.302
+        },
+        "effective_text": null,
+        "required": true,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:CF、行13（フリー・キャッシュフロー）、H13〜N13",
+          "quote": "H13:997150 / I13:1053819 / J13:1124049 / K13:1197989 / L13:1273449 / M13:1350065 / N13:1443302",
+          "logic": "Base CaseファイルCFシート行13（FCF＝営業CF＋投資CF）の計算値。FY27E〜FY33E全期間。財務DDのp.28でFY27計画FCFを「900〜1,100百万円の水準」と言及しており、997,150千円はこのレンジ内。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 85,
+        "key": "sponsor_revenue",
+        "section": "Sponsorケース計画PL",
+        "label": "売上収益（Sponsorケース計画）",
+        "unit": "百万円",
+        "source_type": "calculated",
+        "source_unit": "千円",
+        "case_name": "sponsor",
+        "values": {
+          "FY27": 15266.687,
+          "FY28": 16336.323,
+          "FY29": 17523.093,
+          "FY30": 18650.744,
+          "FY31": 19723.104,
+          "FY32": 20839.978,
+          "FY33": 21994.131
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY27": 15266.687,
+          "FY28": 16336.323,
+          "FY29": 17523.093,
+          "FY30": 18650.744,
+          "FY31": 19723.104,
+          "FY32": 20839.978,
+          "FY33": 21994.131
+        },
+        "effective_text": null,
+        "required": true,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Sponsor_B.xlsx",
+          "location": "シート:PL、行9（売上収益）、H9〜N9",
+          "quote": "H9:15266687 / I9:16336323 / J9:17523093 / K9:18650744 / L9:19723104 / M9:20839978 / N9:21994131",
+          "logic": "Sponsor CaseファイルのカバーシートB8で「ケース：Sponsor Case（スポンサーケース）」と明示。PLシート行9の計算値をFY27E〜FY33E全期間分抽出。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 86,
+        "key": "sponsor_op",
+        "section": "Sponsorケース計画PL",
+        "label": "営業利益（Sponsorケース計画）",
+        "unit": "百万円",
+        "source_type": "calculated",
+        "source_unit": "千円",
+        "case_name": "sponsor",
+        "values": {
+          "FY27": 1785.156,
+          "FY28": 2070.671,
+          "FY29": 2393.365,
+          "FY30": 2712.324,
+          "FY31": 3038.66,
+          "FY32": 3396.786,
+          "FY33": 3779.468
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY27": 1785.156,
+          "FY28": 2070.671,
+          "FY29": 2393.365,
+          "FY30": 2712.324,
+          "FY31": 3038.66,
+          "FY32": 3396.786,
+          "FY33": 3779.468
+        },
+        "effective_text": null,
+        "required": true,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Sponsor_B.xlsx",
+          "location": "シート:PL、行21（営業利益）、H21〜N21",
+          "quote": "H21:1785156 / I21:2070671 / J21:2393365 / K21:2712324 / L21:3038660 / M21:3396786 / N21:3779468",
+          "logic": "Sponsor CaseファイルPLシート行21の計算値。FY27E〜FY33E全期間。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 87,
+        "key": "sponsor_ebitda",
+        "section": "Sponsorケース計画PL",
+        "label": "修正EBITDA（Sponsorケース計画）",
+        "unit": "百万円",
+        "source_type": "calculated",
+        "source_unit": "千円",
+        "case_name": "sponsor",
+        "values": {
+          "FY27": 1898.856,
+          "FY28": 2188.371,
+          "FY29": 2515.065,
+          "FY30": 2838.024,
+          "FY31": 3168.36,
+          "FY32": 3530.486,
+          "FY33": 3917.168
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY27": 1898.856,
+          "FY28": 2188.371,
+          "FY29": 2515.065,
+          "FY30": 2838.024,
+          "FY31": 3168.36,
+          "FY32": 3530.486,
+          "FY33": 3917.168
+        },
+        "effective_text": null,
+        "required": true,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Sponsor_B.xlsx",
+          "location": "シート:PL、行25（修正EBITDA）、H25〜N25",
+          "quote": "H25:1898856 / I25:2188371 / J25:2515065 / K25:2838024 / L25:3168360 / M25:3530486 / N25:3917168",
+          "logic": "Sponsor CaseファイルPLシート行25（修正EBITDA＝営業利益＋減価償却費）の計算値。FY27E〜FY33E全期間。BaseケースFY27 1,750,000千円に対しSponsorケースFY27 1,898,856千円と+148,856千円上振れ。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 88,
+        "key": "sponsor_ni",
+        "section": "Sponsorケース計画PL",
+        "label": "当期純利益（Sponsorケース計画）",
+        "unit": "百万円",
+        "source_type": "extracted",
+        "source_unit": "千円",
+        "case_name": "sponsor",
+        "values": {
+          "FY27": 1142.161,
+          "FY28": 1349.033,
+          "FY29": 1581.559,
+          "FY30": 1811.508,
+          "FY31": 2046.547,
+          "FY32": 2303.521,
+          "FY33": 2592.239
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY27": 1142.161,
+          "FY28": 1349.033,
+          "FY29": 1581.559,
+          "FY30": 1811.508,
+          "FY31": 2046.547,
+          "FY32": 2303.521,
+          "FY33": 2592.239
+        },
+        "effective_text": null,
+        "required": true,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Sponsor_B.xlsx",
+          "location": "シート:PL、行32（当期純利益）、H32〜N32",
+          "quote": "H32:1142161 / I32:1349033 / J32:1581559 / K32:1811508 / L32:2046547 / M32:2303521 / N32:2592239",
+          "logic": "Sponsor CaseファイルPLシート行32の記載値（FY27以降は直接入力値）。FY27〜FY33全期間。支払利息行に同様の#REF!エラーが存在するため純利益は直接入力値が残存（照会参照）。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 89,
+        "key": "sponsor_cash",
+        "section": "Sponsorケース計画BS",
+        "label": "現金及び預金（Sponsorケース計画）",
+        "unit": "百万円",
+        "source_type": "extracted",
+        "source_unit": "千円",
+        "case_name": "sponsor",
+        "values": {
+          "FY27": 1523.861,
+          "FY28": 2113.594,
+          "FY29": 2930.853,
+          "FY30": 3989.061,
+          "FY31": 5292.308,
+          "FY32": 6852.529,
+          "FY33": 6749.468
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY27": 1523.861,
+          "FY28": 2113.594,
+          "FY29": 2930.853,
+          "FY30": 3989.061,
+          "FY31": 5292.308,
+          "FY32": 6852.529,
+          "FY33": 6749.468
+        },
+        "effective_text": null,
+        "required": true,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Sponsor_B.xlsx",
+          "location": "シート:BS、行7（現金及び預金）、H7〜N7",
+          "quote": "H7:1523861 / I7:2113594 / J7:2930853 / K7:3989061 / L7:5292308 / M7:6852529 / N7:6749468",
+          "logic": "Sponsor CaseファイルBSシート行7の記載値。FY27〜FY33全期間。Baseより現金蓄積が大きく、FY32末に6,852,529千円に達する。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 90,
+        "key": "sponsor_net_assets",
+        "section": "Sponsorケース計画BS",
+        "label": "純資産（Sponsorケース計画）",
+        "unit": "百万円",
+        "source_type": "extracted",
+        "source_unit": "千円",
+        "case_name": "sponsor",
+        "values": {
+          "FY27": 2852.161,
+          "FY28": 4201.194,
+          "FY29": 5782.753,
+          "FY30": 7594.261,
+          "FY31": 9640.808,
+          "FY32": 11944.329,
+          "FY33": 14536.568
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY27": 2852.161,
+          "FY28": 4201.194,
+          "FY29": 5782.753,
+          "FY30": 7594.261,
+          "FY31": 9640.808,
+          "FY32": 11944.329,
+          "FY33": 14536.568
+        },
+        "effective_text": null,
+        "required": true,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Sponsor_B.xlsx",
+          "location": "シート:BS、行23（純資産）、H23〜N23",
+          "quote": "H23:2852161 / I23:4201194 / J23:5782753 / K23:7594261 / L23:9640808 / M23:11944329 / N23:14536568",
+          "logic": "Sponsor CaseファイルBSシート行23の記載値。FY27以降は買収後連結（のれん5,500,000千円計上）。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 91,
+        "key": "sponsor_fcf",
+        "section": "Sponsorケース計画CF",
+        "label": "フリー・キャッシュフロー（Sponsorケース計画）",
+        "unit": "百万円",
+        "source_type": "calculated",
+        "source_unit": "千円",
+        "case_name": "sponsor",
+        "values": {
+          "FY27": 1063.861,
+          "FY28": 1239.733,
+          "FY29": 1467.259,
+          "FY30": 1708.208,
+          "FY31": 1953.247,
+          "FY32": 2210.221,
+          "FY33": 2496.939
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY27": 1063.861,
+          "FY28": 1239.733,
+          "FY29": 1467.259,
+          "FY30": 1708.208,
+          "FY31": 1953.247,
+          "FY32": 2210.221,
+          "FY33": 2496.939
+        },
+        "effective_text": null,
+        "required": true,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Sponsor_B.xlsx",
+          "location": "シート:CF、行13（フリー・キャッシュフロー）、H13〜N13",
+          "quote": "H13:1063861 / I13:1239733 / J13:1467259 / K13:1708208 / L13:1953247 / M13:2210221 / N13:2496939",
+          "logic": "Sponsor CaseファイルCFシート行13（FCF＝営業CF＋投資CF）の計算値。FY27E〜FY33E全期間。Baseより設備投資額が大きい（年140百万円 vs 年120百万円）が、利益増により上回るFCF水準。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 92,
+        "key": "ev",
+        "section": "ストラクチャー",
+        "label": "エンタープライズ・バリュー（EV）",
+        "unit": "百万円",
+        "source_type": "extracted",
+        "source_unit": "千円",
+        "case_name": null,
+        "values": {
+          "FY26": 12000.0
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY26": 12000.0
+        },
+        "effective_text": null,
+        "required": true,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:inp、B13〜D13",
+          "quote": "エンタープライズ・バリュー（EV）: 12000000",
+          "logic": "inpシートのストラクチャーセクションから抽出。Sponsorケースのinpシートも同値（12,000,000千円）。財務DDのp.30でも「エンタープライズ・バリュー（EV）12,000百万円」と一致。案件情報のev_mm=12,000（百万円）とも整合。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 93,
+        "key": "senior_loan",
+        "section": "ストラクチャー",
+        "label": "シニアローン総額",
+        "unit": "百万円",
+        "source_type": "extracted",
+        "source_unit": "千円",
+        "case_name": null,
+        "values": {
+          "FY26": 6500.0
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY26": 6500.0
+        },
+        "effective_text": null,
+        "required": true,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:inp、B15〜D15",
+          "quote": "シニアローン総額: 6500000",
+          "logic": "inpシートのストラクチャーセクションから抽出。Sponsorケースのinpシートも同値（6,500,000千円）。財務DDのp.30・デットスケジュールH14の期首残高とも一致。案件情報のsenior_mm=6,500（百万円）とも整合。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 94,
+        "key": "goodwill",
+        "section": "ストラクチャー",
+        "label": "のれん想定額（暫定PPA前）",
+        "unit": "百万円",
+        "source_type": "extracted",
+        "source_unit": "千円",
+        "case_name": null,
+        "values": {
+          "FY27": 5500.0
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY27": 5500.0
+        },
+        "effective_text": null,
+        "required": true,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:BS、行13（のれん）、H13〜N13",
+          "quote": "H13:5500000（FY27〜FY33全期間固定）。inpシートB21:のれん想定額（暫定PPA前）D21:5500000",
+          "logic": "BSシートののれん（Goodwill）行および前提条件シートののれん想定額から抽出。両ケースとも5,500,000千円で共通。財務DDの試算値5,280百万円との差異をmismatchに記録。"
+        },
+        "mismatch": {
+          "other_value": 5280,
+          "other_file": "DD_Financial_オートスタッフ中部.pdf",
+          "other_location": "p.31（7.2 のれん想定額の試算）",
+          "other_quote": "当法人の試算によるのれん想定額は5,280百万円である。スポンサー提出の財務モデルにはのれん5,500百万円が計上されており、220百万円の差異がある。",
+          "other_unit": "百万円",
+          "note": "スポンサーモデル（BaseおよびSponsor両ケース）のBSシートは5,500,000千円を計上。財務DDの試算は5,280百万円で220百万円の差異。差異の主因は取引費用の取扱いおよび識別可能無形資産（顧客関連資産）の評価前提の相違とされ、最終PPAにより確定予定。BSへの計上額および評価倍率計算に直結するため照会が必要。"
+        },
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 95,
+        "key": "equity_contribution",
+        "section": "ストラクチャー",
+        "label": "エクイティ出資額",
+        "unit": "百万円",
+        "source_type": "extracted",
+        "source_unit": "千円",
+        "case_name": null,
+        "values": {
+          "FY26": 5500.0
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY26": 5500.0
+        },
+        "effective_text": null,
+        "required": false,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:inp、B14〜D14",
+          "quote": "エクイティ出資: 5500000",
+          "logic": "inpシートのストラクチャーセクションから抽出。Sponsorケースinpも同値（5,500,000千円）。財務DDのp.30でも「エクイティ出資5,500百万円」と一致。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 96,
+        "key": "loan_period",
+        "section": "ストラクチャー",
+        "label": "ローン期間（年）",
+        "unit": "年",
+        "source_type": "extracted",
+        "source_unit": null,
+        "case_name": null,
+        "values": {
+          "FY26": 7
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY26": 7
+        },
+        "effective_text": null,
+        "required": false,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:inp、B17〜D17",
+          "quote": "ローン期間（年）: 7",
+          "logic": "inpシートから抽出。デットスケジュールのシニアローン（FY27〜FY33の7年間、FY33末残高ゼロ）と整合。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 97,
+        "key": "interest_rate",
+        "section": "ストラクチャー",
+        "label": "適用金利（TIBOR+200bp想定）",
+        "unit": "%",
+        "source_type": "extracted",
+        "source_unit": null,
+        "case_name": null,
+        "values": {
+          "FY26": 0.022
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY26": 0.022
+        },
+        "effective_text": null,
+        "required": false,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:inp、B18〜D18",
+          "quote": "適用金利（TIBOR+200bp想定）: 0.022",
+          "logic": "inpシートから抽出（小数表記0.022＝2.2%）。デットスケジュールのdeptシートB18でも0.022と一致。Baseおよびsponsorケース共通前提。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 98,
+        "key": "mandatory_amortization",
+        "section": "ストラクチャー",
+        "label": "約定弁済額（年・最終回残額一括）",
+        "unit": "百万円",
+        "source_type": "extracted",
+        "source_unit": "千円",
+        "case_name": null,
+        "values": {
+          "FY26": 650.0
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY26": 650.0
+        },
+        "effective_text": null,
+        "required": false,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:inp、B19〜D19",
+          "quote": "約定弁済（年・最終回残額一括）: 650000",
+          "logic": "inpシートから抽出。デットスケジュールのdeptシートB15でもH15〜M15=-650,000と一致。FY33は残額2,600,000千円の一括返済（N15）。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 99,
+        "key": "sponsor_ebitda_teaser",
+        "section": "ストラクチャー",
+        "label": "スポンサー提示EBITDA（速報・ティーザー記載）",
+        "unit": "百万円",
+        "source_type": "extracted",
+        "source_unit": "千円",
+        "case_name": null,
+        "values": {
+          "FY26": 1585.0
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY26": 1585.0
+        },
+        "effective_text": null,
+        "required": false,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:inp、B28〜D28",
+          "quote": "スポンサー提示EBITDA（速報・ティーザー記載）: 1585000",
+          "logic": "inpシートのその他前提セクションから抽出。BaseおよびSponsorケース共通前提。正常収益力EBITDA（1,620,000千円）との差異をmismatchに記録。"
+        },
+        "mismatch": {
+          "other_value": 1620000,
+          "other_file": "AutostaffChubu_Model_Base_B.xlsx",
+          "other_location": "シート:PL、G25（修正EBITDA FY26A）",
+          "other_quote": "G25: 1620000（修正EBITDA FY26実績）",
+          "other_unit": "千円",
+          "note": "ティーザー記載の速報値1,585,000千円は現行モデルのFY26実績EBITDA1,620,000千円より35,000千円（約2.2%）低い。速報から確報への修正によるものと推察されるが、差異の内容（採用DX費用計上タイミング等）は確認が必要。"
+        },
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 100,
+        "key": "debt_schedule_interest",
+        "section": "デットスケジュール",
+        "label": "支払利息（シニアローン・デットスケジュール計算値）",
+        "unit": "百万円",
+        "source_type": "calculated",
+        "source_unit": "千円",
+        "case_name": null,
+        "values": {
+          "FY27": -135.85,
+          "FY28": -121.55,
+          "FY29": -107.25,
+          "FY30": -92.95,
+          "FY31": -78.65,
+          "FY32": -64.35,
+          "FY33": -28.6
+        },
+        "text_value": null,
+        "effective_values": {
+          "FY27": -135.85,
+          "FY28": -121.55,
+          "FY29": -107.25,
+          "FY30": -92.95,
+          "FY31": -78.65,
+          "FY32": -64.35,
+          "FY33": -28.6
+        },
+        "effective_text": null,
+        "required": false,
+        "evidence": {
+          "file": "AutostaffChubu_Debt_B.xlsx",
+          "location": "シート:debt、行19（Interest Expense）、H19〜N19",
+          "quote": "H19:-135850 / I19:-121550 / J19:-107250 / K19:-92950 / L19:-78650 / M19:-64350 / N19:-28600",
+          "logic": "デットスケジュールのシニアローン利息計算値（平均残高×金利2.2%）。両ケースのPLシート行28（支払利息）が#REF!エラーのため、正しい利息値はこのデットスケジュール値に依拠すべきである。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 101,
+        "key": "fin_highlights",
+        "section": "財務ハイライト",
+        "label": "財務ハイライト",
+        "unit": "百万円",
+        "source_type": "extracted",
+        "source_unit": null,
+        "case_name": null,
+        "values": null,
+        "text_value": "・売上成長：FY22〜FY26の5年間でCAGR約+6.3%（11,059百万円→14,160百万円）。成長は稼働人数増加（年平均+3.2%程度）と派遣単価改定（年率+2%）の複合であり、特定要因への偏重は認められない。\n・粗利率・EBITDAマージン改善：粗利率はFY22の19.6%からFY26の20.1%へ改善。主因は稼働率の上昇（85.0%→88.0%）による非稼働コスト低減であり、スプレッド（派遣単価2,100円/h－スタッフ時給1,450円/h＝650円/h）は安定的に拡大している。EBITDAマージンも10.2%→11.4%へ同様の改善を示す。\n・採用費の上昇：採用単価（CPA）はFY24の225千円/名からFY26の250千円/名へと年率5%超で増加しており、採用費合計もFY24の236百万円からFY26の295百万円へ拡大。売上成長率を上回るペースの費用増加が今後の利益率に対する主要な上振れリスク要因である。\n・キャッシュフロー創出力：FCFのFY26実績は1,305百万円であり、EBITDAから約80%の転換率を示す。労働集約型ビジネスとして設備投資（年100〜120百万円）が軽微なため、利益がほぼそのままキャッシュに転換される構造にある。\n・買収後の現金水準：クロージング後の期首現金は約1,100百万円（月間給与支払約900百万円）と最低限であり、約定弁済650百万円・支払利息（FY27は約136百万円）が加わるため、早期のバックアップファシリティ設定が重要となる。",
+        "effective_values": null,
+        "effective_text": "・売上成長：FY22〜FY26の5年間でCAGR約+6.3%（11,059百万円→14,160百万円）。成長は稼働人数増加（年平均+3.2%程度）と派遣単価改定（年率+2%）の複合であり、特定要因への偏重は認められない。\n・粗利率・EBITDAマージン改善：粗利率はFY22の19.6%からFY26の20.1%へ改善。主因は稼働率の上昇（85.0%→88.0%）による非稼働コスト低減であり、スプレッド（派遣単価2,100円/h－スタッフ時給1,450円/h＝650円/h）は安定的に拡大している。EBITDAマージンも10.2%→11.4%へ同様の改善を示す。\n・採用費の上昇：採用単価（CPA）はFY24の225千円/名からFY26の250千円/名へと年率5%超で増加しており、採用費合計もFY24の236百万円からFY26の295百万円へ拡大。売上成長率を上回るペースの費用増加が今後の利益率に対する主要な上振れリスク要因である。\n・キャッシュフロー創出力：FCFのFY26実績は1,305百万円であり、EBITDAから約80%の転換率を示す。労働集約型ビジネスとして設備投資（年100〜120百万円）が軽微なため、利益がほぼそのままキャッシュに転換される構造にある。\n・買収後の現金水準：クロージング後の期首現金は約1,100百万円（月間給与支払約900百万円）と最低限であり、約定弁済650百万円・支払利息（FY27は約136百万円）が加わるため、早期のバックアップファシリティ設定が重要となる。",
+        "required": true,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:PL（行9・15・25・26）、シート:CF（行13）、シート:calc（行11・12）",
+          "quote": "G26（EBITDAマージンFY26）:0.11440…C26（FY22）:0.10163…H25（FY27BaseEBITDA）:1750000",
+          "logic": "実績PL・CF・calcシートの抽出値、および財務DDのp.13・p.27・p.32・p.34の記述を組み合わせて財務特性を要約。数値はすべて上記抽出値に依拠。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      {
+        "id": 102,
+        "key": "case_assumptions",
+        "section": "財務ハイライト",
+        "label": "ケース前提差異（Base vs Sponsor）",
+        "unit": "百万円",
+        "source_type": "extracted",
+        "source_unit": null,
+        "case_name": null,
+        "values": null,
+        "text_value": "・稼働率前提：Baseケースは88.0%で横ばい（FY27〜FY33固定）であるのに対し、Sponsorケースは88.5%（FY27）→89.0%（FY28）→89.5%（FY29）→90.0%（FY30以降）と段階的に上昇する前提を採用。稼働率1%ptの差異はEBITDAに約160百万円/年の影響（財務DD感応度分析）。\n・派遣単価改定率：Baseケースは概ね年率約+1.0〜1.2%（FY27: 2,125円/h→FY33: 2,255円/h）であるのに対し、SponsorケースはFY27: 2,140円/h（+1.9%）からFY33: 2,401円/h（累計+14.3%）と年率約+1.9〜2.0%の大幅な改定を前提とし、FY33時点でBase比+146円/hの差異となる。\n・在籍登録スタッフ数・採用人数：Baseケースは在籍スタッフ数をFY27:3,950名→FY33:4,585名（年+105〜130名）と保守的に積み上げるのに対し、Sponsorケースはより積極的にFY27:4,000名→FY33:5,030名（年+165〜180名）と設定。新規採用人数もFY27でBase 1,220名に対しSponsor 1,260名と増強。\n・EBITDA水準の差異：上記前提の複合効果としてFY27時点でBaseの1,750,000千円に対しSponsorは1,898,856千円（+149百万円、+8.5%）。FY33ではBaseの2,308,593千円に対しSponsorは3,917,168千円（+1,609百万円、+69.7%）と乖離が累積拡大する。Sponsorケースの前提は過去実績の稼働率（88%上限近傍）・単価改定実績（年+2%）の上限付近に張り付いており、計画の蓋然性については慎重な評価が必要。",
+        "effective_values": null,
+        "effective_text": "・稼働率前提：Baseケースは88.0%で横ばい（FY27〜FY33固定）であるのに対し、Sponsorケースは88.5%（FY27）→89.0%（FY28）→89.5%（FY29）→90.0%（FY30以降）と段階的に上昇する前提を採用。稼働率1%ptの差異はEBITDAに約160百万円/年の影響（財務DD感応度分析）。\n・派遣単価改定率：Baseケースは概ね年率約+1.0〜1.2%（FY27: 2,125円/h→FY33: 2,255円/h）であるのに対し、SponsorケースはFY27: 2,140円/h（+1.9%）からFY33: 2,401円/h（累計+14.3%）と年率約+1.9〜2.0%の大幅な改定を前提とし、FY33時点でBase比+146円/hの差異となる。\n・在籍登録スタッフ数・採用人数：Baseケースは在籍スタッフ数をFY27:3,950名→FY33:4,585名（年+105〜130名）と保守的に積み上げるのに対し、Sponsorケースはより積極的にFY27:4,000名→FY33:5,030名（年+165〜180名）と設定。新規採用人数もFY27でBase 1,220名に対しSponsor 1,260名と増強。\n・EBITDA水準の差異：上記前提の複合効果としてFY27時点でBaseの1,750,000千円に対しSponsorは1,898,856千円（+149百万円、+8.5%）。FY33ではBaseの2,308,593千円に対しSponsorは3,917,168千円（+1,609百万円、+69.7%）と乖離が累積拡大する。Sponsorケースの前提は過去実績の稼働率（88%上限近傍）・単価改定実績（年+2%）の上限付近に張り付いており、計画の蓋然性については慎重な評価が必要。",
+        "required": true,
+        "evidence": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:calc（行8・11・14）、シート:PL（行25）",
+          "quote": "BaseケースH8:0.88（稼働率FY27）, H11:2125（単価FY27）, H14:1220（採用人数FY27）… SponsorケースH8:0.885, H11:2140, H14:1260",
+          "logic": "BaseケースおよびSponsorケースのcalcシート（稼働率・派遣単価・採用人数）、PLシート（修正EBITDA）の各計算値を対照してケース差異を記述。稼働率感応度はDD財務p.35から引用。"
+        },
+        "mismatch": null,
+        "status": "proposed",
+        "edited": false,
+        "resolution_note": null,
+        "confirmed_by": null,
+        "confirmed_at": null
+      }
+    ],
+    "kpi_nodes": [
+      {
+        "id": 20,
+        "node_id": "EBITDA",
+        "parent_id": null,
+        "label": "EBITDA",
+        "origin": "model",
+        "star": true,
+        "formula": "営業利益 + 減価償却費",
+        "value_text": "資料に財務モデルExcelの記載がないため取得できていない（DDレポートの定性記述から構造を推定）",
+        "badge": "最上位・返済能力集約指標",
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.14（5章 収益構造）",
+          "quote": "収益は「稼働人数 × 稼働時間 × 派遣単価」に分解される。…粗利率は派遣単価とスタッフ時給の差（スプレッド）と稼働効率で決まる。",
+          "logic": "財務モデルExcelが提供されていないため、DDレポートの収益構造記述と業界標準のLBO財務モデル構造（EBITDA＝営業利益＋D&A）に基づいてツリーを設計した。EBITDAをLBO返済能力の集約指標として根に置く。"
+        },
+        "added_via_chat": false
+      },
+      {
+        "id": 21,
+        "node_id": "EBIT",
+        "parent_id": "EBITDA",
+        "label": "営業利益（EBIT）",
+        "origin": "model",
+        "star": false,
+        "formula": "売上総利益 − 販管費合計",
+        "value_text": "資料に直接記載なし",
+        "badge": null,
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.14（5章 収益構造）",
+          "quote": "粗利率は派遣単価とスタッフ時給の差（スプレッド）と稼働効率で決まる。",
+          "logic": "EBITDAの定義式（EBITDA＝EBIT＋D&A）よりEBITDAの直下に営業利益を配置。売上総利益から販管費を控除して算出される標準的なPL構造を採用。"
+        },
+        "added_via_chat": false
+      },
+      {
+        "id": 22,
+        "node_id": "DA",
+        "parent_id": "EBITDA",
+        "label": "減価償却費（D&A）",
+        "origin": "model",
+        "star": false,
+        "formula": "EBITDA − 営業利益（EBITDAへの加算項目）",
+        "value_text": "資料に記載がないため取得できていない",
+        "badge": null,
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.7（2.2 拠点網と組織）",
+          "quote": "スタッフ寮は12棟（借上げ含む）・収容能力約900名であり…自社3棟・借上げ9棟",
+          "logic": "EBITDAは営業利益に減価償却費を加算して算出される。自社ビル・自社寮3棟の固定資産が存在することからD&A計上を確認。EBITDAツリーの根の直下に配置。"
+        },
+        "added_via_chat": false
+      },
+      {
+        "id": 23,
+        "node_id": "GROSS_PROFIT",
+        "parent_id": "EBIT",
+        "label": "売上総利益",
+        "origin": "model",
+        "star": false,
+        "formula": "売上高合計 − 売上原価合計",
+        "value_text": "粗利率 20.1%（FY26実績）",
+        "badge": null,
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.14（5章 収益構造）",
+          "quote": "粗利率 20.1%（FY26実績）",
+          "logic": "DDレポートp.14に粗利率20.1%の記載あり。売上総利益＝売上高合計×20.1%として親子関係を設定。営業利益の構成要素として配置。"
+        },
+        "added_via_chat": false
+      },
+      {
+        "id": 24,
+        "node_id": "SGA",
+        "parent_id": "EBIT",
+        "label": "販管費合計",
+        "origin": "model",
+        "star": false,
+        "formula": "採用費 + 本社人件費 + その他販管費",
+        "value_text": "資料に合計値の直接記載なし",
+        "badge": null,
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.14（5章 収益構造）",
+          "quote": "主要コスト スタッフ労務費（時給×1.14〔法定福利〕）、採用費、本社費",
+          "logic": "DDレポートp.14の主要コスト列挙から、採用費・本社費（本社人件費）・その他販管費を販管費として分類。営業利益＝売上総利益−販管費の構造上、EBITの直下に配置。"
+        },
+        "added_via_chat": false
+      },
+      {
+        "id": 25,
+        "node_id": "REVENUE",
+        "parent_id": "GROSS_PROFIT",
+        "label": "売上高合計",
+        "origin": "model",
+        "star": false,
+        "formula": "派遣料収入 + その他営業収入",
+        "value_text": "資料に数値記載なし（FY26は派遣料98.8%／その他1.2%の構成比のみ記載）",
+        "badge": null,
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.14（5章 収益構造）",
+          "quote": "売上構成 派遣料収入 98.8%／その他営業収入 1.2%（FY26）",
+          "logic": "売上総利益＝売上高−原価のため、売上総利益の直下に売上高合計を配置。98.8%と1.2%の構成比からの内訳分解。"
+        },
+        "added_via_chat": false
+      },
+      {
+        "id": 26,
+        "node_id": "COGS",
+        "parent_id": "GROSS_PROFIT",
+        "label": "売上原価合計",
+        "origin": "model",
+        "star": false,
+        "formula": "スタッフ労務費 + その他原価",
+        "value_text": "資料に合計値の直接記載なし（粗利率20.1%から逆算すると原価率約79.9%）",
+        "badge": null,
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.14（5章 収益構造）",
+          "quote": "売上原価の中心はスタッフ労務費（法定福利費込）であり、粗利率は派遣単価とスタッフ時給の差（スプレッド）と稼働効率で決まる。",
+          "logic": "売上総利益＝売上高−売上原価の構造上、売上総利益の直下に売上原価合計を配置。原価の主要構成は労務費であることをDDレポートが明示。"
+        },
+        "added_via_chat": false
+      },
+      {
+        "id": 27,
+        "node_id": "DISPATCH_REV",
+        "parent_id": "REVENUE",
+        "label": "派遣料収入",
+        "origin": "model",
+        "star": true,
+        "formula": "稼働人数 × 月間平均稼働時間 × 派遣単価 × 12ヶ月",
+        "value_text": "売上高の98.8%（FY26）",
+        "badge": "主要収益ドライバー",
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.14（5章 収益構造）",
+          "quote": "収益ドライバー 稼働人数 × 月間平均稼働時間 × 派遣単価",
+          "logic": "DDレポートp.14が派遣料収入の計算式を明示。稼働人数・稼働時間・単価の3変数の積として定義されており、その3変数を子ノードに展開するため親に設定。"
+        },
+        "added_via_chat": false
+      },
+      {
+        "id": 28,
+        "node_id": "OTHER_REV",
+        "parent_id": "REVENUE",
+        "label": "その他営業収入（紹介手数料等）",
+        "origin": "model",
+        "star": false,
+        "formula": "紹介手数料等",
+        "value_text": "売上高の1.2%（FY26）",
+        "badge": null,
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.14（5章 収益構造）",
+          "quote": "残余は紹介手数料等のその他営業収入である。…売上構成 派遣料収入 98.8%／その他営業収入 1.2%（FY26）",
+          "logic": "売上高合計＝派遣料収入＋その他営業収入の構造から、売上高合計の内訳として配置。"
+        },
+        "added_via_chat": false
+      },
+      {
+        "id": 29,
+        "node_id": "STAFF_LABOR",
+        "parent_id": "COGS",
+        "label": "スタッフ労務費",
+        "origin": "model",
+        "star": true,
+        "formula": "稼働人数 × 月間平均稼働時間 × スタッフ時給 × 法定福利費率（1.14） × 12ヶ月",
+        "value_text": "資料に金額記載なし（算式の構造のみ確認）",
+        "badge": "原価最大項目",
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.14（5章 収益構造）",
+          "quote": "主要コスト スタッフ労務費（時給×1.14〔法定福利〕）",
+          "logic": "DDレポートp.14に「時給×1.14〔法定福利〕」と算式が明記。原価の中心科目であるため売上原価合計の直下に配置し、時給・法定福利費率を子ノードに展開。"
+        },
+        "added_via_chat": false
+      },
+      {
+        "id": 30,
+        "node_id": "OTHER_COGS",
+        "parent_id": "COGS",
+        "label": "その他原価",
+        "origin": "model",
+        "star": false,
+        "formula": "寮・送迎費等の直接費",
+        "value_text": "資料に金額記載なし",
+        "badge": null,
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.7（2.2 拠点網と組織）",
+          "quote": "スタッフ寮は12棟（借上げ含む）・収容能力約900名",
+          "logic": "売上原価は労務費が中心であるが、寮・送迎バス運行は対象会社の差別化インフラとして直接費に含まれると想定。原価の残余項目として売上原価合計の直下に配置。"
+        },
+        "added_via_chat": false
+      },
+      {
+        "id": 31,
+        "node_id": "ACTIVE_STAFF",
+        "parent_id": "DISPATCH_REV",
+        "label": "稼働人数（名）",
+        "origin": "dd",
+        "star": true,
+        "formula": "在籍登録スタッフ数 × 稼働率",
+        "value_text": "3,344名（FY26実績）",
+        "badge": "収益最重要KPI",
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.15（5.2 KPIの推移 表）",
+          "quote": "稼働人数（名） FY24:3,079 FY25:3,218 FY26:3,344",
+          "logic": "派遣料収入＝稼働人数×稼働時間×単価の算式より、稼働人数を派遣料収入の直下に配置。在籍数×稼働率の積として算出されるため、その2変数をさらに子ノードに展開。"
+        },
+        "added_via_chat": false
+      },
+      {
+        "id": 32,
+        "node_id": "AVG_HOURS",
+        "parent_id": "DISPATCH_REV",
+        "label": "月間平均稼働時間（h/人）",
+        "origin": "dd",
+        "star": false,
+        "formula": "1人あたり月間就業時間",
+        "value_text": "166h（FY26実績）",
+        "badge": null,
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.15（5.2 KPIの推移 表）",
+          "quote": "月間平均稼働時間（h） FY24:165 FY25:166 FY26:166",
+          "logic": "派遣料収入の計算式「稼働人数×月間平均稼働時間×派遣単価」の第2因数として、派遣料収入の直下に配置。"
+        },
+        "added_via_chat": false
+      },
+      {
+        "id": 33,
+        "node_id": "BILL_RATE",
+        "parent_id": "DISPATCH_REV",
+        "label": "派遣単価（円/h）",
+        "origin": "dd",
+        "star": true,
+        "formula": "顧客への請求時給単価（スキル区分・工程別設定、年1回4月改定）",
+        "value_text": "2,100円/h（FY26実績）",
+        "badge": "単価改定力リスク",
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.15（5.2 KPIの推移 表）・p.19（6.3 契約条件と単価改定）",
+          "quote": "派遣単価（円/h） FY24:2,020 FY25:2,060 FY26:2,100 / 過去3年平均+2.0%",
+          "logic": "派遣料収入の計算式の第3因数として派遣料収入の直下に配置。単価改定交渉力がスプレッド維持の要であり、DDレポートも要注視事項として言及しているためstar=true。"
+        },
+        "added_via_chat": false
+      },
+      {
+        "id": 34,
+        "node_id": "ENROLLED_STAFF",
+        "parent_id": "ACTIVE_STAFF",
+        "label": "在籍登録スタッフ数（名）",
+        "origin": "dd",
+        "star": false,
+        "formula": "期首在籍数 + 新規採用人数 − 離職者数",
+        "value_text": "3,800名（FY26・2026年3月末）",
+        "badge": null,
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.15（5.2 KPIの推移 表）・p.4（1.1 対象会社の概要）",
+          "quote": "在籍登録スタッフ数（名） FY24:3,560 FY25:3,690 FY26:3,800 / 在籍登録スタッフ約3,800名（2026年3月末時点）",
+          "logic": "稼働人数＝在籍登録スタッフ数×稼働率であるため、稼働人数の第1因数として配置。新規採用数・離職率により動態管理される変数。"
+        },
+        "added_via_chat": false
+      },
+      {
+        "id": 35,
+        "node_id": "UTIL_RATE",
+        "parent_id": "ACTIVE_STAFF",
+        "label": "稼働率",
+        "origin": "dd",
+        "star": true,
+        "formula": "稼働人数 ÷ 在籍登録スタッフ数",
+        "value_text": "88.0%（FY26実績）",
+        "badge": "収益性最重要KPI・業界最高水準",
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.15（5.2 KPIの推移 表）・p.4（1.1）・p.12（4.1 競合比較表）",
+          "quote": "稼働率 FY24:86.5% FY25:87.2% FY26:88.0% / 業界水準を上回る稼働率（2026年3月期実績88%）/ 対象会社 地場専業 稼働率88%",
+          "logic": "稼働人数＝在籍数×稼働率の第2因数。DDレポートが「収益性の最重要指標」と明示し、競合比較でも業界最高水準であるためstar=true。"
+        },
+        "added_via_chat": false
+      },
+      {
+        "id": 36,
+        "node_id": "NEW_HIRE",
+        "parent_id": "ENROLLED_STAFF",
+        "label": "新規採用人数（名）",
+        "origin": "dd",
+        "star": false,
+        "formula": "採用費 ÷ CPA",
+        "value_text": "1,180名（FY26実績）",
+        "badge": null,
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.15（5.2 KPIの推移 表）・p.16（5.3 採用とスタッフ定着 表）",
+          "quote": "新規採用人数（名） FY24:1,050 FY25:1,120 FY26:1,180",
+          "logic": "在籍登録スタッフ数は期首在籍＋新規採用−離職で推移するため、在籍数の直下に新規採用人数を配置。採用費÷CPAの逆算でも確認可能。"
+        },
+        "added_via_chat": false
+      },
+      {
+        "id": 37,
+        "node_id": "TURNOVER_RATE",
+        "parent_id": "ENROLLED_STAFF",
+        "label": "年間離職率",
+        "origin": "dd",
+        "star": true,
+        "formula": "年間離職者数 ÷ 期中平均在籍数",
+        "value_text": "22%（FY26実績）",
+        "badge": "採用コスト・在籍数に直結するリスクKPI",
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.15（5.2 KPIの推移 表）",
+          "quote": "年間離職率 FY24:24% FY25:23% FY26:22%",
+          "logic": "在籍数の動態（期首在籍＋採用−離職）における離職サイドを定量化する指標。離職率が上昇すると補充採用費が増加しCPAとの複合でコスト増となるため、在籍数の直下に配置しstar=true。"
+        },
+        "added_via_chat": false
+      },
+      {
+        "id": 38,
+        "node_id": "STAFF_WAGE",
+        "parent_id": "STAFF_LABOR",
+        "label": "スタッフ時給（円/h）",
+        "origin": "model",
+        "star": true,
+        "formula": "スタッフへの支払時給単価（最低賃金・労使協定水準に連動）",
+        "value_text": "資料に直接記載なし（派遣単価2,100円/hと粗利率20.1%から逆算するとスプレッドは約422円/h）",
+        "badge": "コストスプレッドの決定因子",
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.14（5章 収益構造）・p.11（3.3 労働需給と規制環境）",
+          "quote": "主要コスト スタッフ労務費（時給×1.14〔法定福利〕）/ 価格競争は単価下限を規定する最低賃金・労使協定水準により一定の歯止めがある",
+          "logic": "スタッフ労務費＝稼働人数×稼働時間×時給×1.14の算式上、時給はスタッフ労務費の直接の決定因子。最低賃金上昇が時給に波及しスプレッドを圧縮するリスクがあるためstar=true。"
+        },
+        "added_via_chat": false
+      },
+      {
+        "id": 39,
+        "node_id": "SOCIAL_INS_RATE",
+        "parent_id": "STAFF_LABOR",
+        "label": "法定福利費率",
+        "origin": "dd",
+        "star": true,
+        "formula": "スタッフ労務費 = 時給 × 法定福利費率（1.14）",
+        "value_text": "1.14（FY26）／2026年度改定+0.2pt予定",
+        "badge": "規制コスト変動リスク",
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.14（5章 収益構造）・p.11（3.3 労働需給と規制環境）",
+          "quote": "スタッフ労務費（時給×1.14〔法定福利〕）/ 2026年度の法定福利費率の改定（+0.2pt）は業界全体のコスト要因",
+          "logic": "DDレポートp.14が「時給×1.14〔法定福利〕」と算式内の係数として明示。p.11では+0.2ptの改定が予告されており、スプレッド圧縮リスクとしてstar=true。"
+        },
+        "added_via_chat": false
+      },
+      {
+        "id": 40,
+        "node_id": "RECRUIT_COST",
+        "parent_id": "SGA",
+        "label": "採用費（百万円）",
+        "origin": "dd",
+        "star": true,
+        "formula": "採用単価CPA × 新規採用人数",
+        "value_text": "295百万円（FY26実績）",
+        "badge": "上昇トレンド・計画達成リスク",
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.16（5.3 採用とスタッフ定着 表）",
+          "quote": "採用費（百万円） FY24:236 FY25:267 FY26:295 / 採用単価（CPA：採用費÷採用人数）はFY24の225千円からFY26には250千円へと年率5%超のペースで上昇",
+          "logic": "DDレポートp.16に採用費の金額と算式（CPA×採用人数）が明示されており、CPA上昇が計画達成の主要リスクとして言及されているためstar=true。販管費の内訳として配置。"
+        },
+        "added_via_chat": false
+      },
+      {
+        "id": 41,
+        "node_id": "HQ_PERSONNEL",
+        "parent_id": "SGA",
+        "label": "本社人件費（内勤従業員）",
+        "origin": "model",
+        "star": false,
+        "formula": "内勤従業員数 × 平均給与",
+        "value_text": "資料に金額記載なし（内勤従業員218名は確認）",
+        "badge": null,
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.7（2.2 拠点網と組織）・p.14（5章 収益構造）",
+          "quote": "内勤従業員 218名（営業・コーディネーター・管理部門）/ 主要コスト…本社費",
+          "logic": "DDレポートp.14が「本社費」を主要コストとして列挙。p.7の内勤従業員218名が本社人件費の原資。販管費内訳として配置。"
+        },
+        "added_via_chat": false
+      },
+      {
+        "id": 42,
+        "node_id": "OTHER_SGA",
+        "parent_id": "SGA",
+        "label": "その他販管費",
+        "origin": "model",
+        "star": false,
+        "formula": "販管費合計 − 採用費 − 本社人件費",
+        "value_text": "資料に金額記載なし",
+        "badge": null,
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.14（5章 収益構造）",
+          "quote": "主要コスト スタッフ労務費（時給×1.14〔法定福利〕）、採用費、本社費",
+          "logic": "販管費合計＝採用費＋本社人件費＋その他の構造上、残余項目として配置。システム老朽化（基幹システム更新費等）がここに含まれる可能性がある。"
+        },
+        "added_via_chat": false
+      },
+      {
+        "id": 43,
+        "node_id": "CPA",
+        "parent_id": "RECRUIT_COST",
+        "label": "採用単価CPA（千円/名）",
+        "origin": "dd",
+        "star": true,
+        "formula": "採用費 ÷ 新規採用人数",
+        "value_text": "250千円/名（FY26実績）",
+        "badge": "年率5%超上昇・主要コストリスク",
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.16（5.3 採用とスタッフ定着 表）",
+          "quote": "採用単価CPA（千円/名） FY24:225 FY25:238 FY26:250 / 採用単価（CPA：採用費÷採用人数）はFY24の225千円からFY26には250千円へと年率5%超のペースで上昇",
+          "logic": "採用費＝CPA×採用人数の算式よりCPAは採用費の直接の構成因子。DDレポートが「主要なコスト上振れリスク」と明示しているためstar=true。"
+        },
+        "added_via_chat": false
+      },
+      {
+        "id": 44,
+        "node_id": "REFERRAL_RATE",
+        "parent_id": "CPA",
+        "label": "リファラル採用比率",
+        "origin": "dd",
+        "star": true,
+        "formula": "リファラル経由採用数 ÷ 新規採用人数合計",
+        "value_text": "23%（FY26実績）",
+        "badge": "CPA抑制の対抗手段・上昇余地に注目",
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.16（5.3 採用とスタッフ定着 表）",
+          "quote": "リファラル比率 FY24:18% FY25:21% FY26:23% / リファラル比率の引上げが対抗策となる",
+          "logic": "リファラル採用はWeb媒体経由より低コストであり、比率が上昇するとCPA全体が低下する。DDレポートが対抗策として明示しているため、CPA（採用費）の下位ドライバーとして配置しstar=true。"
+        },
+        "added_via_chat": false
+      },
+      {
+        "id": 45,
+        "node_id": "EARLY_ATTRITION",
+        "parent_id": "TURNOVER_RATE",
+        "label": "6ヶ月以内早期離職率",
+        "origin": "dd",
+        "star": false,
+        "formula": "入社6ヶ月以内離職者数 ÷ 同期入社者数",
+        "value_text": "19%（FY26実績）／業界平均25%前後",
+        "badge": null,
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.16（5.3 採用とスタッフ定着）",
+          "quote": "入社6ヶ月以内の早期離職率が19%と業界平均（25%前後）を下回る。寮・送迎・資格取得支援（フォークリフト等）のパッケージが効いており",
+          "logic": "早期離職率は年間離職率の先行指標であり、寮・送迎インフラの定着効果を定量化する指標。年間離職率の下位ドライバーとして配置。"
+        },
+        "added_via_chat": false
+      },
+      {
+        "id": 46,
+        "node_id": "CUSTOMER_CONC",
+        "parent_id": "DISPATCH_REV",
+        "label": "顧客集中度（上位3社売上比率）",
+        "origin": "dd",
+        "star": true,
+        "formula": "上位3社売上合計 ÷ 売上高合計",
+        "value_text": "62%（FY26実績）／うち最大手A社28%",
+        "badge": "最重要事業リスク・買収後モニタリング最優先",
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.18（6.2 顧客集中度）",
+          "quote": "上位3社への売上依存度は62%（うち最大手A社28%）に達しており、特定顧客の生産動向・調達方針変更が業績に与える影響は大きい。",
+          "logic": "DDレポートが「顧客集中度は本件の事業リスク評価における最重要論点」と明示。派遣料収入が特定顧客に依存していることを示す指標であり、売上変動リスクの直接ドライバーとして派遣料収入の直下に配置しstar=true。"
+        },
+        "added_via_chat": false
+      },
+      {
+        "id": 47,
+        "node_id": "MARKET_SHARE",
+        "parent_id": "DISPATCH_REV",
+        "label": "東海地区市場シェア（推定）",
+        "origin": "dd",
+        "star": false,
+        "formula": "対象会社売上高 ÷ 東海地区製造派遣市場規模",
+        "value_text": "約7%（FY26推計）",
+        "badge": null,
+        "evidence": {
+          "file": "DD_Business_オートスタッフ中部.pdf",
+          "location": "p.9（3.1 製造派遣市場の規模と成長性）",
+          "quote": "対象会社はこの地域市場において推定シェア約7%を有する。",
+          "logic": "市場シェアは派遣料収入の外部環境コンテキストを示す参考指標。派遣料収入の規模感を市場規模と対比するために派遣料収入の下位に配置。"
+        },
+        "added_via_chat": false
+      }
+    ],
+    "scenarios": [
+      {
+        "id": 5,
+        "key": "A",
+        "origin": "ai",
+        "type_label": "トップライン",
+        "title": "主要顧客A社の取引縮小による稼働率急低下",
+        "cause": "最大手顧客A社（売上構成比28%）が電動化部品への工程転換を加速し、旧来工程の派遣契約を段階的に削減。CoC条項の通知を契機に関係が不安定化するシナリオ。DDで指摘のとおり同社の基本契約残存は2年、内製化・自動化の検討が報じられている。",
+        "affected_kpis": [
+          "B7",
+          "B25",
+          "B7"
+        ],
+        "change_text": "稼働率 88% → 82%（▲6pt）、派遣事業売上 約▲14,700百万円×6/88 ≒ ▲1,003百万円（FY27ベースケース比）、修正EBITDA 約▲960百万円（感応度160百万円/pt×6pt）",
+        "change_basis": "財務DDのEBITDA感応度分析：稼働率1pt低下でEBITDA▲160百万円（p.35）。事業DDによる顧客集中度：A社28%、上位3社62%（p.18）。A社の派遣工程のうちパワートレイン系が全体の約31%（p.10）、A社シェア28%を勘案すると最大約▲8〜9pt分の需要が喪失リスクゾーンに入る。ここでは漸進的縮小として▲6ptで試算。",
+        "impact": "EBITDAがFY27ベースケース1,750百万円から約▲960百万円押し下げられ790百万円程度に低下する。これに対し年間デットサービスは約定弁済650百万円＋支払利息135百万円（FY27）の合計約785百万円。DSCRはほぼ1.0x前後まで圧縮され、余剰キャッシュはほぼ消滅する。FCFベースでは年間設備投資120百万円を差し引くと実質的にマイナスに転じる可能性があり、現預金の取崩しが始まる。現預金はFY27ベースケースの期末1,457百万円から急速に減少し、クロージング時の想定手元流動性約1,100百万円が早期に毀損される。Net Debt/EBITDAはFY27期末有利子負債5,850百万円に対してベースケース3.3倍から約7.4倍まで急上昇する。",
+        "impact_calc": [
+          {
+            "metric": "DSCR（FY27）",
+            "formula": "EBITDA ÷（約定弁済 ＋ 支払利息）",
+            "before": "1,750百万円 ÷（650百万円 ＋ 135百万円）＝ 約2.2x",
+            "after": "{{790百万円}} ÷（650百万円 ＋ 135百万円）＝ 約{{1.0x}}",
+            "note": "{{稼働率▲6pt}}によりEBITDAが1,750百万円から790百万円へ低下し、デットサービス785百万円に対するカバレッジがほぼ1.0xまで圧縮される"
+          },
+          {
+            "metric": "Net Debt/EBITDA（FY27末）",
+            "formula": "期末有利子負債 ÷ EBITDA",
+            "before": "5,850百万円 ÷ 1,750百万円 ＝ 約3.3x",
+            "after": "5,850百万円 ÷ {{790百万円}} ＝ 約{{7.4x}}",
+            "note": "{{稼働率▲6pt}}によるEBITDA急減で、分子の有利子負債は不変のまま倍率が3.3倍から7.4倍へ大幅に上昇する"
+          },
+          {
+            "metric": "FCF（FY27）",
+            "formula": "EBITDA △ 支払利息 △ 法人税等 △ 運転資本増減 △ 設備投資",
+            "before": "1,750百万円 △ 135百万円 △ 467百万円 △ 36百万円 △ 120百万円 ＝ 約992百万円",
+            "after": "{{790百万円}} △ 135百万円 △ {{約204百万円（概算）}} △ 36百万円 △ 120百万円 ＝ 約{{295百万円}}",
+            "note": "{{稼働率▲6ptによるEBITDA▲960百万円}}により、FCFが約992百万円から約295百万円へ急減し、約定弁済650百万円を大幅に下回る"
+          }
+        ],
+        "safeguards": "A社との関係悪化を早期に検知するためのKPIモニタリング（月次稼働人数・受注残）の設定。コベナンツ設計においては稼働率80%を下回った場合のEarlyWarning指標化を検討。法務DDが指摘するCoC条項に基づきクロージング前のA社事前説明を徹底し、関係維持の確度を高める。バックアップファシリティ（コミットメントライン）の設定（財務DDも推奨）により急激な現金不足を防止。B社・C社および新規顧客開拓による売上分散の計画化。",
+        "questions": "①A社との現行派遣契約の残存期間・工程別内訳の詳細開示は可能か。②パワートレイン系工程から電池・EV工程への転換にあたり対象会社はA社の新工程に参入する計画があるか。③CoC条項についてA社との協議状況・クロージング前の説明スケジュールをいつ確定できるか。④有利子負債5,850百万円（FY27末）に対するNet Debt/EBITDAコベナンツ水準の考え方はどうか。",
+        "adopted": false,
+        "rejection_note": null,
+        "stale_reason": null,
+        "updated_at": "2026-08-04T12:26:28.467875"
+      },
+      {
+        "id": 6,
+        "key": "B",
+        "origin": "ai",
+        "type_label": "コスト",
+        "title": "採用単価（CPA）の急騰と法定福利費率引上げによるコスト圧迫",
+        "cause": "製造工程職の有効求人倍率1.9倍（東海地区・2026年5月）がさらに上昇し、採用単価（CPA）が計画比で大幅に上振れる。加えて2026年度改定の法定福利費率+0.2ptに続き翌年度も追加改定が実施されるシナリオ。採用競争激化はDDが最重要リスクとして明示（事業DD p.5・p.16）。",
+        "affected_kpis": [
+          "B9",
+          "B17",
+          "B11",
+          "B25"
+        ],
+        "change_text": "採用単価CPA：計画255千円/名 → 305千円/名（＋20%、約50千円/名上昇）、採用費追加負担：1,220名×50千円＝約61百万円増。法定福利費率：+0.4pt（計画外追加0.2pt）、スタッフ労務費追加：売上ベースで粗利率▲約0.4pt相当・約60百万円増。合計コスト増加 約120百万円。",
+        "change_basis": "財務DDの感応度：採用単価CPA+10%でEBITDA▲30百万円（p.35）。よってCPA+20%は▲60百万円。法定福利費率+0.2ptはFY27に約▲25百万円（財務DD p.11）、さらに0.2pt追加で合計▲50百万円。合計約▲110〜120百万円。事業DD：CPAはFY24の225千円からFY26の250千円へ年率5%超ペースで上昇（p.16）、有効求人倍率1.9倍は全国平均超（p.11）。",
+        "impact": "EBITDAはFY27ベースケースの1,750百万円から約▲120百万円押し下げられ1,630百万円程度となる。DSCRは1,630百万円÷785百万円≒2.1xと依然余裕はあるが、コスト上振れが継続すれば後年度には累積的に圧迫される。より深刻なのは採用競争の激化が稼働率維持に必要な採用人数の確保を困難にする点で、採用不足が稼働率低下（シナリオAと複合）に波及するリスクがある。Net Debt/EBITDAは5,850百万円÷1,630百万円≒3.6xとベースケース比0.3x悪化。現預金への直接的な影響は年間FCFの減少（約▲120百万円）として表れ、FY27末現預金はベースケースの1,457百万円を下回る見込み。単独では管理可能な水準だが、単価転嫁が遅れる局面（最大6ヶ月・財務DD p.11）では一時的なスプレッド縮小が重なり損益が複合的に悪化する。",
+        "impact_calc": [
+          {
+            "metric": "DSCR（FY27）",
+            "formula": "EBITDA ÷（約定弁済 ＋ 支払利息）",
+            "before": "1,750百万円 ÷（650百万円 ＋ 135百万円）＝ 約2.2x",
+            "after": "{{1,630百万円}} ÷（650百万円 ＋ 135百万円）＝ 約{{2.1x}}",
+            "note": "{{採用単価CPA+20%（▲60百万円）と法定福利費追加改定（▲60百万円）}}の合計約▲120百万円のコスト増加によりEBITDAが1,630百万円へ低下し、DSCRが2.2xから2.1xへ低下する"
+          },
+          {
+            "metric": "Net Debt/EBITDA（FY27末）",
+            "formula": "期末有利子負債 ÷ EBITDA",
+            "before": "5,850百万円 ÷ 1,750百万円 ＝ 約3.3x",
+            "after": "5,850百万円 ÷ {{1,630百万円}} ＝ 約{{3.6x}}",
+            "note": "{{CPA急騰・法定福利費上昇によるEBITDA▲120百万円}}により倍率が3.3倍から3.6倍へ悪化する"
+          },
+          {
+            "metric": "粗利率（FY27）",
+            "formula": "（売上収益 △ 売上原価）÷ 売上収益",
+            "before": "3,016百万円 ÷ 14,890百万円 ＝ 約20.3%",
+            "after": "{{2,956百万円（原価▲60百万円追加）}} ÷ 14,890百万円 ＝ 約{{19.9%}}",
+            "note": "{{法定福利費追加改定によるスタッフ労務費増加約60百万円}}が転嫁前の期間に発生し、粗利率が20.3%から約19.9%へ低下する（FY27は購買前提シートの計算値を使用）"
+          }
+        ],
+        "safeguards": "リファラル採用比率の引上げ計画（FY26実績23%→計画値への進捗確認）による採用費の抑制。採用単価が閾値（280千円/名等）を超えた場合の銀行への報告・協議義務をコベナンツの管理指標に組み込む。法定福利費上昇分の顧客への転嫁交渉（毎年4月改定・過去3年実績+2%）の継続状況をモニタリング。採用DXの内製化（FY27以降）によるコスト効率化が計画どおり進捗しているか確認。",
+        "questions": "①FY27の採用費予算（311百万円）のうちリファラル経由の割合と媒体費の内訳はどのように想定しているか。②法定福利費率の追加改定が生じた場合、顧客への転嫁交渉はどのタイミング・方式で行う想定か。③採用DX内製化後（FY27〜）のCPAへの削減効果をどの程度見込んでいるか、根拠数値はあるか。④採用人数が計画（1,220名）を10%以上下回った場合の稼働率・売上への影響をスポンサーはどう試算しているか。",
+        "adopted": false,
+        "rejection_note": null,
+        "stale_reason": null,
+        "updated_at": "2026-08-04T12:26:28.467887"
+      },
+      {
+        "id": 7,
+        "key": "C",
+        "origin": "ai",
+        "type_label": "イベント",
+        "title": "自動車生産急減（リセッション・減産局面）による稼働率急低下と現預金の急減",
+        "cause": "米中貿易摩擦の再燃・国内景気後退・完成車各社の在庫調整が重なり、東海地区の自動車生産台数が前年比▲15〜20%規模で急減。顧客が30日前通知の個別契約解除条項を行使して派遣人数を削減し、稼働率が短期間に大きく低下するシナリオ。2009年のリーマンショック時には売上が約4割減少した先例がある（事業DD p.6・p.17）。ただし本件投資期間（5〜7年）内での発生確率は限定的としつつ、ダウンサイドテールリスクとして把握すべきシナリオ。",
+        "affected_kpis": [
+          "B7",
+          "B7",
+          "B25",
+          "B7"
+        ],
+        "change_text": "稼働率：88% → 76%（▲12pt）、EBITDAへの影響：▲160百万円/pt × 12pt ＝ ▲1,920百万円、EBITDAは1,750百万円 → ▲170百万円（赤字転落）。ただし変動コスト（採用費・非稼働スタッフのコスト削減）の一定の対応により実際の悪化幅は緩和され、▲1,400〜1,600百万円程度（EBITDA150〜350百万円）と推定。",
+        "change_basis": "財務DDの感応度：稼働率1pt低下でEBITDA▲160百万円（p.35）。▲12ptは2009年実績（売上4割減）を参考とした保守的水準。同年は拠点統合・採用停止で対応したことを考慮し、変動コスト圧縮効果として損益悪化幅を感応度の単純計算より小さく見積もり▲1,400百万円程度とした。競合比較表（事業DD p.12）で全国大手N社稼働率82%が中長期ベースラインとなり、大手並みの76%程度まで低下すると想定。",
+        "impact": "EBITDAが150〜350百万円へ急落した場合、デットサービス（年間約785百万円＝約定弁済650百万円＋支払利息135百万円）を大幅に下回り、DSCRは0.2〜0.4x程度となる。FCFは大幅なマイナスとなり、現預金の取崩しが本格化する。ベースケースでのFY27末現預金1,457百万円は、月間給与支払約900百万円（財務DD p.32）を考慮すると実質的な余裕は1〜2ヶ月分にすぎず、稼働率急低下が6ヶ月以上継続すると流動性危機に発展するリスクがある。Net Debt/EBITDAは5,850百万円÷250百万円（中央値）で23倍超となり、比率の意味をなさない水準に達する。コベナンツ抵触の可能性が高く、ウェーバー交渉が必要となる局面が想定される。クロージング直後の現預金が財務DDの試算で約1,100百万円（p.32）と最低限とされている点から、イベント発生タイミングが早期であればあるほど余裕は小さい。",
+        "impact_calc": [
+          {
+            "metric": "DSCR（FY27・急減シナリオ）",
+            "formula": "EBITDA ÷（約定弁済 ＋ 支払利息）",
+            "before": "1,750百万円 ÷（650百万円 ＋ 135百万円）＝ 約2.2x",
+            "after": "{{250百万円（中央値推定）}} ÷（650百万円 ＋ 135百万円）＝ 約{{0.3x}}",
+            "note": "{{稼働率▲12ptによるEBITDA▲1,400〜1,600百万円の急落}}により、デットサービスに対するカバレッジが0.3x程度まで低下する"
+          },
+          {
+            "metric": "現預金残高（FY27末・急減シナリオ）",
+            "formula": "期首現預金 ＋ FCF △ 約定弁済",
+            "before": "約1,100百万円（期首） ＋ 997百万円（FCF・ベースケース） △ 650百万円 ＝ 約1,447百万円",
+            "after": "約1,100百万円（期首） ＋ {{▲300百万円（FCF・急減時）}} △ 650百万円 ＝ 約{{150百万円}}",
+            "note": "{{稼働率▲12ptによるFCFのマイナス転落}}により、FY27末の現預金が約1,447百万円から約150百万円へ急減し、月間給与支払約900百万円に対して著しく不足する"
+          },
+          {
+            "metric": "Net Debt/EBITDA（FY27末・急減シナリオ）",
+            "formula": "期末有利子負債 ÷ EBITDA",
+            "before": "5,850百万円 ÷ 1,750百万円 ＝ 約3.3x",
+            "after": "5,850百万円 ÷ {{250百万円}} ＝ 約{{23.4x}}",
+            "note": "{{稼働率▲12ptによるEBITDA250百万円への急落}}により、有利子負債は弁済が進まずNet Debt/EBITDAが比率として機能しない水準（約23倍）に達する"
+          }
+        ],
+        "safeguards": "コミットメントライン（バックアップファシリティ）の早期設定（財務DD・法務DDとも推奨）により流動性クッションを確保。コベナンツにDSCR/レバレッジ条項に加えて現預金維持条項（最低XXX百万円）を設定し、早期警戒指標とする。貸出契約に景気急変時のリストラクチャリング協議条項（アコモデーション条項）を盛り込み、事前のコンティンジェンシープランを合意しておく。変動コスト比率（採用費・非稼働スタッフコスト）の管理策（迅速な採用停止・派遣契約非更新の執行能力）をスポンサーに確認。自動車産業の生産動向を月次でモニタリングするレポーティングコベナンツの設定。",
+        "questions": "①2009年リーマンショック時の稼働率低下の最大値・回復期間の実績データを開示できるか。②稼働率が大幅低下した際の変動コスト削減のプレイブック（採用停止・非稼働スタッフの対応方針）はあるか。③コミットメントラインの設定規模・発動条件についてスポンサーはどの程度のラインを想定しているか。④主要顧客への自動車生産計画（FY27〜FY30）の見通しについてヒアリング済みの内容があれば開示できるか。",
+        "adopted": false,
+        "rejection_note": null,
+        "stale_reason": null,
+        "updated_at": "2026-08-04T12:26:28.467890"
+      }
+    ],
+    "memos": [],
+    "history": [
+      {
+        "id": 23,
+        "at": "2026-08-04T12:26:28.437453",
+        "user": "shinsa",
+        "action": "AI解析（シナリオ）",
+        "detail": "推奨シナリオ3件を提案"
+      },
+      {
+        "id": 22,
+        "at": "2026-08-04T12:24:32.534980",
+        "user": "shinsa",
+        "action": "AI解析（KPI構造）",
+        "detail": "KPIツリー28ノードを提案"
+      },
+      {
+        "id": 21,
+        "at": "2026-08-04T12:22:28.876309",
+        "user": "shinsa",
+        "action": "AI解析（抽出）",
+        "detail": "36項目を抽出・確認事項6件を検知"
+      },
+      {
+        "id": 20,
+        "at": "2026-08-04T12:17:23.453477",
+        "user": "shinsa",
+        "action": "案件情報を更新",
+        "detail": "登録内容を確定"
+      },
+      {
+        "id": 19,
+        "at": "2026-08-04T12:17:23.369805",
+        "user": "shinsa",
+        "action": "案件情報の自動読み取り",
+        "detail": "13フィールドを資料から抽出"
+      },
+      {
+        "id": 18,
+        "at": "2026-08-04T12:16:41.564734",
+        "user": "shinsa",
+        "action": "資料アップロード",
+        "detail": "DD_Tax_オートスタッフ中部.pdf（DDレポート（税務））"
+      },
+      {
+        "id": 17,
+        "at": "2026-08-04T12:16:36.041162",
+        "user": "shinsa",
+        "action": "資料アップロード",
+        "detail": "DD_Legal_オートスタッフ中部.pdf（DDレポート（法務））"
+      },
+      {
+        "id": 16,
+        "at": "2026-08-04T12:16:29.679326",
+        "user": "shinsa",
+        "action": "資料アップロード",
+        "detail": "DD_Financial_オートスタッフ中部.pdf（DDレポート（財務））"
+      },
+      {
+        "id": 15,
+        "at": "2026-08-04T12:16:23.185885",
+        "user": "shinsa",
+        "action": "資料アップロード",
+        "detail": "DD_Business_オートスタッフ中部.pdf（DDレポート（事業））"
+      },
+      {
+        "id": 14,
+        "at": "2026-08-04T12:16:16.273485",
+        "user": "shinsa",
+        "action": "資料アップロード",
+        "detail": "AutostaffChubu_Debt_B.xlsx（種別未設定（その他資料））"
+      },
+      {
+        "id": 13,
+        "at": "2026-08-04T12:16:07.882751",
+        "user": "shinsa",
+        "action": "資料アップロード",
+        "detail": "AutostaffChubu_Model_Sponsor_B.xlsx（種別未設定（その他資料））"
+      },
+      {
+        "id": 12,
+        "at": "2026-08-04T12:15:58.413959",
+        "user": "shinsa",
+        "action": "資料アップロード",
+        "detail": "AutostaffChubu_Model_Base_B.xlsx（種別未設定（その他資料））"
+      },
+      {
+        "id": 11,
+        "at": "2026-08-04T12:15:48.183583",
+        "user": "shinsa",
+        "action": "案件登録（下書き）",
+        "detail": "資料アップロードを開始"
+      }
+    ],
+    "exports": [],
+    "findings": [],
+    "inquiries": [
+      {
+        "id": 3,
+        "category": "参照切れ",
+        "severity": "high",
+        "title": "PL支払利息行の#REF!エラー（両ケース共通）",
+        "detail": "BaseケースおよびSponsorケース両モデルのPLシート行28（支払利息・FY27E〜FY33E）において、FY27〜FY33全期間のセル数式が「=#REF!H19」等の参照切れ（#REF!エラー）となっている。本来このセルはデットスケジュールシートの利息計算を参照すると考えられるが、リンク先のシートまたはファイルが欠落しているためエラーが生じている。計画期間の経常利益・法人税・当期純利益はエラーを無視した手入力値（ハードコード）が計上されているが、デットスケジュールファイル（AutostaffChubu_Debt_B.xlsx）で計算されたシニアローン利息（FY27: 135,850千円、FY28: 121,550千円…FY33: 28,600千円）との整合性が未検証である。Baseケース例：経常利益FY27は1,506,450千円（手入力）に対し、正しくはEBITDA（1,750,000千円）から支払利息（135,850千円）・営業外損益等を控除した値となるべきであり、精査が必要。",
+        "source": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:PL、行28（支払利息）、H28〜N28",
+          "quote": "H28: '=#REF!H19' → #REF!（参照切れ。リンク先シート/ファイルの欠落）",
+          "logic": "ダイジェスト上「#REF!（参照切れ。リンク先シート/ファイルの欠落）」と明示されているため参照切れとして照会。同一エラーがSponsorケースファイルの同行にも存在することを確認。"
+        },
+        "suggested_question": "BaseケースおよびSponsorケースのPLシート行28（支払利息 FY27〜FY33）が#REF!エラーとなっており、参照先のシートまたはファイルが欠落しています。正しい参照先ファイル（例：debtシートの利息計算セル）をお示しいただくか、#REF!エラーを修正した最新版モデルをご提供ください。あわせて、現状の経常利益・当期純利益の手入力値（ハードコード値）がデットスケジュールの利息計算値と整合していることをご確認ください。",
+        "status": "open",
+        "resolution_note": null,
+        "resolved_by": null,
+        "resolved_at": null,
+        "created_at": "2026-08-04T12:22:29.087871"
+      },
+      {
+        "id": 4,
+        "category": "資料間矛盾",
+        "severity": "high",
+        "title": "のれん想定額の前提差異（モデル vs 財務DD）",
+        "detail": "スポンサーモデル（BaseおよびSponsorケース共通）はのれん5,500,000千円を計上しているのに対し、財務DDは独自試算によるのれん想定額を5,280百万円（5,280,000千円）としており、220,000千円の差異が存在する。財務DDによれば差異の主因は（i）取引費用の取扱い（スポンサーモデルの株式取得対価前提11,520百万円 vs 財務DD試算11,300百万円）および（ii）識別可能無形資産（顧客関連資産）の評価前提の相違とされている。のれん金額はBSの資産合計・レバレッジ比率計算に直接影響するため、最終PPAまでの間の暫定値としてどちらを参照すべきか確認が必要。",
+        "source": {
+          "file": "DD_Financial_オートスタッフ中部.pdf",
+          "location": "p.31（7.2 のれん想定額の試算）",
+          "quote": "当法人の試算によるのれん想定額は5,280百万円である。スポンサー提出の財務モデルにはのれん5,500百万円が計上されており、220百万円の差異がある。差異の主因は取引費用の取扱いおよび識別可能無形資産（顧客関連資産）の評価前提の相違",
+          "logic": "財務DDのp.31に明示された資料間矛盾を抽出。モデル計上値との対比として記録。"
+        },
+        "suggested_question": "財務DDによるのれん試算値（5,280百万円）とスポンサーモデル計上値（5,500百万円）の差異220百万円について、（i）取引費用のどの項目に前提差異があるか（スポンサーモデル11,520百万円 vs 財務DD11,300百万円の220百万円差の内訳）、（ii）識別可能無形資産（顧客関連資産）の評価額についてスポンサーが前提とする額をお示しください。また、最終PPAまでの間、審査上ではどちらの暫定値を用いるべきかのご意向をお聞かせください。",
+        "status": "open",
+        "resolution_note": null,
+        "resolved_by": null,
+        "resolved_at": null,
+        "created_at": "2026-08-04T12:22:29.087880"
+      },
+      {
+        "id": 5,
+        "category": "正シート識別",
+        "severity": "medium",
+        "title": "旧版PLシート（PL_old）の取扱い",
+        "detail": "BaseケースおよびSponsorケースの両Excelファイルに「PL_old」シートが存在し、シートの冒頭に「損益計算書【旧版 v2.1】※使用しないこと（FY26速報反映前）」と明記されている。ただし両ファイルの旧版シートの計画値はFY27以降で異なっており（Base旧版FY27売上高14,368,850千円 vs Sponsor旧版FY27売上高14,732,352千円）、旧版同士でも内容が相違する。旧版はスポンサーモデルのv2.1（シニア7,000,000千円・金利2.4%）の設定を反映した別前提のモデルであり、審査相談における参照対象から除外すべきである。なお、inpシートにも「（参考）旧前提 v2.1：シニア7,000,000／金利2.4% ※現行版では使用しない」との注記があり、現行モデルとの不整合は確認済み。",
+        "source": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:PL_old、A1",
+          "quote": "損益計算書【旧版 v2.1】※使用しないこと（FY26速報反映前）",
+          "logic": "シート名「PL_old」および冒頭セルの「※使用しないこと」の注記から旧版シートと識別。現行モデル（ver.4.0）との使用区分を明確化するため照会。"
+        },
+        "suggested_question": "BaseケースおよびSponsorケースの両ファイルに「PL_old（v2.1）」シートが残存しています。本シートはシニアローン7,000,000千円・金利2.4%の旧前提に基づく参考情報との理解でよいか、また本シートの数値を審査参照資料の対象外として取り扱うことに問題がないかご確認ください。",
+        "status": "open",
+        "resolution_note": null,
+        "resolved_by": null,
+        "resolved_at": null,
+        "created_at": "2026-08-04T12:22:29.087881"
+      },
+      {
+        "id": 6,
+        "category": "資料間矛盾",
+        "severity": "medium",
+        "title": "ティーザーEBITDA速報値と確報値の差異",
+        "detail": "両ファイルのinpシートに「スポンサー提示EBITDA（速報・ティーザー記載）1,585,000千円」が記載されているが、現行モデルのFY26実績EBITDA（修正EBITDA）は1,620,000千円であり、35,000千円（約2.2%）の差異がある。財務DDの正常収益力EBITDAも1,620百万円であり確報値を支持している。速報値から確報値への修正内容（FY26採用DX費用の一過性区分変更等の可能性）の詳細が不明なため、速報値の取扱いと修正経緯を確認する必要がある。",
+        "source": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:inp、B28〜D28",
+          "quote": "スポンサー提示EBITDA（速報・ティーザー記載）: 1585000",
+          "logic": "inpシートの速報EBITDAと、PLシートG25の実績EBITDA（1,620,000千円）の差異35,000千円を資料間矛盾として記録。"
+        },
+        "suggested_question": "inpシートに記載のティーザー速報EBITDA（1,585,000千円）と現行モデルのFY26実績EBITDA（1,620,000千円）の差異35,000千円について、修正の経緯（修正項目・金額内訳）をご説明ください。また、速報値をベースに試算されている評価指標（EV/EBITDA等）があれば、確報値ベースへの読み替えをお願いします。",
+        "status": "open",
+        "resolution_note": null,
+        "resolved_by": null,
+        "resolved_at": null,
+        "created_at": "2026-08-04T12:22:29.087881"
+      },
+      {
+        "id": 7,
+        "category": "作成時点差",
+        "severity": "medium",
+        "title": "DDレポート調査基準日とモデル作成日の差異",
+        "detail": "財務DD・法務DD・事業DDの調査基準日は2026年5月31日であるのに対し、スポンサーモデル（BaseおよびSponsorケース）の作成日はカバーシートに「2026年7月10日（Ver. 4.0）」と記載されており、約40日の作成時点差が存在する。財務DDはFY27第1四半期（2026年4〜6月）の進捗を参照しているが（p.29）、モデルのFY27計画値がDDレポート作成後に改定されている可能性がある。特に採用市場環境（CPA・採用人数）に関する前提のアップデートの有無を確認する必要がある。",
+        "source": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:Cover、B11",
+          "quote": "作成日：2026年7月10日（Ver. 4.0・12期版）",
+          "logic": "モデルカバーシートの作成日（2026年7月10日）とDD各報告書の調査基準日（2026年5月31日）を比較し、40日程度の作成時点差を確認。"
+        },
+        "suggested_question": "スポンサーモデル（Ver. 4.0、2026年7月10日作成）はDDレポートの調査基準日（2026年5月31日）より後に作成されています。モデルVer. 4.0において、DD調査基準日以降に変更された主要前提（特に採用単価・採用人数・稼働率・FY27計画値）がある場合はその内容をお示しください。また、財務DDのFY27第1四半期進捗（前年同期比+5.2%）はVer. 4.0の計画値に反映されていますか。",
+        "status": "open",
+        "resolution_note": null,
+        "resolved_by": null,
+        "resolved_at": null,
+        "created_at": "2026-08-04T12:22:29.087882"
+      },
+      {
+        "id": 8,
+        "category": "正シート識別",
+        "severity": "low",
+        "title": "作業用Scratchシート・空Sheet1の取扱い",
+        "detail": "BaseケースおよびSponsorケースの両ファイルに「Scratch」シートと「Sheet1」（空白）が存在する。Scratchシートは冒頭に「（作業用シート・成果物ではありません）」と明記されており、「旧のれん試算 5,656,000 → PPA仮 5,500,000」「年間換算係数（166h×2,125×12）ミス。使わない」等の作業メモが含まれる。Sheet1は内容が空欄であることが確認されている。これらは審査相談における参照対象外と理解するが、のれん旧試算値（5,656,000千円）や計算ミスの記録は審査の参考情報として把握した。",
+        "source": {
+          "file": "AutostaffChubu_Model_Base_B.xlsx",
+          "location": "シート:Scratch、A1・B12・B10",
+          "quote": "A1:（作業用シート・成果物ではありません）… B12:旧のれん試算 5,656,000 → PPA仮 5,500,000",
+          "logic": "シート名「Scratch」および冒頭セルの明示から作業用シートと識別。Sheet1は空欄であることを確認。"
+        },
+        "suggested_question": "ScratchシートおよびSheet1は審査相談用の参照資料には含まれないとの理解でよいかご確認ください。また、Scratchシートに記録されている旧のれん試算値（5,656,000千円）と現行モデル計上値（5,500,000千円）の差額156,000千円について、変更の経緯（PPA前提の変更内容）をご説明いただけますか。",
+        "status": "open",
+        "resolution_note": null,
+        "resolved_by": null,
+        "resolved_at": null,
+        "created_at": "2026-08-04T12:22:29.087883"
+      }
+    ],
+    "analysis_runs": [
+      {
+        "id": 3,
+        "step": "scenarios",
+        "status": "ok",
+        "mode": "anthropic",
+        "model": "claude-sonnet-4-6",
+        "input_tokens": 59948,
+        "output_tokens": 6087,
+        "max_tokens": 32000,
+        "stop_reason": "tool_use",
+        "duration_ms": 114564,
+        "prompt_chars": 74584,
+        "result_summary": "シナリオ3件",
+        "error": null,
+        "at": "2026-08-04T12:26:28.437192"
+      },
+      {
+        "id": 2,
+        "step": "kpi",
+        "status": "ok",
+        "mode": "anthropic",
+        "model": "claude-sonnet-4-6",
+        "input_tokens": 10676,
+        "output_tokens": 8694,
+        "max_tokens": 32000,
+        "stop_reason": "tool_use",
+        "duration_ms": 123198,
+        "prompt_chars": 9466,
+        "result_summary": "KPI 28ノード",
+        "error": null,
+        "at": "2026-08-04T12:24:32.534272"
+      },
+      {
+        "id": 1,
+        "step": "items",
+        "status": "ok",
+        "mode": "anthropic",
+        "model": "claude-sonnet-4-6",
+        "input_tokens": 75265,
+        "output_tokens": 20182,
+        "max_tokens": 32000,
+        "stop_reason": "tool_use",
+        "duration_ms": 302307,
+        "prompt_chars": 95932,
+        "result_summary": "抽出36項目・確認事項6件",
+        "error": null,
+        "at": "2026-08-04T12:22:28.875727"
+      }
+    ],
+    "chat_suggestions": {
+      "kpi": [
+        "（例）重要なKPIを追加・変更したい内容を入力してください"
+      ],
+      "scenario": [
+        "（例）シナリオの深掘り・保全策の追加などを入力してください"
+      ]
+    }
+  }
+}

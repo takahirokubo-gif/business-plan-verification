@@ -20,3 +20,10 @@ __pycache__/
 
 # ビルド成果物
 *.tsbuildinfo
+docs/stitch/output/*.zip
+
+# OS
+.DS_Store
+
+# 実資料サンプル（実在社名・confidential 表記を含むため公開リポジトリには載せない）
+actual_data_sample/
