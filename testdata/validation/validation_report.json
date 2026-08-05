@@ -1,0 +1,474 @@
+{
+  "summary": {
+    "total": 58,
+    "passed": 56,
+    "failed": 0,
+    "manual": 2
+  },
+  "results": [
+    {
+      "id": "E1",
+      "dataset": "A",
+      "desc": "Model_A: シート数6枚以上（Cover除く）・PL/BS/CF別シート",
+      "status": "pass",
+      "actual": "7枚 ['Assumptions', 'PL', 'BS', 'CF', 'KPI_Drivers', 'Debt_Schedule', '月次試算表_FY26']",
+      "expected": "6枚以上・PL/BS/CF存在"
+    },
+    {
+      "id": "E1/E5",
+      "dataset": "A",
+      "desc": "Model_A: 全対象シートの期間列がFY22〜FY33の12期・実績/計画区分一致",
+      "status": "pass",
+      "actual": "12期一貫",
+      "expected": "FY22〜FY33・実績5期＋計画7期"
+    },
+    {
+      "id": "E2",
+      "dataset": "A",
+      "desc": "Model_A: 月次試算表_FY26（2025/04〜2026/03・PL5行＋BS3行）",
+      "status": "pass",
+      "actual": "hdr=['2025/04', '2025/05']…2026/03 PL=5行 BS=3行",
+      "expected": "12ヶ月・PL5行以上・BS3行以上"
+    },
+    {
+      "id": "E2",
+      "dataset": "A",
+      "desc": "Model_A: 月次12ヶ月合計＝年次FY26（±1千円）・3月末残高＝年次BS",
+      "status": "pass",
+      "actual": "PL差異(円)={'revenue': 0, 'cogs': 0, 'sga': 0} BS差異(円)={'cash': 0, 'ar': 0, 'ap': 0}",
+      "expected": "PL±1,000円以内・BS一致"
+    },
+    {
+      "id": "E2",
+      "dataset": "A",
+      "desc": "Model_A: 季節月（5月・8月・1月）の売上が他9ヶ月平均比△5〜8%",
+      "status": "pass",
+      "actual": "{'2025/05': '6.0%', '2025/08': '6.5%', '2026/01': '7.0%'}",
+      "expected": "各月5〜8%低下"
+    },
+    {
+      "id": "E3",
+      "dataset": "A",
+      "desc": "Model_A: 単位表記の位置×記法が3種類以上",
+      "status": "pass",
+      "actual": "['PL!N2(ヘッダー右端・コロン)', 'CF!A1(タイトル内)', 'BS!A2(標準)', 'Debt!A2(英語)']",
+      "expected": "3種類以上"
+    },
+    {
+      "id": "E4",
+      "dataset": "A",
+      "desc": "Model_A: 年次ヘッダーのFY表記率100%",
+      "status": "pass",
+      "actual": "100%",
+      "expected": "100%"
+    },
+    {
+      "id": "E4",
+      "dataset": "A",
+      "desc": "Model_A: 英語併記科目3件以上",
+      "status": "pass",
+      "actual": "5件",
+      "expected": "3件以上"
+    },
+    {
+      "id": "E5",
+      "dataset": "A",
+      "desc": "Model_A: FY22〜23実績（全期黒字・CAGR5〜8%・滑らかな接続）",
+      "status": "pass",
+      "actual": "NI={'FY22': 709457.0, 'FY23': 785306.0} CAGR=6.37% 成長率=['6.8%', '5.5%', '7.2%', '6.0%']",
+      "expected": "黒字・CAGR5〜8%・各年成長率が連続"
+    },
+    {
+      "id": "E5",
+      "dataset": "A",
+      "desc": "Model_A: FY32〜33計画（稼働率88%維持・単価改定+1%/年前後）",
+      "status": "pass",
+      "actual": "util=[0.88, 0.88] 改定率=1.00%/0.99%",
+      "expected": "88%・+1%前後"
+    },
+    {
+      "id": "共通(整合)",
+      "dataset": "A",
+      "desc": "Model_A: 再計算一致・PL縦計算・BS貸借一致・破損セル以外の数式エラーゼロ",
+      "status": "pass",
+      "actual": "不一致0件 想定外破損0件 評価エラー0件",
+      "expected": "全一致・エラーゼロ"
+    },
+    {
+      "id": "E1",
+      "dataset": "B",
+      "desc": "Base_B: シート数6枚以上（Cover除く）・PL/BS/CF別シート",
+      "status": "pass",
+      "actual": "9枚 ['Assumptions', 'PL', 'BS', 'CF', 'KPI_Drivers', '月次試算表_FY26', 'PL_old', 'Scratch', 'Sheet1']",
+      "expected": "6枚以上・PL/BS/CF存在"
+    },
+    {
+      "id": "E1/E5",
+      "dataset": "B",
+      "desc": "Base_B: 全対象シートの期間列がFY22〜FY33の12期・実績/計画区分一致",
+      "status": "pass",
+      "actual": "12期一貫",
+      "expected": "FY22〜FY33・実績5期＋計画7期"
+    },
+    {
+      "id": "E2",
+      "dataset": "B",
+      "desc": "Base_B: 月次試算表_FY26（2025/04〜2026/03・PL5行＋BS3行）",
+      "status": "pass",
+      "actual": "hdr=['2025/04', '2025/05']…2026/03 PL=5行 BS=3行",
+      "expected": "12ヶ月・PL5行以上・BS3行以上"
+    },
+    {
+      "id": "E2",
+      "dataset": "B",
+      "desc": "Base_B: 月次12ヶ月合計＝年次FY26（±1千円）・3月末残高＝年次BS",
+      "status": "pass",
+      "actual": "PL差異(円)={'revenue': 0, 'cogs': 0, 'sga': 0} BS差異(円)={'cash': 0, 'ar': 0, 'ap': 0}",
+      "expected": "PL±1,000円以内・BS一致"
+    },
+    {
+      "id": "E2",
+      "dataset": "B",
+      "desc": "Base_B: 季節月（5月・8月・1月）の売上が他9ヶ月平均比△5〜8%",
+      "status": "pass",
+      "actual": "{'2025/05': '6.0%', '2025/08': '6.5%', '2026/01': '7.0%'}",
+      "expected": "各月5〜8%低下"
+    },
+    {
+      "id": "E3",
+      "dataset": "B",
+      "desc": "Base_B: 単位表記の位置×記法が3種類以上",
+      "status": "pass",
+      "actual": "['PL!N2(ヘッダー右端・コロン)', 'CF!A1(タイトル内)', 'BS!A2(標準)']",
+      "expected": "3種類以上"
+    },
+    {
+      "id": "E4",
+      "dataset": "B",
+      "desc": "Base_B: 年次ヘッダーのFY表記率100%",
+      "status": "pass",
+      "actual": "100%",
+      "expected": "100%"
+    },
+    {
+      "id": "E4",
+      "dataset": "B",
+      "desc": "Base_B: 英語併記科目3件以上",
+      "status": "pass",
+      "actual": "5件",
+      "expected": "3件以上"
+    },
+    {
+      "id": "E5",
+      "dataset": "B",
+      "desc": "Base_B: FY22〜23実績（全期黒字・CAGR5〜8%・滑らかな接続）",
+      "status": "pass",
+      "actual": "NI={'FY22': 709457.0, 'FY23': 785306.0} CAGR=6.37% 成長率=['6.8%', '5.5%', '7.2%', '6.0%']",
+      "expected": "黒字・CAGR5〜8%・各年成長率が連続"
+    },
+    {
+      "id": "E5",
+      "dataset": "B",
+      "desc": "Base_B: FY32〜33計画（稼働率88%維持・単価改定+1%/年前後）",
+      "status": "pass",
+      "actual": "util=[0.88, 0.88] 改定率=1.00%/0.99%",
+      "expected": "88%・+1%前後"
+    },
+    {
+      "id": "共通(整合)",
+      "dataset": "B",
+      "desc": "Base_B: 再計算一致・PL縦計算・BS貸借一致・破損セル以外の数式エラーゼロ",
+      "status": "pass",
+      "actual": "不一致0件 想定外破損0件 評価エラー0件",
+      "expected": "全一致・エラーゼロ"
+    },
+    {
+      "id": "E11",
+      "dataset": "B",
+      "desc": "Base_B: 支払利息FY27〜33の7セルが解決不能参照（#REF!）・全番地planted記載",
+      "status": "pass",
+      "actual": "7セル ['PL!H28', 'PL!I28', 'PL!J28', 'PL!K28', 'PL!L28', 'PL!M28', 'PL!N28']",
+      "expected": "PL!H28:N28の7セル"
+    },
+    {
+      "id": "E1",
+      "dataset": "B",
+      "desc": "Sponsor_B: シート数6枚以上（Cover除く）・PL/BS/CF別シート",
+      "status": "pass",
+      "actual": "9枚 ['Assumptions', 'PL', 'BS', 'CF', 'KPI_Drivers', '月次試算表_FY26', 'PL_old', 'Scratch', 'Sheet1']",
+      "expected": "6枚以上・PL/BS/CF存在"
+    },
+    {
+      "id": "E1/E5",
+      "dataset": "B",
+      "desc": "Sponsor_B: 全対象シートの期間列がFY22〜FY33の12期・実績/計画区分一致",
+      "status": "pass",
+      "actual": "12期一貫",
+      "expected": "FY22〜FY33・実績5期＋計画7期"
+    },
+    {
+      "id": "E2",
+      "dataset": "B",
+      "desc": "Sponsor_B: 月次試算表_FY26（2025/04〜2026/03・PL5行＋BS3行）",
+      "status": "pass",
+      "actual": "hdr=['2025/04', '2025/05']…2026/03 PL=5行 BS=3行",
+      "expected": "12ヶ月・PL5行以上・BS3行以上"
+    },
+    {
+      "id": "E2",
+      "dataset": "B",
+      "desc": "Sponsor_B: 月次12ヶ月合計＝年次FY26（±1千円）・3月末残高＝年次BS",
+      "status": "pass",
+      "actual": "PL差異(円)={'revenue': 0, 'cogs': 0, 'sga': 0} BS差異(円)={'cash': 0, 'ar': 0, 'ap': 0}",
+      "expected": "PL±1,000円以内・BS一致"
+    },
+    {
+      "id": "E2",
+      "dataset": "B",
+      "desc": "Sponsor_B: 季節月（5月・8月・1月）の売上が他9ヶ月平均比△5〜8%",
+      "status": "pass",
+      "actual": "{'2025/05': '6.0%', '2025/08': '6.5%', '2026/01': '7.0%'}",
+      "expected": "各月5〜8%低下"
+    },
+    {
+      "id": "E3",
+      "dataset": "B",
+      "desc": "Sponsor_B: 単位表記の位置×記法が3種類以上",
+      "status": "pass",
+      "actual": "['PL!N2(ヘッダー右端・コロン)', 'CF!A1(タイトル内)', 'BS!A2(標準)']",
+      "expected": "3種類以上"
+    },
+    {
+      "id": "E4",
+      "dataset": "B",
+      "desc": "Sponsor_B: 年次ヘッダーのFY表記率100%",
+      "status": "pass",
+      "actual": "100%",
+      "expected": "100%"
+    },
+    {
+      "id": "E4",
+      "dataset": "B",
+      "desc": "Sponsor_B: 英語併記科目3件以上",
+      "status": "pass",
+      "actual": "5件",
+      "expected": "3件以上"
+    },
+    {
+      "id": "E5",
+      "dataset": "B",
+      "desc": "Sponsor_B: FY22〜23実績（全期黒字・CAGR5〜8%・滑らかな接続）",
+      "status": "pass",
+      "actual": "NI={'FY22': 709457.0, 'FY23': 785306.0} CAGR=6.37% 成長率=['6.8%', '5.5%', '7.2%', '6.0%']",
+      "expected": "黒字・CAGR5〜8%・各年成長率が連続"
+    },
+    {
+      "id": "共通(整合)",
+      "dataset": "B",
+      "desc": "Sponsor_B: 再計算一致・PL縦計算・BS貸借一致・破損セル以外の数式エラーゼロ",
+      "status": "pass",
+      "actual": "不一致0件 想定外破損0件 評価エラー0件",
+      "expected": "全一致・エラーゼロ"
+    },
+    {
+      "id": "E11",
+      "dataset": "B",
+      "desc": "Sponsor_B: 支払利息FY27〜33の7セルが解決不能参照（#REF!）・全番地planted記載",
+      "status": "pass",
+      "actual": "7セル ['PL!H28', 'PL!I28', 'PL!J28', 'PL!K28', 'PL!L28', 'PL!M28', 'PL!N28']",
+      "expected": "PL!H28:N28の7セル"
+    },
+    {
+      "id": "E6",
+      "dataset": "A",
+      "desc": "指定業界用語15語中10語以上が出現（Excel A＋統合DD）",
+      "status": "pass",
+      "actual": "15語",
+      "expected": "10語以上"
+    },
+    {
+      "id": "E6",
+      "dataset": "B",
+      "desc": "指定業界用語15語中10語以上が出現（Excel B＋DD4分冊）",
+      "status": "pass",
+      "actual": "15語",
+      "expected": "10語以上"
+    },
+    {
+      "id": "E2(A)",
+      "dataset": "A",
+      "desc": "月次試算表の冒頭に「（単位：円）」ラベル",
+      "status": "pass",
+      "actual": "（単位：円）",
+      "expected": "（単位：円）"
+    },
+    {
+      "id": "E4",
+      "dataset": "A",
+      "desc": "英語行ラベルのシートが1枚以上（Debt_Schedule 80%以上英語）",
+      "status": "pass",
+      "actual": "100% (7/7)",
+      "expected": "80%以上"
+    },
+    {
+      "id": "D1(A)",
+      "dataset": "A",
+      "desc": "統合版DDが単一PDFで60ページ以上・表30個以上",
+      "status": "pass",
+      "actual": "75ページ・図表68点",
+      "expected": "60p以上・30表以上"
+    },
+    {
+      "id": "D2(A)",
+      "dataset": "A",
+      "desc": "計画前提（稼働率・単価改定・CPA・採用人数のうち3種以上）が3章以上に分散",
+      "status": "pass",
+      "actual": "{'稼働率': ['1', '2', '3', '4', '5', '6', '8', '9'], '単価改定': ['2', '4', '5', '6', '9'], 'CPA': ['2', '3', '4', '5', '6', '9'], '採用人数': ['3', '4', '8', '9']}",
+      "expected": "3キーワード以上が各3章以上"
+    },
+    {
+      "id": "D2(A)",
+      "dataset": "A",
+      "desc": "分散の質（表の再掲でなく実質的な記述か）は目視確認（M3）",
+      "status": "manual",
+      "actual": "review_report.mdに記録",
+      "expected": "目視"
+    },
+    {
+      "id": "X2(A)",
+      "dataset": "A",
+      "desc": "統合版DDは千円統一・Excel Aと単位一致（百万円等の混入0件）",
+      "status": "pass",
+      "actual": "DD混入=[] Excel混入=[]",
+      "expected": "0件"
+    },
+    {
+      "id": "負条件",
+      "dataset": "A",
+      "desc": "B専用13ID（E7〜E11・D3〜D6・X1〜X4）に該当する要素が0件",
+      "status": "pass",
+      "actual": "0件",
+      "expected": "0件"
+    },
+    {
+      "id": "負条件",
+      "dataset": "A",
+      "desc": "統合版DDの負条件（多段表・他分冊参照なし等）の最終確認は目視併用",
+      "status": "manual",
+      "actual": "review_report.mdに記録",
+      "expected": "目視"
+    },
+    {
+      "id": "E2(B)",
+      "dataset": "B",
+      "desc": "Base_B: 月次試算表に単位ラベル0件",
+      "status": "pass",
+      "actual": "0件",
+      "expected": "0件"
+    },
+    {
+      "id": "E7/X1",
+      "dataset": "B",
+      "desc": "Base_B: 科目改称6組を全シート一貫適用（PL_old/Scratchは旧表記）・5組以上",
+      "status": "pass",
+      "actual": "改称6組 不備=なし",
+      "expected": "6組適用・旧シートは旧表記"
+    },
+    {
+      "id": "E8",
+      "dataset": "B",
+      "desc": "Base_B: 罠シート3枚（PL_old「使用しないこと」注記・Scratch・空Sheet1）",
+      "status": "pass",
+      "actual": "['PL_old', 'Scratch', 'Sheet1'] 注記=あり",
+      "expected": "3枚"
+    },
+    {
+      "id": "E10",
+      "dataset": "B",
+      "desc": "Base_B: 本表グリッド外のKPI補足小表3つ以上（各3行×2列以上・本表と整合）",
+      "status": "pass",
+      "actual": "[('PL P3:R11', 'OK'), ('KPI B19:D24', 'OK'), ('BS P3:Q8', 'OK')]",
+      "expected": "3表以上・整合"
+    },
+    {
+      "id": "X2〜X4",
+      "dataset": "B",
+      "desc": "Base_B: 不一致の維持（ティーザー1,585,000・のれん5,500,000・Scratch旧試算）",
+      "status": "pass",
+      "actual": "teaser=1585000 goodwill=5500000 scratch=あり",
+      "expected": "維持"
+    },
+    {
+      "id": "E2(B)",
+      "dataset": "B",
+      "desc": "Sponsor_B: 月次試算表に単位ラベル0件",
+      "status": "pass",
+      "actual": "0件",
+      "expected": "0件"
+    },
+    {
+      "id": "E7/X1",
+      "dataset": "B",
+      "desc": "Sponsor_B: 科目改称6組を全シート一貫適用（PL_old/Scratchは旧表記）・5組以上",
+      "status": "pass",
+      "actual": "改称6組 不備=なし",
+      "expected": "6組適用・旧シートは旧表記"
+    },
+    {
+      "id": "E8",
+      "dataset": "B",
+      "desc": "Sponsor_B: 罠シート3枚（PL_old「使用しないこと」注記・Scratch・空Sheet1）",
+      "status": "pass",
+      "actual": "['PL_old', 'Scratch', 'Sheet1'] 注記=あり",
+      "expected": "3枚"
+    },
+    {
+      "id": "E10",
+      "dataset": "B",
+      "desc": "Sponsor_B: 本表グリッド外のKPI補足小表3つ以上（各3行×2列以上・本表と整合）",
+      "status": "pass",
+      "actual": "[('PL P3:R11', 'OK'), ('KPI B19:D24', 'OK'), ('BS P3:Q8', 'OK')]",
+      "expected": "3表以上・整合"
+    },
+    {
+      "id": "X2〜X4",
+      "dataset": "B",
+      "desc": "Sponsor_B: 不一致の維持（ティーザー1,585,000・のれん5,500,000・Scratch旧試算）",
+      "status": "pass",
+      "actual": "teaser=1585000 goodwill=5500000 scratch=あり",
+      "expected": "維持"
+    },
+    {
+      "id": "E9",
+      "dataset": "B",
+      "desc": "Base_B/Sponsor_Bが同一シート構成・同一科目名・計画期数値差分30セル以上",
+      "status": "pass",
+      "actual": "構成一致=True 科目一致=True 差分=154セル",
+      "expected": "30セル以上"
+    },
+    {
+      "id": "E11",
+      "dataset": "B",
+      "desc": "分離デットスケジュール AutostaffChubu_Debt_B.xlsx が存在",
+      "status": "pass",
+      "actual": "AutostaffChubu_Debt_B.xlsx",
+      "expected": "存在"
+    },
+    {
+      "id": "X2〜X4",
+      "dataset": "B",
+      "desc": "DD4分冊は百万円表記・のれん5,280（p.31）・正常EBITDA1,620（p.34）を維持",
+      "status": "pass",
+      "actual": "p31のれん=あり p34EBITDA=あり",
+      "expected": "維持"
+    },
+    {
+      "id": "D3〜D6",
+      "dataset": "B",
+      "desc": "DD4分冊のSHA-256が原本と完全一致（無変更の証明）",
+      "status": "pass",
+      "actual": "4/4一致",
+      "expected": "4/4一致"
+    }
+  ]
+}
