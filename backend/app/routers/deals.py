@@ -370,7 +370,8 @@ def _deal_info(deal: Deal) -> dict:
 
 
 def _docs_of(deal: Deal) -> list[dict]:
-    return [dict(filename=d.filename, slot=d.slot, stored_path=d.stored_path)
+    return [dict(filename=d.filename, slot=d.slot, stored_path=d.stored_path,
+                 identified_label=d.identified_label)
             for d in deal.documents]
 
 

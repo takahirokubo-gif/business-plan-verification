@@ -226,7 +226,8 @@ DEAL_INFO_SCHEMA = {
                 "close_date": {"type": ["string", "null"], "description": "YYYY-MM-DD"},
                 "ev_mm": {"type": ["number", "null"],
                           "description": "EV。必ず百万円単位に換算した数値を入れる"
-                                         "（千円建て資料の値は1,000で割る。元の値と換算の旨をsourcesに記載）"},
+                                         "（資料の単位が何であれ百万円に換算する。"
+                                         "元の値・単位と換算の過程をsourcesに記載）"},
                 "senior_mm": {"type": ["number", "null"], "description": "百万円単位に換算した数値"},
                 "equity_mm": {"type": ["number", "null"], "description": "百万円単位に換算した数値"},
                 "tenor_years": {"type": ["number", "null"]},
@@ -317,6 +318,14 @@ def _file_sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+DD_SLOT_NAMES = ("dd_business", "dd_financial", "dd_legal", "dd_tax", "dd_integrated")
+
+# 実物の財務モデルは300行を超えることがあるため、上限は保険としてのみ置く。
+# 値の無いセルは出力しないので、上限を上げてもトークンは行数に比例しては増えない。
+MAX_DIGEST_ROWS = 2000
+MAX_DIGEST_COLS = 200
+
+
 def _excel_digest(path: Path) -> str:
     """Excelのシート構造・ラベル・数式・値をLLM入力用のテキストにする。
 
@@ -325,6 +334,9 @@ def _excel_digest(path: Path) -> str:
     2. キャッシュ値が無い場合、システム側の数式評価エンジンで算出 →「計算値」
     3. #REF! を含む数式 →「#REF!（参照切れ）」と明示（照会の材料）
     4. 評価不能 →「計算不能」
+
+    上限に当たって切り落とした場合は、その旨をシート末尾に明記する
+    （黙って切ると「AIが見落とした」と「そもそも渡していない」が区別できなくなるため）。
     """
     from openpyxl import load_workbook
 
@@ -336,8 +348,8 @@ def _excel_digest(path: Path) -> str:
     for ws in wb.worksheets:
         wsv = wbv[ws.title]
         out.append(f"=== シート: {ws.title} ===")
-        for row in ws.iter_rows(min_row=1, max_row=min(ws.max_row, 80),
-                                max_col=min(ws.max_column, 30)):
+        rows, cols = min(ws.max_row, MAX_DIGEST_ROWS), min(ws.max_column, MAX_DIGEST_COLS)
+        for row in ws.iter_rows(min_row=1, max_row=rows, max_col=cols):
             cells = []
             for c in row:
                 if c.value is None:
@@ -360,6 +372,10 @@ def _excel_digest(path: Path) -> str:
                 cells.append(f"{c.coordinate}: {c.value!r}")
             if cells:
                 out.append(" | ".join(cells))
+        if ws.max_row > rows or ws.max_column > cols:
+            out.append(f"（注意: シート「{ws.title}」は全{ws.max_row}行×{ws.max_column}列のうち"
+                       f"先頭{rows}行×{cols}列のみを表示。範囲外は未読であり、"
+                       "そこに記載がある可能性を排除できない）")
     return "\n".join(out)
 
 
@@ -375,6 +391,41 @@ def _pdf_digest(path: Path, max_pages: int | None = None) -> str:
     if max_pages is not None and len(reader.pages) > max_pages:
         out.append(f"（注意: 全{len(reader.pages)}ページ中、先頭{max_pages}ページのみを表示）")
     return "\n".join(out)
+
+
+def _excel_docs(documents: list[dict]) -> list[dict]:
+    return [d for d in documents
+            if d.get("stored_path") and str(d["stored_path"]).endswith(".xlsx")]
+
+
+def _pick_model_doc(documents: list[dict]) -> dict | None:
+    """KPIツリー生成に使う財務モデルを1冊選ぶ。
+
+    スロットが付いていればそれを優先し、付いていない（種別なしで取り込んだ）
+    Excelもファイル名・判定ラベルから候補にする。ケース違いのファイルが複数ある案件で、
+    ベースケースらしいものを選び、デットスケジュール等の付属ファイルを避ける。
+    """
+    for slot in ("model_base", "model_sponsor"):
+        doc = next((d for d in documents if d["slot"] == slot), None)
+        if doc:
+            return doc
+    candidates = [d for d in _excel_docs(documents) if d["slot"] not in DD_SLOT_NAMES]
+    if not candidates:
+        return None
+
+    def score(doc: dict) -> int:
+        text = f"{doc.get('filename', '')} {doc.get('identified_label') or ''}".lower()
+        s = 0
+        if any(w in text for w in ("base", "ベース")):
+            s += 2
+        if any(w in text for w in ("sponsor", "スポンサー")):
+            s -= 1
+        # デットスケジュール・返済予定表の類は主たる財務モデルではない
+        if any(w in text for w in ("debt", "デット", "返済", "借入")):
+            s -= 3
+        return s
+
+    return max(candidates, key=score)
 
 
 def _docs_digest(documents: list[dict], excel_limit: int | None = None,
@@ -395,7 +446,12 @@ def _docs_digest(documents: list[dict], excel_limit: int | None = None,
         parts.append(header)
         if p.suffix == ".xlsx":
             digest = _excel_digest(p)
-            parts.append(digest[:excel_limit] if excel_limit else digest)
+            if excel_limit and len(digest) > excel_limit:
+                parts.append(digest[:excel_limit])
+                parts.append(f"（注意: このファイルのダイジェストは全{len(digest):,}文字のうち"
+                             f"先頭{excel_limit:,}文字のみを表示。以降は未読）")
+            else:
+                parts.append(digest)
         else:
             parts.append(_pdf_digest(p, max_pages=pdf_pages))
     return "\n".join(parts)
@@ -472,7 +528,10 @@ class AnthropicExtractor(Extractor):
             digest = _excel_digest(path)[:8000]
         prompt = (f"次のファイルの社名と資料種別を判定してください。\n"
                   f"ファイル名: {filename}\n先頭部分の内容:\n{digest[:8000]}\n"
-                  "事業・財務等の複数領域が1冊にまとまった統合版DDは dd_integrated と判定すること。")
+                  "事業・財務等の複数領域が1冊にまとまった統合版DDは dd_integrated と判定すること。"
+                  "いずれの種別にも当てはまらない資料は unknown とし、"
+                  "資料の実際の性格と判定できない理由を detail に書くこと"
+                  "（無理にいずれかの種別へ寄せない）。")
         return self._call(prompt, IDENTIFY_SCHEMA, "identify_document")
 
     def extract_deal_info(self, documents: list[dict]) -> dict:
@@ -484,8 +543,8 @@ class AnthropicExtractor(Extractor):
             "各フィールドの出典（ファイル＋シート/セルまたはページ）を sources に必ず記載すること。"
             "借入人SPC名はDDレポートの買収ストラクチャー・買収後B/S関連の記述も含めて全文を探すこと。"
             "金額フィールド（ev_mm・senior_mm・equity_mm・sponsor_ebitda_mm）は"
-            "必ず百万円単位に換算した数値を入れること（千円建て資料の値は1,000で割る。"
-            "元の値・単位と換算の旨をsourcesに記載）。"
+            "必ず百万円単位に換算した数値を入れること（資料の単位が何であれ百万円に換算する。"
+            "元の値・単位と換算の過程をsourcesに記載）。"
             "本行取組額・担当者・審査相談予定日は行内情報のため対象外。"
             "資料に無い項目は null にすること（推測しない）。")
         return self._call("\n".join(parts), DEAL_INFO_SCHEMA, "extract_deal_info")
@@ -499,14 +558,20 @@ class AnthropicExtractor(Extractor):
             "2. 過去実績：資料にある全年度のPL（売上高・営業利益・EBITDA・当期純利益）、"
             "BS（現預金・純資産・有利子負債）、CF（FCF）。"
             "実績が5期あれば5期すべて抽出する（年度の取捨選択をしない）\n"
-            "3. 予測数値：各ケース（Sponsor/Base）のFY計画値"
+            "3. 予測数値：資料に存在するケースごとのFY計画値"
             "（売上・営業利益・EBITDA・当期純利益・現預金・純資産・FCF）。"
             "計画も資料にある全年度を抽出する（7期あれば7期すべて）。"
             "計画値は財務モデル（キャッシュ値・計算値）とDDレポートの計画表の両方を確認し、"
             "両方にあれば一致を検証（不一致はmismatchに記載）、片方のみならその出典を明記。"
-            "ケースの判定根拠（シート・セル）を明記。"
+            "ケースの数・名称は資料に従うこと（2つとは限らない）。"
+            "判定根拠（シート・セル・プルダウン等の切替方法）を明記。"
             "独立したケースが1つしか存在しない場合は、存在するケースのみ抽出し、"
-            "無いケースは values=null・source_type=missing で報告して理由をlogicに書く\n"
+            "無いケースは values=null・source_type=missing で報告して理由をlogicに書く。"
+            "ケースが3つ以上ある場合は、審査の基礎とすべき保守的なケースと"
+            "スポンサー提示等の強気ケースを標準キーに割り当て、"
+            "残りは case3_revenue 等のキーで追加し、割当の論理をlogicに書く。"
+            "どのケースを審査の基礎とすべきかが資料から一意に決まらない場合は"
+            "inquiries（category=正ファイル識別）で照会する\n"
             "4. ストラクチャー：のれん・EV・シニアローン。資料間で値が食い違う場合はmismatchに両方を記載\n"
             "5. 財務ハイライト（key=fin_highlights・section=財務ハイライト・text_value）："
             "抽出した実績・計画数値に基づき、利益率や資金フローの特徴的な変動とその要因"
@@ -514,19 +579,25 @@ class AnthropicExtractor(Extractor):
             "審査報告書にふさわしい文体で記述。"
             "「・観点：本文」形式の箇条書き3〜5項目（改行区切り）とし、数値は抽出値のみを引用すること\n"
             "6. ケース前提差異（key=case_assumptions・section=財務ハイライト・text_value）："
-            "BaseケースとSponsorケースの前提（KPI・成長率・マージン）の違いと乖離の主因を、"
+            "抽出した各ケースの前提（KPI・成長率・マージン）の違いと乖離の主因を、"
             "審査報告書にふさわしい文体で記述。"
-            "「・観点：本文」形式の箇条書き3〜4項目（改行区切り）とし、両ケースの計画値の差を具体的数値で示すこと\n"
+            "「・観点：本文」形式の箇条書き3〜4項目（改行区切り）とし、ケース間の計画値の差を具体的数値で示すこと"
+            "（ケースが1つしか無い場合はその旨を述べる）\n"
             "抽出の規律：\n"
             "・FCF等の導出指標も、まず資料の記載値（CF計算書・DDのCF表）を探して抽出する"
             "（source_type=extracted）。記載が無い場合のみ計算値・推定を用い、定義と算法をlogicに明記する\n"
             "・正常収益力EBITDA（normalized_ebitda）はDDの結論部・QoE・正常収益力関連の章まで必ず探すこと\n"
-            "・表記揺れ（Net Sales / Adj. EBITDA等）は名寄せし、マッピングの論理をlogicに書く。"
+            "・同一の概念が資料ごとに異なる名称・略称・英語表記で書かれている場合は名寄せし、"
+            "マッピングの論理をlogicに書く。"
             "確証の無い名寄せは inquiries（category=名寄せ）でも報告する\n"
-            "・旧版シート（PL_old等）・作業用シート・空シートは抽出対象外とし、"
+            "・シート名・注記・記載内容から現行版ではないと判断されるシート"
+            "（旧版・作業用・下書き・空シート等）は抽出対象外とし、"
             "検知したら inquiries（category=正シート識別）で報告する\n"
             "・#REF!等の参照切れを検知したら inquiries（category=参照切れ）で報告し、"
             "リンク先ファイルの提供を求める質問を書く\n"
+            "・ダイジェストに『計算不能』と示された数式（システムが解釈できない関数・"
+            "外部参照等）の値は、推定で埋めず source_type=missing とし、"
+            "計画の主要数値に関わる場合は inquiries で照会する\n"
             "・単位ラベルの無いシート・表の数値は勝手に単位を仮定せず、"
             "inquiries（category=単位不明）で照会する（周辺資料から単位が一意に確定できる場合は"
             "その論理をlogicに書いた上で抽出してよい）\n"
@@ -534,27 +605,36 @@ class AnthropicExtractor(Extractor):
             "keyの命名規則：以下に該当する項目は必ずこの標準キーを使うこと（帳票出力が参照する）。"
             "実績: act_revenue／act_op（営業利益）／act_ebitda／act_ni（当期純利益）／"
             "act_cash（現預金）／act_net_assets（純資産）／act_debt（有利子負債）／act_fcf。"
-            "Baseケース計画: base_revenue／base_op／base_ebitda／base_ni／base_cash／"
-            "base_net_assets／base_fcf。"
-            "Sponsorケース計画: sponsor_revenue／sponsor_op／sponsor_ebitda／sponsor_ni／"
-            "sponsor_cash／sponsor_net_assets／sponsor_fcf。"
+            "審査の基礎とする保守的なケースの計画: base_revenue／base_op／base_ebitda／base_ni／"
+            "base_cash／base_net_assets／base_fcf。"
+            "スポンサー提示等の強気ケースの計画: sponsor_revenue／sponsor_op／sponsor_ebitda／"
+            "sponsor_ni／sponsor_cash／sponsor_net_assets／sponsor_fcf。"
             "ストラクチャー: ev／senior_loan／goodwill。その他: normalized_ebitda（正常収益力EBITDA）。"
             "該当しない項目は内容がわかる英小文字スネークケースで命名。\n"
-            "valuesの年度キーは『FY+西暦下2桁』（例: FY24, FY27）で統一すること"
-            "（『FY26A』『FY27E』のような実績/予想サフィックスはキーに含めず区分はlogicに記す。"
-            "『2027/3期』のような決算期表記も使わない）。")
+            "valuesの年度キーは『FY+西暦下2桁』（例: FY24, FY27）で統一すること。"
+            "資料側の年度表記がどのような形式（決算期表記・和暦・実績/予想の別を示す記号等）でも"
+            "この形式に正規化し、元の表記との対応と実績/計画の区分をlogicに記す。"
+            "会計年度の始期が資料から一意に定まらない場合は、割当の前提をlogicに明記する。")
         return self._call("\n".join(parts), ITEMS_SCHEMA, "extract_items")
 
     def propose_kpi_tree(self, deal: dict, documents: list[dict]) -> dict:
         # 財務モデルはBase優先・無ければSponsor（単一ケース案件に対応）。
+        # スロット未指定（種別なしで取り込んだ）Excelも候補に含める
+        # ——ここを slot だけで探すと、種別なし投入時にモデルが1冊も渡らない
+        model_doc = _pick_model_doc(documents)
+        other_models = [d for d in _excel_docs(documents) if d is not model_doc]
         # 事業系DDは分冊（dd_business）と統合版（dd_integrated）の両方に対応
-        model_doc = next((d for d in documents if d["slot"] == "model_base"), None) \
-            or next((d for d in documents if d["slot"] == "model_sponsor"), None)
         dd_docs = [d for d in documents if d["slot"] in ("dd_business", "dd_integrated")]
         parts = []
         if model_doc:
             parts.append(f"--- 財務モデル: {model_doc['filename']} ---")
             parts.append(_excel_digest(Path(model_doc["stored_path"])))
+            if other_models:
+                names = "・".join(d["filename"] for d in other_models)
+                parts.append(f"（注記: 本ステップでは上記1冊を財務モデルとして用いた。"
+                             f"他に {names} が提出されている。"
+                             f"上記が主たる財務モデルでないと判断される場合は、その旨を"
+                             f"ツリーの説明に明記すること）")
         seen: set[str] = set()
         for doc in dd_docs:
             sha = _file_sha(Path(doc["stored_path"]))
@@ -570,10 +650,9 @@ class AnthropicExtractor(Extractor):
             "1. 最上位（parent=null）は返済能力に直結する集約指標を1つ置く"
             "（通常はEBITDA。モデルにEBITDA行があればそれを根にする）\n"
             "2. その下に営業利益 → 売上高・売上原価・販管費（各合計）を置き、"
-            "さらに各内訳科目（派遣事業売上・その他営業収入・労務費・その他原価・採用費・"
-            "本社人件費・その他販管費など、モデルに存在する行すべて）へ分解する\n"
-            "3. 各内訳科目の下に、算式に現れるKPIドライバー（稼働人数・在籍数・稼働率・"
-            "稼働時間・単価・時給・法定福利費率・採用人数・CPA等）まで分解する\n"
+            "さらにモデルに存在する内訳科目の行すべてへ分解する\n"
+            "3. 各内訳科目の下に、算式に現れる非財務の変数（数量・比率・単価・時間・率など、"
+            "対象会社の事業を動かすドライバー）まで分解する\n"
             "4. 減価償却費のようにEBITDAへ直接加算される項目も根の直下に置く\n"
             "重要な制約：\n"
             "・すべてのノードの parent は、必ず同じ nodes 配列内に存在する id を指すこと"
