@@ -26,6 +26,16 @@ class MockExtractor(Extractor):
         self._scenarios = _load("scenarios_autostaff.json")
         self._chat = _load("chat_scripts.json")
 
+    def _require_known_sample(self, documents: list[dict]):
+        """解析対象にサンプルファイルが1つも無ければ拒否する。
+
+        ファイル名の検証はアップロード時（identify_document）にもあるが、
+        シード済みの別案件（例：サンメディクス）へAPIから直接解析を叩いた場合に、
+        無関係なオートスタッフ中部のフィクスチャで上書きしてしまうのを防ぐ。
+        """
+        if not any(d.get("filename") in self._identify for d in documents):
+            raise UnknownSampleFileError()
+
     # ---- 案件照合
     def identify_document(self, filename: str, path: Path | None) -> dict:
         info = self._identify.get(filename)
@@ -35,6 +45,7 @@ class MockExtractor(Extractor):
 
     # ---- 案件基本情報の読み取り（S2の自動入力）
     def extract_deal_info(self, documents: list[dict]) -> dict:
+        self._require_known_sample(documents)
         time.sleep(min(MOCK_DELAY_SECONDS, 2.0))
         return self._deal_info
 
@@ -42,6 +53,7 @@ class MockExtractor(Extractor):
     def extract_items(self, deal: dict, documents: list[dict]) -> dict:
         # 照会もfixtureから返す。ここを空にすると、シード済みデモ案件を
         # モックで再解析したときにデモ用の照会が消えてしまう
+        self._require_known_sample(documents)
         time.sleep(MOCK_DELAY_SECONDS)
         return dict(items=self._extraction["items"],
                     inquiries=self._extraction.get("inquiries", []))
@@ -50,6 +62,7 @@ class MockExtractor(Extractor):
     def propose_kpi_tree(self, deal: dict, documents: list[dict]) -> dict:
         # デモでは解析直後の画面がシード済み案件（オートスタッフ中部）と同一になるよう、
         # チャット追加扱いの「大口派遣先への売上依存度」ノードも最初から含める
+        self._require_known_sample(documents)
         nodes = list(self._kpi_tree["nodes"])
         nodes.append(dict(self._kpi_tree["concentration_node"], added_via_chat=True))
         return dict(nodes=nodes)
@@ -57,6 +70,7 @@ class MockExtractor(Extractor):
     # ---- シナリオ提案
     def propose_scenarios(self, deal: dict, documents: list[dict]) -> list[dict]:
         # 同上：自分の仮説カード（D）も含め、シード済み案件と同じ4シナリオを返す
+        self._require_known_sample(documents)
         return self._scenarios["cards"] + [self._scenarios["human_card"]]
 
     # ---- チャット（台本方式・対象選択に対応）
@@ -71,8 +85,9 @@ class MockExtractor(Extractor):
                 if diff and diff.get("type") == "add_node":
                     existing = state.get("node_ids") or []
                     if diff["node"]["id"] in existing:
-                        return dict(reply="「大口派遣先への売上依存度」は既にKPIツリーに"
-                                          "追加されています。", diff=None)
+                        label = diff["node"].get("label", "このKPI")
+                        return dict(reply=f"「{label}」は既にKPIツリーに追加されています。",
+                                    diff=None)
                     # 対象ブランチが選択されていればそこに追加する
                     if target and target in existing:
                         diff["node"]["parent"] = target

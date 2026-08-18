@@ -30,6 +30,9 @@ _ADDED_COLUMNS: dict[str, dict[str, str]] = {
         "source_type": "VARCHAR NOT NULL DEFAULT 'extracted'",
         "source_unit": "VARCHAR",
     },
+    "scenarios": {
+        "impact_calc_json": "TEXT",
+    },
 }
 
 
