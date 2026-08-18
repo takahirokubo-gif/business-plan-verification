@@ -67,7 +67,9 @@ ITEMS_SCHEMA = {
                     "label": {"type": "string"},
                     "unit": {"type": "string",
                              "description": "元資料の単位表記のまま（例: 千円・百万円・円・%・名・円/h）。"
-                                            "換算しない（単位の正規化はシステム側で行う）"},
+                                            "換算しない（単位の正規化はシステム側で行う）。"
+                                            "単価・比率は必ず分母まで書く（例: 千円/名・円/h）。"
+                                            "分母を省くと金額合計と誤認され百万円へ誤換算される"},
                     "case": {"type": ["string", "null"], "enum": ["base", "sponsor", None]},
                     "values": {"type": ["object", "null"],
                                "description": "年度→数値（元資料の単位のまま・換算しない）。定性項目はnull"},

@@ -2687,7 +2687,7 @@
       "key": "act_cpa",
       "section": "実績（FY24〜FY26）",
       "label": "採用CPA",
-      "unit": "千円",
+      "unit": "千円/名",
       "case": null,
       "values": {
         "FY24": 225,
@@ -2999,7 +2999,7 @@
       "key": "base_cpa",
       "section": "計画：ベースケース（FY27〜FY31）",
       "label": "採用CPA",
-      "unit": "千円",
+      "unit": "千円/名",
       "case": "base",
       "values": {
         "FY27": 255,
@@ -3323,7 +3323,7 @@
       "key": "sponsor_cpa",
       "section": "計画：スポンサーケース（FY27〜FY31）",
       "label": "採用CPA",
-      "unit": "千円",
+      "unit": "千円/名",
       "case": "sponsor",
       "values": {
         "FY27": 265,

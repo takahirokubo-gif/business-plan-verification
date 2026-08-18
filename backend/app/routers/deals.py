@@ -144,7 +144,10 @@ def extract_deal_info(deal_id: int, user: str | None = None,
         raise HTTPException(400, "資料がアップロードされていません")
     docs = [dict(filename=d.filename, slot=d.slot, stored_path=d.stored_path)
             for d in deal.documents]
-    result = get_extractor().extract_deal_info(docs)
+    try:
+        result = get_extractor().extract_deal_info(docs)
+    except UnknownSampleFileError as e:
+        raise HTTPException(400, e.message)
     # 画面に出る説明文（note・出典）から内部表現を除去する
     if isinstance(result, dict):
         if isinstance(result.get("note"), str):
@@ -333,11 +336,14 @@ def upload_document(deal_id: int, slot: str = Form("unclassified"), user: str = 
         raise HTTPException(400, e.message)
 
     docs = []
+    removed_paths: set[str] = set()
     for s in slots:
         # 単一スロットは上書き（種別未設定は複数ファイルを並べて保持する）
         if s not in MULTI_SLOTS:
             for d in list(deal.documents):
                 if d.slot == s:
+                    if d.stored_path:
+                        removed_paths.add(d.stored_path)
                     db.delete(d)
         elif any(d.slot == s and d.filename == safe_name for d in deal.documents):
             continue  # 同じファイルの重複登録は無視
@@ -349,10 +355,25 @@ def upload_document(deal_id: int, slot: str = Form("unclassified"), user: str = 
         db.add(doc)
         docs.append(doc)
     db.flush()
-    labels = "、".join(DOCUMENT_SLOTS.get(s, s) for s in slots)
-    add_history(db, deal, user, "資料アップロード", f"{safe_name}（{labels}）")
+    if docs:
+        labels = "、".join(DOCUMENT_SLOTS.get(s, s) for s in slots)
+        add_history(db, deal, user, "資料アップロード", f"{safe_name}（{labels}）")
+    else:
+        # 全スロットで重複スキップ＝何も登録していない。書き込んだ実体も捨てる
+        dest.unlink(missing_ok=True)
     db.commit()
-    result = docs[0].to_dict() if docs else dict(filename=safe_name, slot=slots[0])
+    # 上書きで参照が無くなった実体ファイルを削除する（/tmp・ディスクの肥大化防止）。
+    # 統合版DD等で複数スロットが同一実体を共有するため、残存参照を確認してから消す
+    still_referenced = {d.stored_path for d in deal.documents if d.stored_path}
+    for p in removed_paths - still_referenced:
+        path = Path(p)
+        try:
+            if path.resolve().is_relative_to(UPLOAD_DIR.resolve()):
+                path.unlink(missing_ok=True)
+        except OSError:
+            pass  # 消せなくても登録処理は成功として扱う
+    result = docs[0].to_dict() if docs else dict(filename=safe_name, slot=slots[0],
+                                                 duplicate=True)
     result["slots"] = slots
     # 案件照合（社名の一致チェック）。対象会社が未設定（下書き）の場合は判定しない
     company = info.get("company") or ""
@@ -394,6 +415,11 @@ def _run_step(db: Session, deal: Deal, step: str, extractor, fn):
     """AIステップを実行し、成否にかかわらず診断を残す。失敗は原因つきで返す。"""
     try:
         result = fn()
+    except UnknownSampleFileError as e:
+        # モックで解析できない資料構成（サンプル外）は入力エラーとして返す
+        _record_run(db, deal, step, extractor, error=e.message, status="error")
+        db.commit()
+        raise HTTPException(400, e.message)
     except Exception as e:
         _record_run(db, deal, step, extractor, error=f"{type(e).__name__}: {e}",
                     status="truncated" if type(e).__name__ == "TruncatedOutputError" else "error")
