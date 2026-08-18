@@ -2,7 +2,8 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "installCommand": "cd frontend && npm ci",
-  "buildCommand": "cd frontend && npm run build",
+  "buildCommand": "cd frontend && npm run build && cd .. && mkdir -p public && printf 'User-agent: *\nDisallow: /\n' > public/robots.txt",
+  "outputDirectory": "public",
   "functions": {
     "api/index.py": {
       "maxDuration": 300
