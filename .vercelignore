@@ -1,13 +1,15 @@
 # .vercelignore がある場合、.gitignore ベースの除外は無効になる
 # （frontend/dist をアップロードに含めるために必要）
+#
+# 注意：Git連携デプロイではこの除外がビルド前のソース取得にも適用される。
+# frontend/src・frontend/public を除外するとVercel側ビルド（vercel.json の
+# buildCommand）が「No inputs were found」で失敗するため、除外しないこと
 
 .git
 .claude
 docs
 node_modules
 frontend/node_modules
-frontend/src
-frontend/public
 backend/.venv
 backend/tests
 backend/uploads
