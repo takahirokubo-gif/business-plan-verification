@@ -42,8 +42,9 @@ const METRIC_ORDER = [
   'op_cf', 'inv_cf', 'fin_cf', 'fcf',
 ]
 /** 抽出はするがテーブルには出さない指標（エクスポート等では使用）。
+ *  他項目の合計にすぎない指標のみを対象とする。
  *  必須項目には適用しない（隠すと確定できなくなるため。buildFinTable内で判定） */
-const HIDDEN_METRICS = new Set(['debt', 'total_assets'])
+const HIDDEN_METRICS = new Set(['total_assets'])
 /** この指標の直後に「同率」（対売上比）行を挟む */
 const RATIO_AFTER = new Set(['gross', 'op', 'ordinary'])
 
