@@ -44,9 +44,16 @@ Vercel Python Serverless Function 1本（`api/index.py`）で画面・APIの全�
 処理する構成（`vercel.json` の rewrites）。DBは `/tmp` のSQLiteで、コールドスタート
 ごとに自動シードされる＝常にクリーンなデモ状態で立ち上がる。
 
+デプロイ方法は2通り：
+
 ```bash
+# A. 手元からCLIでデプロイ
 cd frontend && npm run build     # dist を生成（.vercelignore が dist を含めて配信）
 vercel --prod                    # デプロイ
+
+# B. GitHub連携（Vercelダッシュボード → Git で接続済みの場合）
+#    main へのマージだけで本番へ自動デプロイされる。
+#    フロントは vercel.json の installCommand/buildCommand でVercel側がビルドする
 ```
 
 環境変数（Vercelダッシュボード or `vercel env add`）:
