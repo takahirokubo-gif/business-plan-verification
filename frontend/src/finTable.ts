@@ -38,10 +38,11 @@ const KPI_METRICS = new Set(['utilization', 'new_hires', 'unit_price', 'cpa'])
 const METRIC_ORDER = [
   'revenue', 'gross', 'op', 'ordinary', 'ni', 'ebitda',
   'utilization', 'new_hires', 'unit_price', 'cpa',
-  'cash', 'goodwill', 'net_assets',
+  'cash', 'goodwill', 'debt', 'net_assets',
   'op_cf', 'inv_cf', 'fin_cf', 'fcf',
 ]
-/** 抽出はするがテーブルには出さない指標（エクスポート等では使用） */
+/** 抽出はするがテーブルには出さない指標（エクスポート等では使用）。
+ *  必須項目には適用しない（隠すと確定できなくなるため。buildFinTable内で判定） */
 const HIDDEN_METRICS = new Set(['debt', 'total_assets'])
 /** この指標の直後に「同率」（対売上比）行を挟む */
 const RATIO_AFTER = new Set(['gross', 'op', 'ordinary'])
@@ -67,8 +68,10 @@ export function buildFinTable(items: ExtractedItem[]) {
     if (!it.values) continue
     const ck = parseCaseKey(it.key)
     if (ck) {
-      if (HIDDEN_METRICS.has(ck.metric)) {
-        tableIds.add(it.id) // 表には出さないがセクション表示にも出さない（帳票では使用）
+      // 非表示にしてよいのは任意項目だけ。必須項目を隠すと確定する場所が
+      // 画面から消え、必須N/Mが埋まらずKPI確定・エクスポートへ進めなくなる
+      if (HIDDEN_METRICS.has(ck.metric) && !it.required) {
+        tableIds.add(it.id) // 表にもセクションにも出さない（帳票では使用）
         continue
       }
       let row = rowByMetric.get(ck.metric)
