@@ -438,7 +438,7 @@ def build_export_pdf(deal: Deal) -> tuple[str, int]:
 
     # ---- 確認事項（AIが検知した照会）
     if deal.inquiries:
-        w.heading("07｜確認事項（AIが検知した照会）")
+        w.heading("07", "確認事項（AIが検知した照会）")
         w.text("資料内で根拠が一意に決まらない事象。機械が勝手に解決せず人の確認に委ねた項目。",
                size=8, color=GRAY)
         sev = {"high": "高", "medium": "中", "low": "低"}
