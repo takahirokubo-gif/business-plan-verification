@@ -71,6 +71,20 @@ def test_export_requires_confirmation_and_excludes_held(client, auto_id):
     assert len(r.content) > 5000
 
 
+def test_export_pdf(client, auto_id):
+    """PDF出力。審査相談メモ・確認事項（照会）・保留項目が揃った案件で全セクションを描く。
+
+    セクション見出しの引数ミス等はこのフルセットでしか露見しないため、
+    シードの主役案件（メモ2件・照会2件・保留2項目）で通しの生成を確認する。
+    """
+    full = client.get(f"/api/deals/{auto_id}/full").json()
+    assert full["memos"] and full["inquiries"], "全セクションを含む案件で検証する前提"
+    r = client.post(f"/api/deals/{auto_id}/export/pdf", json={"user": "tanaka"})
+    assert r.status_code == 200, r.text
+    assert r.content[:4] == b"%PDF"
+    assert len(r.content) > 5000
+
+
 def test_chat_script_and_fallback(client, auto_id):
     r = client.post(f"/api/deals/{auto_id}/chat", json=dict(
         context="kpi", message="重要KPIの★を稼働率から採用単価CPAに変更して", user="tanaka"))
